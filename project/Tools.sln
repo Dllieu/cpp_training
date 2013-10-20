@@ -1,0 +1,41 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DesignPattern", "DesignPattern.vcxproj", "{CD33CD06-C9D7-43C9-ADE5-3C2B83BBD20A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{A9E83719-1402-4117-9074-A3728682513E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Librairies", "Librairies", "{383D0525-B145-423B-8FDB-DF357CC80744}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestSuite", "TestSuite.vcxproj", "{109DC281-F5BE-4271-8C76-BC34636A346A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Tools", "Tools.vcxproj", "{20278279-B699-4587-B872-7A746661D354}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CD33CD06-C9D7-43C9-ADE5-3C2B83BBD20A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{CD33CD06-C9D7-43C9-ADE5-3C2B83BBD20A}.Debug|Win32.Build.0 = Debug|Win32
+		{CD33CD06-C9D7-43C9-ADE5-3C2B83BBD20A}.Release|Win32.ActiveCfg = Release|Win32
+		{CD33CD06-C9D7-43C9-ADE5-3C2B83BBD20A}.Release|Win32.Build.0 = Release|Win32
+		{109DC281-F5BE-4271-8C76-BC34636A346A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{109DC281-F5BE-4271-8C76-BC34636A346A}.Debug|Win32.Build.0 = Debug|Win32
+		{109DC281-F5BE-4271-8C76-BC34636A346A}.Release|Win32.ActiveCfg = Release|Win32
+		{109DC281-F5BE-4271-8C76-BC34636A346A}.Release|Win32.Build.0 = Release|Win32
+		{20278279-B699-4587-B872-7A746661D354}.Debug|Win32.ActiveCfg = Debug|Win32
+		{20278279-B699-4587-B872-7A746661D354}.Debug|Win32.Build.0 = Debug|Win32
+		{20278279-B699-4587-B872-7A746661D354}.Release|Win32.ActiveCfg = Release|Win32
+		{20278279-B699-4587-B872-7A746661D354}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{CD33CD06-C9D7-43C9-ADE5-3C2B83BBD20A} = {383D0525-B145-423B-8FDB-DF357CC80744}
+		{20278279-B699-4587-B872-7A746661D354} = {383D0525-B145-423B-8FDB-DF357CC80744}
+		{109DC281-F5BE-4271-8C76-BC34636A346A} = {A9E83719-1402-4117-9074-A3728682513E}
+	EndGlobalSection
+EndGlobal
