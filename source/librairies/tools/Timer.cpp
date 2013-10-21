@@ -1,20 +1,19 @@
 #include <iostream>
-
+#include <string>
 #include "Timer.h"
 
 using namespace tools;
 
-Timer::Timer( bool withLog /*= true*/ )
+Timer::Timer( const std::string& customMessage /*= ""*/ )
     : clock_( std::chrono::high_resolution_clock::now() )
-    , withLog_( withLog )
+    , customMessage_( customMessage.empty() ? "Time Elapsed" : customMessage )
 {
     // NOTHING
 }
 
 Timer::~Timer()
 {
-    if ( withLog_ )
-        std::cout << "Time Elapsed: " << elapsed() << std::endl;
+    log();
 }
 
 void    Timer::reset()
@@ -25,4 +24,9 @@ void    Timer::reset()
 double  Timer::elapsed() const
 {
     return std::chrono::duration_cast< std::chrono::duration< double, std::ratio<1> > >( std::chrono::high_resolution_clock::now() - clock_ ).count();
+}
+
+void    Timer::log() const
+{
+    std::cout << customMessage_ << ": " << elapsed() << std::endl;
 }

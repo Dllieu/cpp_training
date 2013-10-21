@@ -25,7 +25,7 @@ MemoryPool::MemoryPool( size_t unitNumber /*= 50*/, size_t unitSize /*= 1024*/ )
     }
 }
 
-void*   MemoryPool::alloc( size_t requestedSize )
+void*   MemoryPool::malloc( size_t requestedSize )
 {
     if ( requestedSize > unitSize_ || ! memoryBlock_ || ! freedBlock_ )
         return malloc( requestedSize );

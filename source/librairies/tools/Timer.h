@@ -9,15 +9,16 @@ namespace tools
 class Timer
 {
 public:
-    Timer( bool withLog = true );
+    Timer( const std::string& customMessage = "" );
     ~Timer();
 
     void    reset();
     double  elapsed() const;
+    void    log() const;
 
 private:
     std::chrono::time_point< std::chrono::high_resolution_clock >   clock_;
-    bool                                                            withLog_;
+    std::string                                                     customMessage_;
 };
 
 }

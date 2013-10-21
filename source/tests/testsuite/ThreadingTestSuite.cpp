@@ -34,6 +34,7 @@ BOOST_AUTO_TEST_CASE( ThreadGroupTestSuite )
         threadGroup.add_thread( new boost::thread( [] ( unsigned threadId ) { std::cout << threadId << std::endl; },
                                                    i ) );
     threadGroup.join_all();
+    BOOST_CHECK( true );
 }
 
 BOOST_AUTO_TEST_SUITE_END() // Threading

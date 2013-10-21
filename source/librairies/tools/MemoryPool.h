@@ -12,7 +12,7 @@ class MemoryPool
 public:
     MemoryPool( size_t unitNumber = 50, size_t unitSize = 1024 );
 
-    void*   alloc( size_t requestedSize );
+    void*   malloc( size_t requestedSize );
     void    free( void* p );
 
 private:
