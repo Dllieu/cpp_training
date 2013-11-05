@@ -10,7 +10,8 @@ public:
     virtual ~AbstractVisitor() {};
 };
 
-// public virtual : calling the destructor could be ambigous otherwise (compile error)
+// Virtual inheritance ensures that the same base class appearing two or more times in an inheritance graph has all of its instances merged
+// (which is the case for the RealVisitor which will implement several AbstractAcyclicVisitor (diamond inheritance case)
 template <class Visitable>
 class AbstractAcyclicVisitor : public virtual AbstractVisitor
 {

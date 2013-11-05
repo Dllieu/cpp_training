@@ -74,7 +74,9 @@
     <ClCompile Include="..\source\tests\testsuite\Initializer.cpp" />
     <ClCompile Include="..\source\tests\testsuite\MacroTestSuite.cpp" />
     <ClCompile Include="..\source\tests\testsuite\MemoryPoolTestSuite.cpp" />
+    <ClCompile Include="..\source\tests\testsuite\MetaProgTestSuite.cpp" />
     <ClCompile Include="..\source\tests\testsuite\ObserverTestSuite.cpp" />
+    <ClCompile Include="..\source\tests\testsuite\STLTestSuite.cpp" />
     <ClCompile Include="..\source\tests\testsuite\ThreadingTestSuite.cpp" />
     <ClCompile Include="..\source\tests\testsuite\VisitorTestSuite.cpp" />
   </ItemGroup>
