@@ -56,7 +56,7 @@ BOOST_AUTO_TEST_CASE( SortTestSuite )
     std::vector< int > v = boost::assign::list_of( 6 )( 8 )( 3 );
 
     // 3-part hybrid sorting algorithm: introsort is performed first (introsort itself being a hybrid of quicksort and heap sort)
-    // to a maximum depth given by 2×log2 n, where n is the number of elements, followed by an insertion sort on the result
+    // to a maximum depth given by 2 log2 n, where n is the number of elements, followed by an insertion sort on the result
     std::sort( v.begin(), v.end(), [](int a, int b) { return a < b; } );
     BOOST_CHECK( std::is_sorted( &v[0], &v[0] + v.size() ) );
 }

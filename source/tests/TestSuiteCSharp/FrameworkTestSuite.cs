@@ -51,9 +51,15 @@
         public void Threading()
         {
             List<Thread> threads = new List<Thread>();
+            List<Task> tasks = new List<Task>();
             Random random = new Random();
             foreach (int i in Enumerable.Range(1, 7))
             {
+                tasks.Add(new Task(delegate()
+                                       {
+                                           Thread.Sleep(1000 * random.Next(1, 2));
+                                           Console.WriteLine("Thread {0}", i);
+                                       }));
                 threads.Add(new Thread(delegate()
                                        {
                                             Thread.Sleep(1000 * random.Next(1, 2));
@@ -62,8 +68,8 @@
                 threads[i].Start();
             }
 
-            foreach (int i in Enumerable.Range(1, 7))
-                threads[i].Join();
+            tasks.ForEach(t => t.Wait());
+            threads.ForEach(t => t.Join());
         }
     }
 }

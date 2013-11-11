@@ -53,6 +53,17 @@ namespace
     };
 }
 
+BOOST_AUTO_TEST_CASE( GenericLambdaVisitor )
+{
+    bool isOption = false;
+    auto visitor = designpattern::makeVisitor( [&]( const Option& option) { std::cout << "option" << std::endl; isOption = true; },
+                                               [&]( const Future& future) { std::cout << "future" << std::endl; } );
+
+    Option o;
+    o.accept( visitor );
+    BOOST_CHECK( isOption );
+}
+
 BOOST_AUTO_TEST_CASE( AcyclicVisitorTestSuite )
 {
     ProductVisitor  visitor;
