@@ -11,6 +11,9 @@
     <Filter Include="Source Files\DesignPattern">
       <UniqueIdentifier>{aaedfbce-5910-4f83-bae6-12a094be0b68}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Interviews">
+      <UniqueIdentifier>{2d1694ef-7db5-408d-aedc-90e14aba5110}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\tests\testsuite\ThreadingTestSuite.cpp">
@@ -36,6 +39,9 @@
     </ClCompile>
     <ClCompile Include="..\source\tests\testsuite\STLTestSuite.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\tests\testsuite\Interview.cpp">
+      <Filter>Source Files\Interviews</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -73,6 +73,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\source\tests\testsuite\Initializer.cpp" />
+    <ClCompile Include="..\source\tests\testsuite\Interview.cpp" />
     <ClCompile Include="..\source\tests\testsuite\MacroTestSuite.cpp" />
     <ClCompile Include="..\source\tests\testsuite\MemoryPoolTestSuite.cpp" />
     <ClCompile Include="..\source\tests\testsuite\MetaProgTestSuite.cpp" />
