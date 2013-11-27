@@ -42,4 +42,34 @@ BOOST_AUTO_TEST_CASE( CheckBalancedParenthesis )
     BOOST_CHECK( ! isBalancedParenthesis("([)]") );
 }
 
+namespace
+{
+    struct Parent
+    {
+        Parent() { std::cout << "Create " << name() << std::endl; }
+        virtual ~Parent() { std::cout << "Destroy " << name() << std::endl; }
+        virtual std::string name() { return "Parent"; }
+    };
+
+    struct Child : public Parent
+    {
+        Child() { std::cout << "Create " << name() << std::endl; }
+        ~Child() { std::cout << "Destroy " << name() << std::endl; }
+        std::string name() override { return "Child"; }
+    };
+
+    std::string    f1( Parent p ) { return p.name(); } // Destroy parent t the end but doesn't create one with the magic of rvalue ref
+    std::string    f2( Parent& p ) { return p.name(); }
+    std::string    f3( Parent* p ) { return p->name(); }
+}
+
+BOOST_AUTO_TEST_CASE( HierarchyTestCase )
+{
+    Child child;
+
+    BOOST_CHECK( f1( child ) == "Parent" );
+    BOOST_CHECK( f2( child ) == "Child" );
+    BOOST_CHECK( f3( &child ) == "Child" );
+}
+
 BOOST_AUTO_TEST_SUITE_END() // Interview

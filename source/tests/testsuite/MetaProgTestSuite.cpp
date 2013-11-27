@@ -96,4 +96,21 @@ BOOST_AUTO_TEST_CASE( FibonacciTestSuite )
     BOOST_CHECK( metaProgElapsed < basicElapsed );
 }
 
+/*
+typename before 'Foo' won't compile:
+ - class keyword is forced when dealing with template template parameters
+
+Stroustrup originally used class to specify types in templates to avoid introducing a new keyword.
+Some in the committee worried that this overloading of the keyword led to confusion. Later,
+the committee introduced a new keyword typename to resolve syntactic ambiguity, and decided to let
+it also be used to specify template types to reduce confusion, but for backward compatibility,
+class kept its overloaded meaning
+
+Except this, the difference is 'nothing', advice is to use 'class' if it's expected
+typename if other types (int, char, ...) may be expected
+*/
+template <template <typename> class/*typename*/ Foo>
+class MyContainer
+{ /*...*/ };
+
 BOOST_AUTO_TEST_SUITE_END() // MetaProg

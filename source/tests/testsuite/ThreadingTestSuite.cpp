@@ -37,4 +37,78 @@ BOOST_AUTO_TEST_CASE( ThreadGroupTestSuite )
     BOOST_CHECK( true );
 }
 
+namespace
+{
+    class ThreadSwitchEstimator
+    {
+    public:
+        ThreadSwitchEstimator( unsigned timeoutInSeconds )
+            : timeoutInSeconds_( timeoutInSeconds )
+            , numberOfContext_( 0 )
+            , clock_( std::chrono::high_resolution_clock::now() )
+        {}
+
+        ~ThreadSwitchEstimator()
+        {
+            double elapsedTime = elapsed();
+            std::cout << "elapsed " << elapsedTime << " secs" << std::endl
+                      << "Thread Context Switch per sec = " << ( elapsedTime > 0.0 ? numberOfContext_ / elapsedTime : 0. )
+                      << " ( " << numberOfContext_ << " / " << elapsedTime << " )" << std::endl;
+        }
+
+        void    startComputing()
+        {
+            for ( ;; )
+            {
+                std::lock_guard< std::recursive_mutex > lock( mutex_ );
+                ++numberOfContext_;
+                if ( timeoutInSeconds_ < elapsed() )
+                    return;
+            }
+        }
+
+    private:
+        unsigned                                                        timeoutInSeconds_;
+        unsigned                                                        numberOfContext_;
+        std::chrono::time_point< std::chrono::high_resolution_clock >   clock_;
+
+        std::recursive_mutex                                            mutex_;
+
+
+        double  elapsed()
+        {
+            std::lock_guard< std::recursive_mutex > lock( mutex_ );
+            return std::chrono::duration_cast< std::chrono::duration< double, std::ratio<1> > >( std::chrono::high_resolution_clock::now() - clock_ ).count();
+        }
+    };
+}
+
+/*
+Difference between Thread context switch and Process context switch :
+
+- The main distinction between a thread switch and a process switch is that during a thread switch,
+the virtual memory space remains the same, while it does not during a process switch. Both types involve
+handing control over to the operating system kernel to perform the context switch. The process of switching
+in and out of the OS kernel along with the cost of switching out the registers is the largest fixed cost of performing a context switch.
+
+- A more fuzzy cost is that a context switch messes with the processors cacheing mechanisms.
+Basically, when you context switch, all of the memory addresses that the processor "remembers"
+in it's cache effectively become useless. The one big distinction here is that when you change virtual memory spaces,
+the processor's Translation Lookaside Buffer (TLB) or equivalent gets flushed making memory accesses much more expensive for a while.
+This does not happen during a thread switch.
+
+*/
+BOOST_AUTO_TEST_CASE( ThreadSwitchTestSuite )
+{
+    ThreadSwitchEstimator   threadEstimator( 2 );
+
+    std::thread     thread1( boost::bind( &ThreadSwitchEstimator::startComputing, boost::ref( threadEstimator ) ) );
+    std::thread     thread2( boost::bind( &ThreadSwitchEstimator::startComputing, boost::ref( threadEstimator ) ) );
+
+    thread1.join();
+    thread2.join();
+
+    // std::thread cause Memory Leak in Visual Studio 2012 compiler... (vc 110)
+}
+
 BOOST_AUTO_TEST_SUITE_END() // Threading

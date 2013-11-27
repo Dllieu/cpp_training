@@ -105,4 +105,25 @@ BOOST_AUTO_TEST_CASE( ContainerTestSuite )
     }
 }
 
+namespace
+{
+    template <typename T>
+    void    swap( T& a, T& b )
+    {
+        T tmp = std::move( a );
+        a = std::move( b );
+        b = std::move( tmp );
+    }
+}
+
+BOOST_AUTO_TEST_CASE( SwapTestSuite )
+{
+    int a = 5;
+    int b = a + 1;
+
+    swap( a, b );
+    std::swap( a, b );
+    BOOST_CHECK( a + 1 == b );
+}
+
 BOOST_AUTO_TEST_SUITE_END() // STL
