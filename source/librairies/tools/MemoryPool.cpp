@@ -15,7 +15,7 @@ MemoryPool::MemoryPool( size_t unitNumber /*= 50*/, size_t unitSize /*= 1024*/ )
     size_t unitRealSize = unitSize_ + sizeof( MemoryPool::Unit );
     for ( size_t i = 0; i < unitNumber; ++i )
     {
-        MemoryPool::Unit* currentUnit = ( MemoryPool::Unit* )( realMemoryBlock + i * unitRealSize );
+        auto currentUnit = ( MemoryPool::Unit* )( realMemoryBlock + i * unitRealSize );
 
         currentUnit->previous = 0;
         if ( currentUnit->next = freedBlock_ )
@@ -30,7 +30,7 @@ void*   MemoryPool::malloc( size_t requestedSize )
     if ( requestedSize > unitSize_ || ! memoryBlock_ || ! freedBlock_ )
         return malloc( requestedSize );
 
-    MemoryPool::Unit* currentUnit = freedBlock_;
+    auto currentUnit = freedBlock_;
     if ( freedBlock_ = currentUnit->next )
         freedBlock_->previous = 0;
 
@@ -51,7 +51,7 @@ void    MemoryPool::free( void* p )
         return;
     }
 
-    MemoryPool::Unit* currentUnit = (MemoryPool::Unit*)( (char*)p - sizeof( MemoryPool::Unit ) );
+    auto currentUnit = (MemoryPool::Unit*)( (char*)p - sizeof( MemoryPool::Unit ) );
     if ( allocatedBlock_ = currentUnit->next )
         allocatedBlock_->previous = 0;
 

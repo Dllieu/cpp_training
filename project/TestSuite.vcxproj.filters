@@ -43,5 +43,14 @@
     <ClCompile Include="..\source\tests\testsuite\Interview.cpp">
       <Filter>Source Files\Interviews</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\tests\testsuite\ExceptionTestSuite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\tests\testsuite\SyntaxSpecificityTestSuite.cpp">
+      <Filter>Source Files\Interviews</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\tests\testsuite\ContainerTestSuite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

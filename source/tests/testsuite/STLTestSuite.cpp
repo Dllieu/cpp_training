@@ -73,38 +73,6 @@ BOOST_AUTO_TEST_CASE( TupleTestSuite )
     BOOST_CHECK( ( std::tuple<int, std::string, double>( i, s, d ) == f() ) );
 }
 
-BOOST_AUTO_TEST_CASE( ContainerTestSuite )
-{
-    auto isOdd = []( int a ) { return ( a & 1 ) == 1; /* & < == */ };
-
-    {
-        std::vector< int > v = boost::assign::list_of( 6 )( 8 )( 3 );
-        std::vector< int > vOld = v;
-
-        // remove shift element to be deleted at the end of the container (elements are ignored)
-        // erase delete them definitely
-        v.erase( std::remove_if( v.begin(), v.end(), isOdd ), v.end() );
-
-        for ( std::vector<int>::iterator it = vOld.begin(); it != vOld.end(); )
-            if ( isOdd( *it ) )
-                it = vOld.erase( it );
-            else
-                ++it;
-
-        BOOST_CHECK( v == vOld );
-    }
-
-    {
-        std::list< int > l = boost::assign::list_of( 6 )( 8 )( 3 );
-        l.remove_if( isOdd );
-    }
-
-    {
-        std::set< int > s = boost::assign::list_of( 6 )( 8 )( 3 );
-        s.erase( 8 );
-    }
-}
-
 namespace
 {
     template <typename T>
