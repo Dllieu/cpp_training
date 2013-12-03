@@ -55,7 +55,7 @@
             Random random = new Random();
             foreach (int i in Enumerable.Range(1, 7))
             {
-                tasks.Add(new Task(delegate()
+                tasks.Add(Task.Run(delegate()
                                        {
                                            Thread.Sleep(1000 * random.Next(1, 2));
                                            Console.WriteLine("Thread {0}", i);
@@ -65,11 +65,32 @@
                                             Thread.Sleep(1000 * random.Next(1, 2));
                                             Console.WriteLine("Thread {0}", i);
                                        }));
-                threads[i].Start();
+                threads[ threads.Count - 1 ].Start();
             }
 
             tasks.ForEach(t => t.Wait());
             threads.ForEach(t => t.Join());
+        }
+
+        public class Pair<T1, T2>
+        {
+            public T1 First { get; set; }
+            public T2 Second { get; set; }
+        }
+
+        void initPair(ref Pair<int, string> pair)
+        {
+            pair = new Pair<int, string>();
+            pair.First = 65;
+            pair.Second = "hello";
+        }
+
+        [Test]
+        public void Container()
+        {
+            Pair<int, string> pair = null;
+            initPair(ref pair);
+            Assert.AreEqual(pair.Second, "hello");
         }
     }
 }

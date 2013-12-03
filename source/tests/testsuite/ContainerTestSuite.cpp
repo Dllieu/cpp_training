@@ -50,6 +50,11 @@ BOOST_AUTO_TEST_CASE( ContainerTestSuite )
     // multiset : set but the keys are not unique (but are still ordered)
     // multimap : can have key/value several time (but they are still ordered by key/value)
 
+    // Which container should I use ?
+    // - vector if no or few insertion / deletion
+    // - deque if a lot of insertion / deletion at the begin / end
+    // - list otherwise
+
     int i = 5;
     {
         // - Ordered

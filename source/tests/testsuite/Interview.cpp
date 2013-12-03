@@ -9,6 +9,73 @@
 
 BOOST_AUTO_TEST_SUITE( Interview )
 
+BOOST_AUTO_TEST_CASE( OperationTestSuite )
+{
+    auto add = [] ( int a, int b )
+    {
+        int carry;
+        do
+        {
+            /* e.g.
+            a = 9        0b1001
+            b = 8        0b1000
+            --
+            carry = 16   0b1000
+            a = 1        0b0001
+            b = 16      0b10000
+            --
+            carry = 0       0b0
+            a = 17      0b10001
+            b = 0           0b0
+            */
+
+            carry = a & b;
+
+            a ^= b;
+            b = carry << 1;
+        } while ( carry );
+
+        return a;
+    };
+    BOOST_CHECK( 9 + 8 == add( 9, 8 ) );
+
+    auto divide = [] ( int a, int b )
+    {
+        int quotient = 0;
+        while ( a >= b )
+        {
+            a -= b; // could use a pseudo opti with a -= b * n and quotient *= n until (b * n < a) (if not the case --n, else ++n)
+            ++quotient;
+        }
+        return quotient;
+    };
+    BOOST_CHECK( 53 / 6 == divide( 53, 6 ) );
+
+    // must be 0b10 or 0b100 or 0b1000 or 0b10000 etc...
+    auto isPowerOf2 = [] ( int a ) { return ( a & ( a - 1 ) ) == 0; };
+    auto isPowerOf4 = [&] ( int a ) { return a > 3 ? isPowerOf2( a >> 1 ) : a == 1; };
+    BOOST_CHECK( isPowerOf2( 4 ) && ! isPowerOf2( 5 ) );
+    BOOST_CHECK( ! isPowerOf4( 2 ) && isPowerOf4( 16 ) );
+}
+
+BOOST_AUTO_TEST_CASE( MinimumSumTestSuite )
+{
+    // Minimal sum of two numbers given a list of integers
+    std::vector< unsigned >  v = boost::assign::list_of( 1 )( 2 )( 7 )( 9 )( 8 );
+
+    auto minimalSum = [] ( std::vector< unsigned > values /* per value */ ) {
+        std::sort( values.begin(), values.end() );
+
+        unsigned result[] = { 0, 0 };
+        for ( size_t i = 0; i < values.size(); ++i )
+            result[ i & 1 ] = result[ i & 1 ] * 10 + values[ i ];
+
+        return result[ 0 ] + result[ 1 ];
+    };
+
+    BOOST_CHECK( minimalSum( v ) == 207 ); // 128 + 79
+}
+
 namespace
 {
     void    displayAllPermutations( std::string& str, int begin, int end, std::set< std::string >& result )
