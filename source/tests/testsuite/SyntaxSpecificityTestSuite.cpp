@@ -274,3 +274,21 @@ namespace
         d.ambigous2();
     }
 }
+
+namespace
+{
+    void    labelSpecification()
+    {
+        int i = 1;
+
+        /*
+        Transfer back past an initialized variable with automatic stoage involve destruction of variables with automatic storage duration
+        that are in scope at the point transferred from but not at the point transferred to
+        */
+label:
+        // A() -> ~A() -> goto -> A() -> ~A()
+        A a;
+        if ( i-- )
+            goto label;
+    }
+}

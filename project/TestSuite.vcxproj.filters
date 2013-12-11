@@ -52,5 +52,11 @@
     <ClCompile Include="..\source\tests\testsuite\ContainerTestSuite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\tests\testsuite\ByteTestSuite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\tests\testsuite\FeatureTestSuite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
