@@ -1,5 +1,7 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/bind.hpp>
+#include <boost/mpl/if.hpp>
+#include <boost/mpl/bool.hpp>
 
 #include "tools/Timer.h"
 
@@ -94,6 +96,47 @@ BOOST_AUTO_TEST_CASE( FibonacciTestSuite )
 
     BOOST_CHECK_EQUAL( metaProgResult, basicResult );
     BOOST_CHECK( metaProgElapsed < basicElapsed );
+}
+
+namespace
+{
+    template < size_t N, size_t c > 
+    struct IsPrimeImpl
+    { 
+        typedef typename boost::mpl::if_< boost::mpl::bool_< ( c * c > N ) >,
+                                          boost::mpl::true_,
+                                          typename boost::mpl::if_< boost::mpl::bool_< ( N % c == 0 ) >,
+                                                                    boost::mpl::false_,
+                                                                    IsPrimeImpl< N, c + 1 >
+                                                                  >::type
+                                        >::type type;
+        enum { value = type::value };
+    };
+ 
+    template<size_t N> 
+    struct IsPrime
+    {
+      enum { value = IsPrimeImpl< N, 2 >::value };
+    };
+ 
+    template <>
+    struct IsPrime< 0 >
+    {
+      enum { value = 0 };
+    };
+ 
+    template <>
+    struct IsPrime< 1 >
+    {
+      enum { value = 0 };
+    };
+}
+
+BOOST_AUTO_TEST_CASE( PrimeTestSuite )
+{
+    BOOST_CHECK( ! IsPrime< 27 >::value );
+    BOOST_CHECK( IsPrime< 29 >::value );
+    BOOST_CHECK( ! IsPrime< 33 >::value );
 }
 
 /*

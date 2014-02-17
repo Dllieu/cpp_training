@@ -3,6 +3,7 @@
 #include <set>
 #include <stack>
 #include <queue>
+#include <unordered_set>
 
 BOOST_AUTO_TEST_SUITE( Container )
 
@@ -45,7 +46,7 @@ BOOST_AUTO_TEST_CASE( ContainerTestSuite )
     // list keep a link to previous / next element
     // forward_list keep a link to the next element only (have no size() operator because it could only be implemented as O(n) which differ with other stl container implementations)
 
-    // unorder_set / unorder_map : set / map which store element in no particular order, allow fast retrieval of element based by value
+    // unordered_set / unordered_map : set / map which store element in no particular order, allow fast retrieval of element based by value
 
     // multiset : set but the keys are not unique (but are still ordered)
     // multimap : can have key/value several time (but they are still ordered by key/value)
@@ -132,6 +133,20 @@ BOOST_AUTO_TEST_CASE( ContainerTestSuite )
         BOOST_CHECK( ( s.top() += 2 ) == i + 2 );
         s.pop();
         BOOST_CHECK( s.empty() );
+    }
+
+    {
+        // Internally, the elements are not sorted in any particular order, but organized into buckets depending on their hash values
+        // to allow for fast access to individual elements directly by their values (with a constant average time complexity on average)
+
+        // explicit unordered_set( size_type n = /* see below */,
+        //                         const hasher& hf = hasher(),
+        //                         const key_equal& eql = key_equal(),
+        //                         const allocator_type& alloc = allocator_type() );
+        std::unordered_set< unsigned > u;
+        u.insert( 5 );
+
+        BOOST_CHECK( u.find( 5 ) != u.end() );
     }
 }
 
