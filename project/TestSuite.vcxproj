@@ -74,6 +74,7 @@
   <ItemGroup>
     <ClCompile Include="..\source\tests\testsuite\ByteTestSuite.cpp" />
     <ClCompile Include="..\source\tests\testsuite\ContainerTestSuite.cpp" />
+    <ClCompile Include="..\source\tests\testsuite\CRTPTestSuite.cpp" />
     <ClCompile Include="..\source\tests\testsuite\ExceptionTestSuite.cpp" />
     <ClCompile Include="..\source\tests\testsuite\FeatureTestSuite.cpp" />
     <ClCompile Include="..\source\tests\testsuite\Initializer.cpp" />

@@ -28,5 +28,6 @@ double  Timer::elapsed() const
 
 void    Timer::log() const
 {
-    std::cout << customMessage_ << ": " << elapsed() << std::endl;
+    auto elapsedTime = elapsed();
+    std::cout << customMessage_ << ": " << elapsedTime << std::endl;
 }

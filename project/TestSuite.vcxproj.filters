@@ -58,5 +58,8 @@
     <ClCompile Include="..\source\tests\testsuite\FeatureTestSuite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\tests\testsuite\CRTPTestSuite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
