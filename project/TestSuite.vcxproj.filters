@@ -14,6 +14,9 @@
     <Filter Include="Source Files\Interviews">
       <UniqueIdentifier>{2d1694ef-7db5-408d-aedc-90e14aba5110}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\MetaProgramming">
+      <UniqueIdentifier>{7b9f038a-93ec-4302-93d7-742c2119735f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\tests\testsuite\ThreadingTestSuite.cpp">
@@ -32,9 +35,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\source\tests\testsuite\MacroTestSuite.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\tests\testsuite\MetaProgTestSuite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\source\tests\testsuite\STLTestSuite.cpp">
@@ -60,6 +60,12 @@
     </ClCompile>
     <ClCompile Include="..\source\tests\testsuite\CRTPTestSuite.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\tests\testsuite\MetaProgTestSuite.cpp">
+      <Filter>Source Files\MetaProgramming</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\tests\testsuite\TMPExercices.cpp">
+      <Filter>Source Files\MetaProgramming</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

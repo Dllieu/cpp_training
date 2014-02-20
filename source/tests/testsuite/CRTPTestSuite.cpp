@@ -2,6 +2,19 @@
 
 #include "tools/Timer.h"
 
+// Inheritance in C++ has served two distinct purposes:
+// 
+// - Mixins (adding new, drop-in behavior to a class, without duplicating code).
+//      In this scenario, the base class has little meaning of its own -- its purpose is to support the new behavior, and not to be used as a common base class among all the subclasses.
+// 
+// - Polymorphism (extending already-declared behavior in the base class).
+//      In this scenario, the base class provides a common interface for all subclasses, yada yada.
+// 
+// CRTP is generally used for the first purpose, and virtual is used for the second.
+// 
+// Sometimes, you can achieve the same thing with both -- and the difference is only in whether the "polymorphism" is static (at compile-time) or dynamic (at run-time).
+// If you don't need run-time polymorphism then you generally go with CRTP because it's usually faster, as the compiler can see what's going on at compile time.
+
 BOOST_AUTO_TEST_SUITE( CRTP )
 
 namespace

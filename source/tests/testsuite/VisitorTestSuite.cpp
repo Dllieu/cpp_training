@@ -2,7 +2,7 @@
 #include <memory>
 #include <boost/test/unit_test.hpp>
 
-#include "designpattern/Visitor.h"
+#include "generic/Visitor.h"
 
 BOOST_AUTO_TEST_SUITE( Visitor )
 

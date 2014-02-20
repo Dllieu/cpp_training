@@ -1,4 +1,5 @@
 #include "MemoryPool.h"
+
 using namespace tools;
 
 MemoryPool::MemoryPool( size_t unitNumber /*= 50*/, size_t unitSize /*= 1024*/ )

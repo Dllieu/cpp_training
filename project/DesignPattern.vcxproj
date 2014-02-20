@@ -11,11 +11,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\source\librairies\designpattern\Visitor.h" />
+    <ClInclude Include="..\source\librairies\generic\IdentifierInterface.h" />
+    <ClInclude Include="..\source\librairies\generic\Visitor.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{CD33CD06-C9D7-43C9-ADE5-3C2B83BBD20A}</ProjectGuid>
     <RootNamespace>DesignPattern</RootNamespace>
+    <ProjectName>Generic</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

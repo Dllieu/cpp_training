@@ -5,10 +5,19 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
+    <Filter Include="Source Files\DesignPatterns">
+      <UniqueIdentifier>{a2dda478-d441-49cf-a908-bb5527d3b6df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Identifiers">
+      <UniqueIdentifier>{1d76276f-d1fc-4958-b1f8-f4379581653c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\source\librairies\designpattern\Visitor.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="..\source\librairies\generic\Visitor.h">
+      <Filter>Source Files\DesignPatterns</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\librairies\generic\IdentifierInterface.h">
+      <Filter>Source Files\Identifiers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
