@@ -125,6 +125,7 @@ namespace
             {
                 // Only reinterpret_cast can be used to convert a pointer to an object to a pointer to an unrelated object type
                 // dynamic_cast can't be used because the argument is not polymorphic (compiler error dependent)
+                // (C-cast cannot be used either)
                 const Foo* f = reinterpret_cast< const Foo* >( &b );
             }
 

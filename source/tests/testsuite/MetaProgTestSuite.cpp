@@ -139,6 +139,42 @@ BOOST_AUTO_TEST_CASE( PrimeTestSuite )
     BOOST_CHECK( ! IsPrime< 33 >::value );
 }
 
+
+namespace
+{
+    // Functions shall not have a return type of type array or function, although they may have a return type of type pointer or reference to such things
+    typedef char (&yes)[1];
+    typedef char (&no)[2];
+
+    template < typename B, typename D >
+    struct Host
+    {
+      operator B*   () const;
+      operator D*   ();
+    };
+
+    template < typename B, typename D >
+    struct is_base_of
+    {
+      template < typename T > 
+      static yes    check( D*, T );   // check( D* ( Host< B, D > ), int );
+      static no     check( B*, int ); // check( B* ( Host< B, D > ), int );
+
+      static const bool value = sizeof( check( Host< B, D >(), int() ) ) == sizeof( yes );
+    };
+
+    class Base {};
+    class Derived : private Base {};
+    class QQ {};
+}
+
+// http://stackoverflow.com/questions/2910979/how-is-base-of-works
+BOOST_AUTO_TEST_CASE( IsBaseOfTestSuite )
+{
+    BOOST_CHECK( ( is_base_of< Base, Derived >::value ) );
+    BOOST_CHECK( ! ( is_base_of< Derived, Base >::value ) );
+}
+
 /*
 typename before 'Foo' won't compile:
  - class keyword is forced when dealing with template template parameters
