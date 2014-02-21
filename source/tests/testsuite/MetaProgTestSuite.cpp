@@ -149,7 +149,7 @@ namespace
     template < typename B, typename D >
     struct Host
     {
-      operator B*   () const;
+      operator B*   () const; // const to make this cast less important -> ensure that D doesn't derive from B before calling this cast (while calling no check)
       operator D*   ();
     };
 
@@ -157,15 +157,17 @@ namespace
     struct is_base_of
     {
       template < typename T > 
-      static yes    check( D*, T );   // check( D* ( Host< B, D > ), int );
-      static no     check( B*, int ); // check( B* ( Host< B, D > ), int );
+      static yes    check( D*, T ); // check( D* ( Host< B, D > ), int );
+
+      // if D derive from B -> ( B* ( Host< B, D > ) ) would be ambigous because both cast operator would work -> the template version is chosen (yes check)
+      // if D not derive from B -> not ambigous anymore since only 1 operator would work -> this version is chosen
+      static no     check( B*, int );
 
       static const bool value = sizeof( check( Host< B, D >(), int() ) ) == sizeof( yes );
     };
 
     class Base {};
     class Derived : private Base {};
-    class QQ {};
 }
 
 // http://stackoverflow.com/questions/2910979/how-is-base-of-works
