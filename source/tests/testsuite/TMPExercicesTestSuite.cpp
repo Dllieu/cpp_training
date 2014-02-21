@@ -103,4 +103,50 @@ BOOST_AUTO_TEST_CASE( ReplaceType )
     BOOST_CHECK( ( std::is_same< int (*) ( int& ), replace_type< double (*) ( double& ), double, int >::type >::value ) );
 }
 
+namespace
+{
+    template < typename Target, typename Source >
+    inline Target  polymorphic_downcast( Source* s )
+    {
+        assert( dynamic_cast< Target >( s ) == s );
+        return static_cast< Target >( s );
+    }
+
+    template < typename Target, typename Source >
+    inline Target  polymorphic_downcast( Source& s )
+    {
+        typedef typename boost::remove_reference< Target >::type targetNoRef;
+        assert( dynamic_cast< targetNoRef* >( &s ) == &s );
+        return static_cast< Target >( s );
+    }
+
+    struct Base { virtual ~Base() {} /* dynamic_cast require one virtual to be considered as polymorphic */ };
+    struct Derived : public Base {};
+}
+
+BOOST_AUTO_TEST_CASE( PolymorphicDowncast )
+{
+    Base b;
+    Derived d;
+
+    auto testDowncastPtr = [] ( Base* p )
+    {
+        // might assert
+        (Derived*) polymorphic_downcast< Derived* >( p );
+        return true;
+    };
+    auto testDowncastRef = [] ( Base& p )
+    {
+        // might assert
+        (Derived&) polymorphic_downcast< Derived& >( p );
+        return true;
+    };
+
+    // testDowncastPtr( &b ); // assert
+    BOOST_CHECK( testDowncastPtr( &d ) );
+
+    // testDowncastRef( b ); // assert
+    BOOST_CHECK( testDowncastRef( d ) );
+}
+
 BOOST_AUTO_TEST_SUITE_END() // TMPExercices
