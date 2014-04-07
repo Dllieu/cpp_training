@@ -67,5 +67,8 @@
     <ClCompile Include="..\source\tests\testsuite\TMPExercicesTestSuite.cpp">
       <Filter>Source Files\MetaProgramming</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\tests\testsuite\SalaryTestSuite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

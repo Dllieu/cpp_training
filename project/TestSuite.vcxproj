@@ -72,6 +72,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\source\tests\testsuite\SalaryTestSuite.cpp" />
     <ClCompile Include="..\source\tests\testsuite\TMPExercicesTestSuite.cpp" />
     <ClCompile Include="..\source\tests\testsuite\ByteTestSuite.cpp" />
     <ClCompile Include="..\source\tests\testsuite\ContainerTestSuite.cpp" />

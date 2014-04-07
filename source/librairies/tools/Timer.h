@@ -6,6 +6,13 @@
 namespace tools
 {
 
+/**
+ * \brief Timer : timer which print out a message at destruction
+ * \author Stephane Molina
+ * \date 07 april 2014
+ *
+ * TODO : utiliser boost::timer en interne pour la clock
+ */
 class Timer
 {
 public:

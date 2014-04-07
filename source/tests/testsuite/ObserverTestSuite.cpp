@@ -22,7 +22,7 @@ namespace
         void    notify( const std::string& message )
         {
             for ( auto& observer : observers )
-                if ( observer )
+                //if ( observer ) // overkill check
                     observer->update( message );
         }
 

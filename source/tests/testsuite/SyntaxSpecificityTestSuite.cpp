@@ -238,6 +238,9 @@ namespace
 
          int u;
          u = 1, 2, 3; // u = 1, other sequences are independants
+
+         char c = '2';
+         BOOST_CHECK( sizeof( + c ) == sizeof( int ) );
     }
 }
 

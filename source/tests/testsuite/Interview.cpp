@@ -15,7 +15,8 @@ BOOST_AUTO_TEST_CASE( MinimumSumTestSuite )
     // Minimal sum of two numbers given a list of integers
     std::vector< unsigned >  v = boost::assign::list_of( 1 )( 2 )( 7 )( 9 )( 8 );
 
-    auto minimalSum = [] ( std::vector< unsigned > values /* per value */ ) {
+    auto minimalSum = [] ( std::vector< unsigned > values /* per value */ )
+    {
         std::sort( values.begin(), values.end() );
 
         unsigned result[] = { 0, 0 };
