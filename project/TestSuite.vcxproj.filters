@@ -17,11 +17,11 @@
     <Filter Include="Source Files\MetaProgramming">
       <UniqueIdentifier>{7b9f038a-93ec-4302-93d7-742c2119735f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Threading">
+      <UniqueIdentifier>{9777bfd9-3eec-4bd7-9a00-f4dcbb14403f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\source\tests\testsuite\ThreadingTestSuite.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\tests\testsuite\Initializer.cpp">
       <Filter>Source Files\Intern</Filter>
     </ClCompile>
@@ -69,6 +69,12 @@
     </ClCompile>
     <ClCompile Include="..\source\tests\testsuite\SalaryTestSuite.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\tests\testsuite\ThreadingTestSuite.cpp">
+      <Filter>Source Files\Threading</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\tests\testsuite\LockFreeTestSuite.cpp">
+      <Filter>Source Files\Threading</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
