@@ -67,14 +67,17 @@
     <ClCompile Include="..\source\tests\testsuite\TMPExercicesTestSuite.cpp">
       <Filter>Source Files\MetaProgramming</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\tests\testsuite\SalaryTestSuite.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\tests\testsuite\ThreadingTestSuite.cpp">
       <Filter>Source Files\Threading</Filter>
     </ClCompile>
     <ClCompile Include="..\source\tests\testsuite\LockFreeTestSuite.cpp">
       <Filter>Source Files\Threading</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\tests\testsuite\SmartPointer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\tests\testsuite\SingletonTestSuite.cpp">
+      <Filter>Source Files\DesignPattern</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

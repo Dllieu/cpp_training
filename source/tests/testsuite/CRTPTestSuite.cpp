@@ -149,12 +149,12 @@ namespace
 DERIVE_SHAPE_CRTP( Square )
 DERIVE_SHAPE_CRTP( Circle )
 
+#undef DERIVE_SHAPE_CRTP
+
 BOOST_AUTO_TEST_CASE( PolymorphicCopyConstructionTestSuite )
 {
     Square b;
     delete b.clone();
 }
-
-#undef DERIVE_SHAPE_CRTP
 
 BOOST_AUTO_TEST_SUITE_END() // CRTP

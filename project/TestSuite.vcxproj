@@ -73,7 +73,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\source\tests\testsuite\LockFreeTestSuite.cpp" />
-    <ClCompile Include="..\source\tests\testsuite\SalaryTestSuite.cpp" />
+    <ClCompile Include="..\source\tests\testsuite\SingletonTestSuite.cpp" />
+    <ClCompile Include="..\source\tests\testsuite\SmartPointer.cpp" />
     <ClCompile Include="..\source\tests\testsuite\TMPExercicesTestSuite.cpp" />
     <ClCompile Include="..\source\tests\testsuite\ByteTestSuite.cpp" />
     <ClCompile Include="..\source\tests\testsuite\ContainerTestSuite.cpp" />

@@ -12,7 +12,7 @@ namespace
     void    count( unsigned id )
     {
         while ( ! ready )
-            std::this_thread::yield();
+            std::this_thread::yield(); // thread waits for other threads to advance without blocking
 
         for ( volatile unsigned i = 0; i < 1000000; ++i )
             ;

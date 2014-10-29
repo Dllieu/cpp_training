@@ -27,7 +27,16 @@ namespace
         }
         return a;
     }
+}
 
+
+BOOST_AUTO_TEST_CASE( AddTestSuite )
+{
+    BOOST_CHECK( 9 + 8 == add( 9, 8 ) );
+}
+
+namespace
+{
     unsigned    multiply( unsigned a, unsigned b )
     {
         unsigned    result = 0;
@@ -42,7 +51,15 @@ namespace
         }
         return result;
     }
+}
 
+BOOST_AUTO_TEST_CASE( MultiplyTestSuite )
+{
+    BOOST_CHECK( 9 * 8 == multiply( 9, 8 ) );
+}
+
+namespace
+{
     unsigned    divide( unsigned a, unsigned b )
     {
         // ???
@@ -55,7 +72,16 @@ namespace
         }
         return quotient;
     }
+}
 
+
+BOOST_AUTO_TEST_CASE( DivideTestSuite )
+{
+    BOOST_CHECK( 53 / 6 == divide( 53, 6 ) );
+}
+
+namespace
+{
     bool    isPowerOf2( int a )
     {
         // must be 0b10 or 0b100 or 0b1000 or 0b10000 etc...
@@ -65,10 +91,6 @@ namespace
 
 BOOST_AUTO_TEST_CASE( ArithmeticTestSuite )
 {
-    BOOST_CHECK( 9 + 8 == add( 9, 8 ) );
-    BOOST_CHECK( 9 * 8 == multiply( 9, 8 ) );
-    BOOST_CHECK( 53 / 6 == divide( 53, 6 ) );
-
     BOOST_CHECK( isPowerOf2( 4 ) && ! isPowerOf2( 5 ) );
 }
 

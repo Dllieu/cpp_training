@@ -9,7 +9,7 @@
     using NUnit.Framework;
 
     [TestFixture]
-    public class FrameworkTestSuite
+    public static class FrameworkTestSuite
     {
         delegate void CustomDelegate(string s);
 
@@ -19,7 +19,7 @@
         }
 
         [Test]
-        public void Delegate()
+        public static void Delegate()
         {
             CustomDelegate c1, c2, c12, c1bis;
 
@@ -37,7 +37,7 @@
         }
 
         [Test]
-        public void WebService()
+        public static void WebService()
         {
             ServiceReference1.ServiceClient client = new ServiceReference1.ServiceClient();
             ServiceReference1.CompositeType composite = new ServiceReference1.CompositeType();
@@ -48,7 +48,7 @@
         }
 
         [Test]
-        public void Threading()
+        public static void Threading()
         {
             List<Thread> threads = new List<Thread>();
             List<Task> tasks = new List<Task>();
@@ -78,7 +78,7 @@
             public T2 Second { get; set; }
         }
 
-        void initPair(ref Pair<int, string> pair)
+        public static void initPair(ref Pair<int, string> pair)
         {
             pair = new Pair<int, string>();
             pair.First = 65;
@@ -86,7 +86,7 @@
         }
 
         [Test]
-        public void Container()
+        public static void Container()
         {
             Pair<int, string> pair = null;
             initPair(ref pair);

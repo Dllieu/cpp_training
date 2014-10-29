@@ -1,6 +1,9 @@
 #include <boost/test/unit_test.hpp>
 #include <typeinfo>
 
+// Operator that can't be specialized
+// sizeof . .* .-> :: ?:
+
 namespace
 {
     // if referenced it won't link since no header included define this variable
@@ -77,6 +80,7 @@ namespace
         // or reference denoting the object. An overriding function in a derived class does not acquire default arguments from the function it overrides
         std::cout << b->f() << std::endl; // will display '1' * 3 == 3 (take the default parameter of the base)
         delete b;
+        return void();
     }
 }
 

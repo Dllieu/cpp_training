@@ -59,7 +59,7 @@ namespace
 BOOST_AUTO_TEST_CASE( BasicObserverTestSuite )
 {
     Subject                                 subject;
-    std::shared_ptr< AbstractObserver >     observer( new Observer() );
+    std::shared_ptr< AbstractObserver >     observer = std::make_shared< Observer >();
     std::string                             notificationMessage( "News!" );
 
     subject.addObserver( observer );
