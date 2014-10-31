@@ -6,6 +6,12 @@ BOOST_AUTO_TEST_SUITE( LockFree )
 
 namespace
 {
+    // There are three separate issues that "atomic" types in C++11 address:
+    //     1.     tearing: a read or write involves multiple bus cycles, and a thread switch occurs in the middle of the operation; this can produce incorrect values.
+    //     2.     cache coherence: a write from one thread updates its processor's cache, but does not update global memory; a read from a different thread reads global memory,
+    //            and doesn't see the updated value in the other processor's cache.
+    //     3.     compiler optimization: the compiler shuffles the order of reads and writes under the assumption that the values are not accessed from another thread, resulting in chaos.
+    // Using std::atomic<bool> ensures that all three of these issues are managed correctly. Not using std::atomic<bool> leaves you guessing, with, at best, non-portable code.
     std::atomic< bool >   ready( false );
     std::atomic< bool >   winner( false );
 

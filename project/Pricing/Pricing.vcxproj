@@ -11,12 +11,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{109DC281-F5BE-4271-8C76-BC34636A346A}</ProjectGuid>
-    <RootNamespace>TestSuite</RootNamespace>
+    <ProjectGuid>{0E1673F3-BE77-4EBD-964A-1E0101CF4A08}</ProjectGuid>
+    <RootNamespace>Pricing</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v110</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
@@ -46,16 +46,10 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir)\..\source\librairies\;C:/Projects/external_lib/boost_1_53_0/boost_1_53_0</AdditionalIncludeDirectories>
-      <PreprocessToFile>false</PreprocessToFile>
+      <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories> ;C:\Projects\external_lib\boost_1_53_0\boost_1_53_0\stage\lib;</AdditionalLibraryDirectories>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <EntryPointSymbol>
-      </EntryPointSymbol>
-      <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -64,6 +58,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -72,34 +67,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\source\tests\testsuite\LockFreeTestSuite.cpp" />
-    <ClCompile Include="..\source\tests\testsuite\SingletonTestSuite.cpp" />
-    <ClCompile Include="..\source\tests\testsuite\SmartPointer.cpp" />
-    <ClCompile Include="..\source\tests\testsuite\StandardDeviationTestSuite.cpp" />
-    <ClCompile Include="..\source\tests\testsuite\TMPExercicesTestSuite.cpp" />
-    <ClCompile Include="..\source\tests\testsuite\ByteTestSuite.cpp" />
-    <ClCompile Include="..\source\tests\testsuite\ContainerTestSuite.cpp" />
-    <ClCompile Include="..\source\tests\testsuite\CRTPTestSuite.cpp" />
-    <ClCompile Include="..\source\tests\testsuite\ExceptionTestSuite.cpp" />
-    <ClCompile Include="..\source\tests\testsuite\FeatureTestSuite.cpp" />
-    <ClCompile Include="..\source\tests\testsuite\Initializer.cpp" />
-    <ClCompile Include="..\source\tests\testsuite\Interview.cpp" />
-    <ClCompile Include="..\source\tests\testsuite\MacroTestSuite.cpp" />
-    <ClCompile Include="..\source\tests\testsuite\MemoryPoolTestSuite.cpp" />
-    <ClCompile Include="..\source\tests\testsuite\MetaProgTestSuite.cpp" />
-    <ClCompile Include="..\source\tests\testsuite\ObserverTestSuite.cpp" />
-    <ClCompile Include="..\source\tests\testsuite\STLTestSuite.cpp" />
-    <ClCompile Include="..\source\tests\testsuite\SyntaxSpecificityTestSuite.cpp" />
-    <ClCompile Include="..\source\tests\testsuite\ThreadingTestSuite.cpp" />
-    <ClCompile Include="..\source\tests\testsuite\VisitorTestSuite.cpp" />
+    <ClInclude Include="..\..\source\librairies\pricing\StandardDeviation.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="Pricing\Pricing.vcxproj">
-      <Project>{0e1673f3-be77-4ebd-964a-1e0101cf4a08}</Project>
-    </ProjectReference>
-    <ProjectReference Include="Tools.vcxproj">
-      <Project>{20278279-b699-4587-b872-7a746661d354}</Project>
-    </ProjectReference>
+    <ClCompile Include="..\..\source\librairies\pricing\StandardDeviation.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

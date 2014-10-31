@@ -20,6 +20,9 @@
     <Filter Include="Source Files\Threading">
       <UniqueIdentifier>{9777bfd9-3eec-4bd7-9a00-f4dcbb14403f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Pricing">
+      <UniqueIdentifier>{14b1379a-4b0a-4f29-a005-0ee4d86e37fc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\tests\testsuite\Initializer.cpp">
@@ -78,6 +81,9 @@
     </ClCompile>
     <ClCompile Include="..\source\tests\testsuite\SingletonTestSuite.cpp">
       <Filter>Source Files\DesignPattern</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\tests\testsuite\StandardDeviationTestSuite.cpp">
+      <Filter>Source Files\Pricing</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
