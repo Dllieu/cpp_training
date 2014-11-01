@@ -91,6 +91,7 @@
     <ClCompile Include="..\source\tests\testsuite\STLTestSuite.cpp" />
     <ClCompile Include="..\source\tests\testsuite\SyntaxSpecificityTestSuite.cpp" />
     <ClCompile Include="..\source\tests\testsuite\ThreadingTestSuite.cpp" />
+    <ClCompile Include="..\source\tests\testsuite\TypeTraitsTestSuite.cpp" />
     <ClCompile Include="..\source\tests\testsuite\VisitorTestSuite.cpp" />
   </ItemGroup>
   <ItemGroup>

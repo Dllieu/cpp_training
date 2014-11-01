@@ -23,6 +23,9 @@
     <Filter Include="Source Files\Pricing">
       <UniqueIdentifier>{14b1379a-4b0a-4f29-a005-0ee4d86e37fc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\STL">
+      <UniqueIdentifier>{3301c939-acf3-4027-94bf-f89e4c44116e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\tests\testsuite\Initializer.cpp">
@@ -38,9 +41,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\source\tests\testsuite\MacroTestSuite.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\tests\testsuite\STLTestSuite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\source\tests\testsuite\Interview.cpp">
@@ -87,6 +87,12 @@
     </ClCompile>
     <ClCompile Include="..\source\tests\testsuite\BranchPredictionTestSuite.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\tests\testsuite\STLTestSuite.cpp">
+      <Filter>Source Files\STL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\tests\testsuite\TypeTraitsTestSuite.cpp">
+      <Filter>Source Files\STL</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
