@@ -25,9 +25,6 @@ namespace WebService
     [DataContract]
     public class CompositeType
     {
-        bool isUp = true;
-        string name = "";
-
         [DataMember]
         public bool IsUp { get; set; }
 

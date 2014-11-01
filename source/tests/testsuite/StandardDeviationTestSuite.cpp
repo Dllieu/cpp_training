@@ -6,6 +6,17 @@ using namespace pricing;
 
 BOOST_AUTO_TEST_SUITE( StandardDeviationTestSuite )
 
+BOOST_AUTO_TEST_CASE( ComputeBasicStandardDeviationTestSuite )
+{
+    double points[] =
+    {
+        10.01, 10.02, 10.03, 10.04, 10.05
+    };
+
+    auto result = StandardDeviation::compute( std::vector< double >( std::begin( points ), std::end( points ) ) );
+    BOOST_REQUIRE( std::fabs( result - 0.0141421 ) < 10e-6 );
+}
+
 BOOST_AUTO_TEST_CASE( ComputeStandardDeviationTestSuite )
 {
     double points[] =
