@@ -7,12 +7,12 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\source\librairies\pricing\StandardDeviation.h">
+    <ClInclude Include="..\source\librairies\pricing\StandardDeviation.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\source\librairies\pricing\StandardDeviation.cpp">
+    <ClCompile Include="..\source\librairies\pricing\StandardDeviation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

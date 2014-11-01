@@ -26,11 +26,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Librairies", "Librairies", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Apps", "Apps", "{018B1FE9-3D10-4C08-8074-4B58EBCA6DFA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaWatcher", "..\MediaWatcher\MediaWatcher.csproj", "{85F93693-A012-4C93-8F4D-53C24566E26E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaWatcher", "..\source\librairies\net\MediaWatcher\MediaWatcher.csproj", "{85F93693-A012-4C93-8F4D-53C24566E26E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TwitchBot", "..\TwitchBot\TwitchBot.csproj", "{ED065EF0-71FB-4D08-9111-09DF0EF5203A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TwitchBot", "..\source\librairies\net\TwitchBot\TwitchBot.csproj", "{ED065EF0-71FB-4D08-9111-09DF0EF5203A}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Pricing", "Pricing\Pricing.vcxproj", "{0E1673F3-BE77-4EBD-964A-1E0101CF4A08}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Pricing", "Pricing.vcxproj", "{0E1673F3-BE77-4EBD-964A-1E0101CF4A08}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -5,7 +5,12 @@
 
 using namespace pricing;
 
-/*static*/ double StandardDeviation::compute( const std::vector< double >& points )
+// Population vs. Sample
+//
+// The primary task of inferential statistics (or estimating or forecasting) is making an opinion about something by using only an incomplete sample of data. 
+// In statistics it is very important to distinguish between population and sample. A population is defined as all members (e.g. occurrences, prices, annual returns) of a specified group. Population is the whole group.
+// A sample is a part of a population that is used to describe the characteristics (e.g. mean or standard deviation) of the whole population. The size of a sample can be less than 1%, or 10%, or 60% of the population, but it is never the whole population.
+/*static*/ double StandardDeviation::compute( const std::vector< double >& points ) // PopulationStandardDeviation
 {
     if ( points.empty() )
         return 0;

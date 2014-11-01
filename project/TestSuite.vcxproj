@@ -33,15 +33,14 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="props\Common.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="props\Common.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)\..\bin\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)\..\obj\$(Configuration)\</IntDir>
-  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -94,7 +93,7 @@
     <ClCompile Include="..\source\tests\testsuite\VisitorTestSuite.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="Pricing\Pricing.vcxproj">
+    <ProjectReference Include="Pricing.vcxproj">
       <Project>{0e1673f3-be77-4ebd-964a-1e0101cf4a08}</Project>
     </ProjectReference>
     <ProjectReference Include="Tools.vcxproj">
