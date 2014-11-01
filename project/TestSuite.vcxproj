@@ -71,6 +71,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\source\tests\testsuite\BranchPredictionTestSuite.cpp" />
     <ClCompile Include="..\source\tests\testsuite\LockFreeTestSuite.cpp" />
     <ClCompile Include="..\source\tests\testsuite\SingletonTestSuite.cpp" />
     <ClCompile Include="..\source\tests\testsuite\SmartPointer.cpp" />

@@ -89,7 +89,7 @@ namespace
     }
 }
 
-BOOST_AUTO_TEST_CASE( ArithmeticTestSuite )
+BOOST_AUTO_TEST_CASE( PowTestSuite )
 {
     BOOST_CHECK( isPowerOf2( 4 ) && ! isPowerOf2( 5 ) );
 }

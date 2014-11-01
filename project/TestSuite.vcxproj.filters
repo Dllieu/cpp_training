@@ -85,5 +85,8 @@
     <ClCompile Include="..\source\tests\testsuite\StandardDeviationTestSuite.cpp">
       <Filter>Source Files\Pricing</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\tests\testsuite\BranchPredictionTestSuite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
