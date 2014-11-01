@@ -1,3 +1,6 @@
+# Specific folders
+dependencies/lib/*
+
 #################
 ## Eclipse
 #################
