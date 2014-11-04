@@ -26,7 +26,7 @@ namespace
 
     struct VirtualDerived : public VirtualBase
     {
-        virtual void Foo() final {}
+        void Foo() final {}
     };
 
     // Avoid the cost of virtual function while retaining the hierarchical benefit

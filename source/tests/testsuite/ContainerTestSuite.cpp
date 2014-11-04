@@ -4,6 +4,7 @@
 #include <stack>
 #include <queue>
 #include <unordered_set>
+#include <unordered_map>
 
 BOOST_AUTO_TEST_SUITE( Container )
 
@@ -46,7 +47,7 @@ BOOST_AUTO_TEST_CASE( ContainerTestSuite )
     // list keep a link to previous / next element
     // forward_list keep a link to the next element only (have no size() operator because it could only be implemented as O(n) which differ with other stl container implementations)
 
-    // unordered_set / unordered_map : set / map which store element in no particular order, allow fast retrieval of element based by value
+    // unordered_set / unordered_map : set / map which store element in no particular order, allow fast retrieval of element based by value (real hash map)
 
     // multiset : set but the keys are not unique (but are still ordered)
     // multimap : can have key/value several time (but they are still ordered by key/value)
@@ -140,14 +141,75 @@ BOOST_AUTO_TEST_CASE( ContainerTestSuite )
         // to allow for fast access to individual elements directly by their values (with a constant average time complexity on average)
 
         // explicit unordered_set( size_type n = /* see below */,
-        //                         const hasher& hf = hasher(),
-        //                         const key_equal& eql = key_equal(),
+        //                         const hasher& hf = hasher(), // hash the key
+        //                         const key_equal& eql = key_equal(), // when we compare a new given key, we first check the hash which will determinate in which "bucket" we are then we compare the remaining keys (at least one) using equal functor with the given key
         //                         const allocator_type& alloc = allocator_type() );
-        std::unordered_set< unsigned > u;
+        std::unordered_set< unsigned > u; // behind
         u.insert( 5 );
 
         BOOST_CHECK( u.find( 5 ) != u.end() );
     }
+}
+
+namespace
+{
+    struct CustomKey
+    {
+        CustomKey( const std::string& literalKey, unsigned numberKey )
+            : literalKey( literalKey )
+            , numberKey( numberKey )
+        {
+            // NOTHING
+        }
+
+        CustomKey( CustomKey&& key )
+            : literalKey( std::move( key.literalKey ) )
+            , numberKey( key.numberKey )
+        {
+            // NOTHING
+        }
+
+        std::string     literalKey;
+        unsigned        numberKey;
+    };
+
+    struct CustomHash
+    {
+        std::size_t     operator()( const CustomKey& customKey ) const
+        {
+            return std::hash< std::string >()( customKey.literalKey )
+                ^ ( customKey.numberKey << 1 );
+        }
+    };
+
+    struct CustomEqual
+    {
+        bool        operator()( const CustomKey& k1, const CustomKey& k2 ) const
+        {
+            return k1.literalKey == k2.literalKey
+                && k1.numberKey == k2.numberKey;
+        }
+    };
+}
+
+BOOST_AUTO_TEST_CASE( UnorderedMapTestSuite )
+{
+    // template < class Key,                                    // unordered_map::key_type
+    //        class T,                                      // unordered_map::mapped_type
+    //        class Hash = hash<Key>,                       // unordered_map::hasher
+    //        class Pred = equal_to<Key>,                   // unordered_map::key_equal
+    //        class Alloc = allocator< pair<const Key,T> >  // unordered_map::allocator_type
+    //        > class unordered_map;
+    std::unordered_map< CustomKey, std::string,
+                        std::function< std::size_t ( const CustomKey& ) >,
+                        std::function< bool ( const CustomKey&, const CustomKey& ) > > unordered_map( 5 /* numberOfBucket */, CustomHash(), CustomEqual() );
+
+    unordered_map.insert( std::make_pair( CustomKey( "0", 0 ), "element 0" ) );
+    unordered_map.insert( std::make_pair( CustomKey( "1", 1 ), "element 1" ) );
+
+    auto it = unordered_map.find( CustomKey( "0", 0 ) );
+    BOOST_REQUIRE( it != unordered_map.end() );
+    BOOST_CHECK( it->second == "element 0" );
 }
 
 BOOST_AUTO_TEST_SUITE_END() // Container

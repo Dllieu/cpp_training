@@ -3,6 +3,27 @@
 
 BOOST_AUTO_TEST_SUITE( TypeTraits )
 
+BOOST_AUTO_TEST_CASE( DecayTestSuite )
+{
+    BOOST_CHECK( ( std::is_same<int, std::decay<int&>::type>::value ) );
+    BOOST_CHECK( ( std::is_same<int, std::decay<int&&>::type>::value ) );
+    BOOST_CHECK( ( std::is_same<int, std::decay<const int&>::type>::value ) );
+    BOOST_CHECK( ( std::is_same<int*, std::decay<int[2]>::type>::value ) );
+    BOOST_CHECK( ( std::is_same<int(*)(int), std::decay<int (int)>::type>::value ) );
+}
+
+namespace
+{
+    class A {};
+    class B { virtual ~B() {} };
+}
+
+BOOST_AUTO_TEST_CASE( HasVirtualDestructorTestSuite )
+{
+    BOOST_CHECK( ! std::has_virtual_destructor< A >::value );
+    BOOST_CHECK( std::has_virtual_destructor< B >::value );
+}
+
 namespace
 {
     class RealClass

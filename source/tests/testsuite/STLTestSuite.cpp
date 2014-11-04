@@ -8,15 +8,6 @@
 
 BOOST_AUTO_TEST_SUITE( STL )
 
-BOOST_AUTO_TEST_CASE( DecayTestSuite )
-{
-    BOOST_CHECK( ( std::is_same<int, std::decay<int&>::type>::value ) );
-    BOOST_CHECK( ( std::is_same<int, std::decay<int&&>::type>::value ) );
-    BOOST_CHECK( ( std::is_same<int, std::decay<const int&>::type>::value ) );
-    BOOST_CHECK( ( std::is_same<int*, std::decay<int[2]>::type>::value ) );
-    BOOST_CHECK( ( std::is_same<int(*)(int), std::decay<int (int)>::type>::value ) );
-}
-
 namespace
 {
     template <typename T>
