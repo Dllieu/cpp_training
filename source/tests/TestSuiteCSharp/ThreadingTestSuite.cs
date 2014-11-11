@@ -16,18 +16,15 @@ namespace TestSuiteCSharp
             var threads = new List<Thread>();
             var tasks = new List<Task>();
             var random = new Random();
+            var action = new Action<int>(i =>
+            {
+                Thread.Sleep(1000 * random.Next(1, 2));
+                Console.WriteLine("Thread {0}", i);
+            });
             foreach (var i in Enumerable.Range(1, 7))
             {
-                tasks.Add(Task.Run(delegate()
-                {
-                    Thread.Sleep(1000 * random.Next(1, 2));
-                    Console.WriteLine("Thread {0}", Thread.CurrentThread.ManagedThreadId);
-                }));
-                threads.Add(new Thread(delegate()
-                {
-                    Thread.Sleep(1000 * random.Next(1, 2));
-                    Console.WriteLine("Thread {0}", Thread.CurrentThread.ManagedThreadId);
-                }));
+                tasks.Add(Task.Run(() => action(i))); // ugly to use i
+                threads.Add(new Thread(() => action(i)));
                 threads[threads.Count - 1].Start();
             }
 
