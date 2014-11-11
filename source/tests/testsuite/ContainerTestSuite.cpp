@@ -5,6 +5,7 @@
 #include <queue>
 #include <unordered_set>
 #include <unordered_map>
+#include <bitset>
 
 BOOST_AUTO_TEST_SUITE( Container )
 
@@ -210,6 +211,20 @@ BOOST_AUTO_TEST_CASE( UnorderedMapTestSuite )
     auto it = unordered_map.find( CustomKey( "0", 0 ) );
     BOOST_REQUIRE( it != unordered_map.end() );
     BOOST_CHECK( it->second == "element 0" );
+}
+
+BOOST_AUTO_TEST_CASE( BitsetTestSuite )
+{
+    std::bitset< 3 >    bitset( "100" );
+
+    BOOST_CHECK( bitset.count() == 1 );
+
+    BOOST_CHECK( ! bitset.test( 0 ) );
+    BOOST_CHECK( ! bitset.test( 1 ) );
+    BOOST_CHECK( bitset.test( 2 ) );
+
+    bitset[ 0 ] = 1;
+    BOOST_CHECK( bitset.test( 0 ) );
 }
 
 BOOST_AUTO_TEST_SUITE_END() // Container

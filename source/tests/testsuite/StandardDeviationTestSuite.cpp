@@ -13,7 +13,7 @@ BOOST_AUTO_TEST_CASE( ComputeBasicStandardDeviationTestSuite )
         10.01, 10.02, 10.03, 10.04, 10.05
     };
 
-    auto result = StandardDeviation::compute( std::vector< double >( std::begin( points ), std::end( points ) ) );
+    auto result = StandardDeviation()( std::vector< double >( std::begin( points ), std::end( points ) ) );
     BOOST_REQUIRE( std::fabs( result - 0.0141421 ) < 10e-6 );
 }
 
@@ -28,7 +28,7 @@ BOOST_AUTO_TEST_CASE( ComputeStandardDeviationTestSuite )
         11.84, 12.18, 11.04, 10.90, 11.80, 11.84,
     };
 
-    auto result = StandardDeviation::compute( std::vector< double >( std::begin( points ), std::end( points ) ) );
+    auto result = StandardDeviation()( std::vector< double >( std::begin( points ), std::end( points ) ) );
     BOOST_REQUIRE( std::fabs( result - 1.4699255 ) < 10e-6 );
 }
 

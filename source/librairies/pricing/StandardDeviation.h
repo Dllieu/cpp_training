@@ -8,7 +8,7 @@ namespace pricing
     class StandardDeviation
     {
     public:
-        static double compute( const std::vector< double >& points );
+        double operator()( const std::vector< double >& points ) const;
     };
 }
 

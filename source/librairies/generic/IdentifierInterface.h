@@ -21,7 +21,7 @@ public:
 
     inline std::string          toFullUri() const
     {
-        std::stringstream ss;
+        std::ostringstream ss;
         ss << type() << ":" << toUri();
         return ss.str();
     }

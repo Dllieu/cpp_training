@@ -47,6 +47,7 @@
     <Compile Include="CoroutineTestSuite.cs" />
     <Compile Include="DelegateTestSuite.cs" />
     <Compile Include="GenericTestSuite.cs" />
+    <Compile Include="ReflectionTestSuite.cs" />
     <Compile Include="ThreadingTestSuite.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
