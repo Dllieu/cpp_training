@@ -19,6 +19,11 @@ namespace containers
             // NOTHING
         }
 
+        std::size_t     size() const
+        {
+            return bitset_.count();
+        }
+
         bool    isInitialized( std::size_t index ) const
         {
             return bitset_.test( index );

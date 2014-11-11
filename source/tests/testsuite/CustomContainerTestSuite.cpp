@@ -41,6 +41,8 @@ BOOST_AUTO_TEST_CASE( SparseArrayTestSuite )
             BOOST_CHECK( sparseArray[ PricingResult::DELTA ] == 12.0 );
         else
             BOOST_CHECK_THROW( constBracketOperator( sparseArray, i ), std::out_of_range );
+
+    BOOST_CHECK( sparseArray.size() == 1 );
 }
 
 BOOST_AUTO_TEST_SUITE_END() // CustomContainer
