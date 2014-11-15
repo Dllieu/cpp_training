@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using sdwrapper;
 
@@ -35,12 +28,21 @@ namespace SubtitlesDownloader
                 e.Effect = DragDropEffects.Move;
         }
 
-        private void OnDragDropEvent(object sender, DragEventArgs e)
+        static private void OnDragDropEvent(object sender, DragEventArgs e)
         {
-            if (e != null)
-                ;
-            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-            foreach (string file in files) Console.WriteLine(file);
+            if (e == null)
+                return;
+
+            var files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            foreach (var file in files)
+            {
+                var f = new ResultChoiceProcessor();
+                f.GetTopResultFromFile(file);
+                break;
+            }
+
+            
+            // show current file in textbox, then if its terminated by divx avi mp4, ask if it want to dowlaod subtitle from it and with which language
         }
     }
 }
