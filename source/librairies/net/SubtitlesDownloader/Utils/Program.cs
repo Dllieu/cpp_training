@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace SubtitlesDownloader
@@ -12,11 +11,14 @@ namespace SubtitlesDownloader
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        static void Main(string[] args)
         {
+            // TODO : pass Bing account key by conf
+            Debug.Assert(args.Any());
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new SubtitlesDownloaderForm());
+            Application.Run(new SubtitlesDownloaderForm(args[0]));
         }
     }
 }

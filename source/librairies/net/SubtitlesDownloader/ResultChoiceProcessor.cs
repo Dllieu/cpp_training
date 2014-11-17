@@ -1,5 +1,8 @@
-﻿using System;
+﻿using System.IO;
+using System.Linq;
+using System;
 using System.Collections.Generic;
+using Bing;
 
 namespace SubtitlesDownloader
 {
@@ -8,48 +11,142 @@ namespace SubtitlesDownloader
     /// -> get top N best website
     /// -> check which website we whitelisted (they will come first) should be highlited in different color in the GUI
     /// -> if user click one of them, use regexp ? to find the link (if not white listed, it should open the page directly through a browser)
+    /// TODO: thread safety
     /// </summary>
     public class ResultChoiceProcessor
     {
-        public HashSet<WhiteListCandidate> WhiteListCandidates { get; private set; }
+        public delegate void OnErrorDelegate(string error);
+        public event OnErrorDelegate OnErrorEvent;
+
+        public delegate void OnResultsDelegate(List<WebResult> whiteListResults, List<WebResult> otherResults);
+        public event OnResultsDelegate OnResultsEvent;
+
+        public List<string> AcceptedFileExtension { get; set; }
+        public int ResultPerRequest { get; set; }
+        private HashSet<WhiteListCandidate> WhiteListCandidates { get; set; }
+        private readonly BingRequestor _bingRequestor;
 
         /// <summary>
         /// TODO: init from conf
         /// </summary>
-        public ResultChoiceProcessor( /*should take a conf to init whitelist stuff*/)
+        public ResultChoiceProcessor(string bingAccountKey/*should take a conf to init whitelist stuff*/)
         {
-            // TODO: init from conf
+            _bingRequestor = new BingRequestor(bingAccountKey);
+
             WhiteListCandidates = new HashSet<WhiteListCandidate>
             {
                 new WhiteListCandidate {
-                    Hostname = "opensubtitles",
+                    Hostname = "opensubtitles.org",
                     DownloadLinkRegex = @"opensubtitles.org/.*/download/sub/.*"
                 },
                 new WhiteListCandidate {
-                    Hostname = "yifysubtitles",
+                    Hostname = "yifysubtitles.com",
                     DownloadLinkRegex = @"yifysubtitles.com/subtitle/"
                 },
             };
+
+            AcceptedFileExtension = new List<string>
+            {
+                ".divx",
+                ".avi",
+                ".mp4",
+                ".mkv"
+            };
+            ResultPerRequest = 10;
         }
 
         /// <summary>
-        /// Result is never null
+        /// On Error
+        /// </summary>
+        /// <param name="error"></param>
+        private void OnError(string error)
+        {
+            var handler = OnErrorEvent;
+            if (handler != null)
+                handler(error);
+        }
+
+        /// <summary>
+        /// On Results
+        /// </summary>
+        /// <param name="whiteListResults"></param>
+        /// <param name="otherResults"></param>
+        private void OnResults(List<WebResult> whiteListResults, List<WebResult> otherResults)
+        {
+            var handler = OnResultsEvent;
+            if (handler != null)
+                handler(whiteListResults, otherResults);
+        }
+
+        /// <summary>
+        /// Process Raw Results, make white list hostname appear first
+        /// </summary>
+        /// <param name="rawResults"></param>
+        private void ProcessRawResults(IEnumerable<WebResult> rawResults)
+        {
+            if (rawResults == null)
+            {
+                OnResults(null, null);
+                return;
+            }
+
+            var whiteListResults = new List<WebResult>(ResultPerRequest);
+            var otherResults = new List<WebResult>(ResultPerRequest);
+            foreach (var rawResult in rawResults)
+            {
+                if (WhiteListCandidates.Any(h => rawResult.DisplayUrl.IndexOf(h.Hostname, StringComparison.OrdinalIgnoreCase) >= 0))
+                {
+                    whiteListResults.Add(rawResult);
+                    if (whiteListResults.Count >= ResultPerRequest)
+                        break;
+                    continue;
+                }
+
+                if (whiteListResults.Count + otherResults.Count < ResultPerRequest)
+                    otherResults.Add(rawResult);
+            }
+
+            if (whiteListResults.Count + otherResults.Count > ResultPerRequest)
+            {
+                var numberOfItemsToRemove = otherResults.Count + whiteListResults.Count - ResultPerRequest;
+                otherResults.RemoveRange(otherResults.Count - numberOfItemsToRemove, numberOfItemsToRemove);
+            }
+            OnResults(whiteListResults, otherResults);
+        }
+
+        /// <summary>
+        /// Is Accepted File
         /// </summary>
         /// <param name="filename"></param>
         /// <returns></returns>
-        public List<CrawlerResult> GetTopResultFromFile(string filename)
+        private bool IsAcceptedFile(string filename)
         {
-            var result = new List<CrawlerResult>();
+            if (filename == null)
+                return false;
 
-            // faire la requete dans une autre classe, et a processer (parser) ici
-            //return result;
+            var filenameExtension = Path.GetExtension(filename);
+            return AcceptedFileExtension.Any(s => string.Compare(s, filenameExtension, true) == 0);
+        }
 
-            //http://www.codeproject.com/Articles/601329/Bing-it-on-Reactive-Extensions-Story-code-and-slid
+        /// <summary>
+        /// Request Subtitle From File
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        public void RequestSubtitleFromFile(string file)
+        {
+            if (!IsAcceptedFile(file))
+                return;
 
-            //https://onedrive.live.com/view.aspx?resid=9C9479871FBFA822!112&app=Word&authkey=!ANNnJQREB0kDC04
-            //https://datamarket.azure.com/receipt/aef2d79f-74bf-4b63-8642-fa520b31491d?ctpa=False
-
-            return result;
+            var filenameWithoutExtension = Path.GetFileNameWithoutExtension(file);
+            try
+            {
+                ProcessRawResults(_bingRequestor.ExecuteQueryInWeb(string.Format("\"{0}\" srt english", filenameWithoutExtension)));
+            }
+            catch (Exception ex)
+            {
+                OnError(ex.Message);
+            }
         }
     }
 }
