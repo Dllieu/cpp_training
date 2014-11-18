@@ -15,7 +15,7 @@ namespace SubtitlesDownloader
         {
             InitializeComponent();
 
-            errorPanel.Visible = true;
+            errorPanel.Visible = false;
 
             AllowDrop = true;
             DragDrop += new DragEventHandler(OnDragDropEvent);
@@ -51,6 +51,7 @@ namespace SubtitlesDownloader
             if (files == null || ! files.Any())
                 return;
 
+            filenameTextBox.Text = files.First();
             _resultChoiceProcessor.RequestSubtitleFromFile(files.First());
             // show current file in textbox, then if its terminated by divx avi mp4, ask if it want to dowlaod subtitle from it and with which language
         }
@@ -61,7 +62,9 @@ namespace SubtitlesDownloader
         /// <param name="error"></param>
         private void OnError(string error)
         {
-            Console.WriteLine("Error: {0}", error);
+            errorDataGridView.Rows.Insert(0, DateTime.Now, error);
+            errorMenuStripLabel.Text = string.Format("{0} Errors", errorDataGridView.Rows.Count);
+            errorMenuStripLabel.Enabled = true;
         }
 
         /// <summary>
