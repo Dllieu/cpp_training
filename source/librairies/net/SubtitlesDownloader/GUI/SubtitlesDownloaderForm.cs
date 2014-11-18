@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 using Bing;
 using sdwrapper;
@@ -13,6 +14,8 @@ namespace SubtitlesDownloader
         public SubtitlesDownloaderForm(string bingAccountKey)
         {
             InitializeComponent();
+
+            errorPanel.Visible = true;
 
             AllowDrop = true;
             DragDrop += new DragEventHandler(OnDragDropEvent);
@@ -45,13 +48,10 @@ namespace SubtitlesDownloader
                 return;
 
             var files = (string[])e.Data.GetData(DataFormats.FileDrop);
-            foreach (var file in files)
-            {
-                _resultChoiceProcessor.RequestSubtitleFromFile(file);
-                break;
-            }
+            if (files == null || ! files.Any())
+                return;
 
-            
+            _resultChoiceProcessor.RequestSubtitleFromFile(files.First());
             // show current file in textbox, then if its terminated by divx avi mp4, ask if it want to dowlaod subtitle from it and with which language
         }
 
@@ -86,5 +86,17 @@ namespace SubtitlesDownloader
             whiteListResults.ForEach(AddWebResultRow);
             otherResults.ForEach(AddWebResultRow);
         }
+
+        #region MENU_EVENT
+        private void DisplayErrorPanel(object sender, EventArgs e)
+        {
+            errorPanel.Visible = displayErrorToolStripMenuItem.Checked ^= true;
+        }
+
+        private void statusBarToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            statusStrip.Visible = statusBarToolStripMenuItem.Checked ^= true;
+        }
+        #endregion
     }
 }

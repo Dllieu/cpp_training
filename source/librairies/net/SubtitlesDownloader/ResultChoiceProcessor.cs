@@ -136,7 +136,10 @@ namespace SubtitlesDownloader
         public void RequestSubtitleFromFile(string file)
         {
             if (!IsAcceptedFile(file))
+            {
+                OnError(string.Format("File format not handled for subtitles: {0}", file));
                 return;
+            }
 
             var filenameWithoutExtension = Path.GetFileNameWithoutExtension(file);
             try
