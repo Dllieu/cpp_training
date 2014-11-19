@@ -1,0 +1,68 @@
+﻿<Window x:Class="SubtitlesDownloaderWPF.SubtitleDownloaderView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        DataContext="{Binding RelativeSource={RelativeSource Self}}"
+        Title="SubtitleDownloaderView" Height="350" Width="525">
+    <Grid>
+        <DockPanel Dock="Top" Name="GlobalPanel" AllowDrop="True" Drop="GlobalPanel_OnDrop">
+            <!-- Menu -->
+            <Menu DockPanel.Dock="Top">
+                <MenuItem Header="_File">
+                    <MenuItem Header="_Open"/>
+                    <MenuItem Header="_Close"/>
+                    <MenuItem Header="_Save"/>
+                </MenuItem>
+                <MenuItem Header="_View">
+                    <MenuItem Header="_Error"/>
+                    <MenuItem Header="_Status Bar" IsChecked="true"/>
+                </MenuItem>
+            </Menu>
+
+            <!-- StatusBar -->
+            <StatusBar DockPanel.Dock="Bottom">
+                <StatusBarItem Content="Filler" />
+            </StatusBar>
+
+            <!-- MainGrid -->
+            <Grid Name="MainGrid">
+                <!-- Column/Row Definition -->
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="25" />
+                    <RowDefinition Height="2*" />
+                    <RowDefinition Height="1*" />
+                </Grid.RowDefinitions>
+                
+                <!-- Grid Content -->
+                <!-- Searching box -->
+                <TextBox Grid.Row="0" Grid.Column="0" Background="Blue">
+                    azeaze
+                </TextBox>
+                
+                <!-- Results -->
+                <ListView Grid.Row="1" Grid.Column="0" Background="BlueViolet" ItemsSource="{Binding SearchResults}" > <!--ItemsSource=-->
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Title" DisplayMemberBinding="{Binding Path=Title}" />
+                            <GridViewColumn Header="Provider" DisplayMemberBinding="{Binding Path=Provider}"/>
+                            <GridViewColumn Header="Description" DisplayMemberBinding="{Binding Path=Description}" />
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+                
+                <!-- Errors -->
+                <ListView Grid.Row="2" Grid.Column="0" Background="Salmon">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Timestamp" />
+                            <GridViewColumn Header="Error Message" />
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </Grid>
+        </DockPanel>
+        
+    </Grid>
+</Window>

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using Bing;
 
-namespace SubtitlesDownloader
+namespace SubtitlesDownloaderWPF
 {
     public class BingRequestor : BingSearchContainer
     {

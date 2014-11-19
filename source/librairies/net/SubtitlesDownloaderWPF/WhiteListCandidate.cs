@@ -1,4 +1,4 @@
-﻿namespace SubtitlesDownloader
+﻿namespace SubtitlesDownloaderWPF
 {
     /// <summary>
     /// Websites in white list means that if we query google, we will try to find them in the result, which mean they are the more appropriate results

@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using Bing;
 
-namespace SubtitlesDownloader
+namespace SubtitlesDownloaderWPF
 {
     /// <summary>
     /// Request google
@@ -138,7 +138,7 @@ namespace SubtitlesDownloader
             }
             catch (Exception ex)
             {
-                OnError(ex.Message);
+                OnError(ex.ToString());
             }
         }
     }
