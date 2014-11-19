@@ -34,24 +34,36 @@
                     <RowDefinition Height="2*" />
                     <RowDefinition Height="1*" />
                 </Grid.RowDefinitions>
-                
+
                 <!-- Grid Content -->
                 <!-- Searching box -->
                 <TextBox Grid.Row="0" Grid.Column="0" Background="Blue">
                     azeaze
                 </TextBox>
-                
+
                 <!-- Results -->
-                <ListView Grid.Row="1" Grid.Column="0" Background="BlueViolet" ItemsSource="{Binding SearchResults}" > <!--ItemsSource=-->
+                <ListView Grid.Row="1" Grid.Column="0" ItemsSource="{Binding SearchResults}" >
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsWhiteListed}" Value="True">
+                                    <Setter Property="Background" Value="LightGreen" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+
                     <ListView.View>
                         <GridView>
-                            <GridViewColumn Header="Title" DisplayMemberBinding="{Binding Path=Title}" />
+                            <GridViewColumn Header="Is White Listed" DisplayMemberBinding="{Binding Path=IsWhiteListed}"/>
                             <GridViewColumn Header="Provider" DisplayMemberBinding="{Binding Path=Provider}"/>
+                            <GridViewColumn Header="Title" DisplayMemberBinding="{Binding Path=Title}" />
                             <GridViewColumn Header="Description" DisplayMemberBinding="{Binding Path=Description}" />
+                            <GridViewColumn Header="Download Link" DisplayMemberBinding="{Binding Path=DownloadLink}"/>
                         </GridView>
                     </ListView.View>
                 </ListView>
-                
+
                 <!-- Errors -->
                 <ListView Grid.Row="2" Grid.Column="0" Background="Salmon">
                     <ListView.View>
@@ -63,6 +75,6 @@
                 </ListView>
             </Grid>
         </DockPanel>
-        
+
     </Grid>
 </Window>

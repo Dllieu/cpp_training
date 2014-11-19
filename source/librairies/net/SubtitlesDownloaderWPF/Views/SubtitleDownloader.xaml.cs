@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
+using System.Windows.Media;
 using Bing;
 
 namespace SubtitlesDownloaderWPF
@@ -56,6 +57,8 @@ namespace SubtitlesDownloaderWPF
                     Provider = webResult.DisplayUrl,
                     DownloadLink = webResult.Url,
                     Description = webResult.Description,
+
+                    Color = Colors.Cyan
                 });
         }
 
