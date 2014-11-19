@@ -41,15 +41,15 @@
             this.panel2 = new System.Windows.Forms.Panel();
             this.resultPanel = new System.Windows.Forms.Panel();
             this.resultFromSearchGridView = new System.Windows.Forms.DataGridView();
+            this.TitleColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.HostNameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DescriptionColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.textPanel = new System.Windows.Forms.Panel();
             this.filenameTextBox = new System.Windows.Forms.TextBox();
             this.errorPanel = new System.Windows.Forms.Panel();
             this.errorDataGridView = new System.Windows.Forms.DataGridView();
             this.TimestampColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ErrorMessageColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.TitleColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.HostNameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.DescriptionColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.statusStrip.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -110,7 +110,7 @@
             // displayErrorToolStripMenuItem
             // 
             this.displayErrorToolStripMenuItem.Name = "displayErrorToolStripMenuItem";
-            this.displayErrorToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.displayErrorToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
             this.displayErrorToolStripMenuItem.Text = "Error";
             this.displayErrorToolStripMenuItem.Click += new System.EventHandler(this.DisplayErrorPanel);
             // 
@@ -119,7 +119,7 @@
             this.statusBarToolStripMenuItem.Checked = true;
             this.statusBarToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.statusBarToolStripMenuItem.Name = "statusBarToolStripMenuItem";
-            this.statusBarToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.statusBarToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
             this.statusBarToolStripMenuItem.Text = "Status Bar";
             this.statusBarToolStripMenuItem.Click += new System.EventHandler(this.statusBarToolStripMenuItem_Click);
             // 
@@ -189,6 +189,27 @@
             this.resultFromSearchGridView.Size = new System.Drawing.Size(919, 217);
             this.resultFromSearchGridView.TabIndex = 10;
             // 
+            // TitleColumn
+            // 
+            this.TitleColumn.HeaderText = "Title";
+            this.TitleColumn.Name = "TitleColumn";
+            this.TitleColumn.ReadOnly = true;
+            this.TitleColumn.Width = 250;
+            // 
+            // HostNameColumn
+            // 
+            this.HostNameColumn.HeaderText = "HostName";
+            this.HostNameColumn.Name = "HostNameColumn";
+            this.HostNameColumn.ReadOnly = true;
+            this.HostNameColumn.Width = 200;
+            // 
+            // DescriptionColumn
+            // 
+            this.DescriptionColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.DescriptionColumn.HeaderText = "Description";
+            this.DescriptionColumn.Name = "DescriptionColumn";
+            this.DescriptionColumn.ReadOnly = true;
+            // 
             // textPanel
             // 
             this.textPanel.Controls.Add(this.filenameTextBox);
@@ -246,29 +267,9 @@
             this.ErrorMessageColumn.Name = "ErrorMessageColumn";
             this.ErrorMessageColumn.ReadOnly = true;
             // 
-            // TitleColumn
-            // 
-            this.TitleColumn.HeaderText = "Title";
-            this.TitleColumn.Name = "TitleColumn";
-            this.TitleColumn.ReadOnly = true;
-            this.TitleColumn.Width = 250;
-            // 
-            // HostNameColumn
-            // 
-            this.HostNameColumn.HeaderText = "HostName";
-            this.HostNameColumn.Name = "HostNameColumn";
-            this.HostNameColumn.ReadOnly = true;
-            this.HostNameColumn.Width = 200;
-            // 
-            // DescriptionColumn
-            // 
-            this.DescriptionColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.DescriptionColumn.HeaderText = "Description";
-            this.DescriptionColumn.Name = "DescriptionColumn";
-            this.DescriptionColumn.ReadOnly = true;
-            // 
             // SubtitlesDownloaderForm
             // 
+            this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(955, 384);

@@ -15,11 +15,8 @@ namespace SubtitlesDownloader
     /// </summary>
     public class ResultChoiceProcessor
     {
-        public delegate void OnErrorDelegate(string error);
-        public event OnErrorDelegate OnErrorEvent;
-
-        public delegate void OnResultsDelegate(List<WebResult> whiteListResults, List<WebResult> otherResults);
-        public event OnResultsDelegate OnResultsEvent;
+        public Action<string> OnErrorEvent;
+        public Action<List<WebResult>, List<WebResult>> OnResultsEvent;
 
         public List<string> AcceptedFileExtension { get; set; }
         public int ResultPerRequest { get; set; }
@@ -115,29 +112,22 @@ namespace SubtitlesDownloader
         }
 
         /// <summary>
-        /// Is Accepted File
-        /// </summary>
-        /// <param name="filename"></param>
-        /// <returns></returns>
-        private bool IsAcceptedFile(string filename)
-        {
-            if (filename == null)
-                return false;
-
-            var filenameExtension = Path.GetExtension(filename);
-            return AcceptedFileExtension.Any(s => string.Compare(s, filenameExtension, true) == 0);
-        }
-
-        /// <summary>
         /// Request Subtitle From File
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
         public void RequestSubtitleFromFile(string file)
         {
-            if (!IsAcceptedFile(file))
+            if (file == null)
             {
-                OnError(string.Format("File format not handled for subtitles: {0}", file));
+                OnError(string.Format("Request subtitle from null file"));
+                return;
+            }
+
+            var filenameExtension = Path.GetExtension(file);
+            if (AcceptedFileExtension.All(s => string.Compare(s, filenameExtension, true) != 0))
+            {
+                OnError(string.Format("File format not handled: \"{0}\"", filenameExtension));
                 return;
             }
 

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using Bing;
-using sdwrapper;
 
 namespace SubtitlesDownloader
 {
@@ -17,9 +16,8 @@ namespace SubtitlesDownloader
 
             errorPanel.Visible = false;
 
-            AllowDrop = true;
-            DragDrop += new DragEventHandler(OnDragDropEvent);
-            DragEnter += new DragEventHandler(OnDragEnterEvent);
+            DragDrop += OnDragDropEvent;
+            DragEnter += OnDragEnterEvent;
 
             _resultChoiceProcessor = new ResultChoiceProcessor(bingAccountKey);
             _resultChoiceProcessor.OnErrorEvent += OnError;
