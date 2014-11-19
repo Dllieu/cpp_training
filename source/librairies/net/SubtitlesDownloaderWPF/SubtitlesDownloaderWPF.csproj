@@ -54,6 +54,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Models\SearchError.cs" />
     <Compile Include="ResultChoiceProcessor.cs" />
     <Compile Include="WhiteListCandidate.cs" />
     <Page Include="Views\SubtitleDownloader.xaml">

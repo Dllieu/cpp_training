@@ -30,9 +30,9 @@
                     <ColumnDefinition Width="1*" />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="25" />
-                    <RowDefinition Height="2*" />
-                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="25" Name="UserInput" />
+                    <RowDefinition Height="2*" Name="SearchResult"/>
+                    <RowDefinition Height="1*" Name="SearchError" />
                 </Grid.RowDefinitions>
 
                 <!-- Grid Content -->
@@ -65,11 +65,11 @@
                 </ListView>
 
                 <!-- Errors -->
-                <ListView Grid.Row="2" Grid.Column="0" Background="Salmon">
+                <ListView Grid.Row="2" Grid.Column="0"  ItemsSource="{Binding SearchErrors}" Background="Salmon">
                     <ListView.View>
                         <GridView>
-                            <GridViewColumn Header="Timestamp" />
-                            <GridViewColumn Header="Error Message" />
+                            <GridViewColumn Header="Timestamp" DisplayMemberBinding="{Binding Path=Timestamp}" />
+                            <GridViewColumn Header="Error Message" DisplayMemberBinding="{Binding Path=ErrorMessage}" />
                         </GridView>
                     </ListView.View>
                 </ListView>

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
-using System.Windows.Media;
 using Bing;
 
 namespace SubtitlesDownloaderWPF
@@ -14,12 +13,14 @@ namespace SubtitlesDownloaderWPF
     public partial class SubtitleDownloaderView : Window
     {
         public ObservableCollection<SearchResult> SearchResults { get; private set; }
+        public ObservableCollection<SearchError> SearchErrors { get; private set; }
         private readonly ResultChoiceProcessor _resultChoiceProcessor;
 
         public SubtitleDownloaderView()
         {
             SearchResults = new ObservableCollection<SearchResult>();
             SearchResults.Add(new SearchResult {Title="Super Titre"});
+            SearchErrors = new ObservableCollection<SearchError>();
 
             // TODO : bingAccountKe in conf
             _resultChoiceProcessor = new ResultChoiceProcessor(Environment.GetCommandLineArgs()[1]);
@@ -35,10 +36,9 @@ namespace SubtitlesDownloaderWPF
         /// <param name="error"></param>
         private void OnError(string error)
         {
-            //SearchErrors.Add(new DateTime.Now, error);
+            SearchErrors.Add(new SearchError { Timestamp = DateTime.Now, ErrorMessage = error });
             //errorMenuStripLabel.Text = string.Format("{0} Errors", errorDataGridView.Rows.Count);
             //errorMenuStripLabel.Enabled = true;
-            Console.WriteLine(error);
         }
 
         /// <summary>
@@ -57,8 +57,6 @@ namespace SubtitlesDownloaderWPF
                     Provider = webResult.DisplayUrl,
                     DownloadLink = webResult.Url,
                     Description = webResult.Description,
-
-                    Color = Colors.Cyan
                 });
         }
 

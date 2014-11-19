@@ -127,7 +127,7 @@ namespace SubtitlesDownloaderWPF
             var filenameExtension = Path.GetExtension(file);
             if (AcceptedFileExtension.All(s => string.Compare(s, filenameExtension, true) != 0))
             {
-                OnError(string.Format("File format not handled: \"{0}\"", filenameExtension));
+                OnError(string.Format("format not handled: \"{0}\" ({1})", filenameExtension, file));
                 return;
             }
 

@@ -15,7 +15,5 @@ namespace SubtitlesDownloaderWPF
         public string Provider { get; set; }
         public string DownloadLink { get; set; }
         public string Description { get; set; }
-
-        public Color Color { get; set; }
     }
 }
