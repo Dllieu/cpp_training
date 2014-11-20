@@ -50,7 +50,7 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <ApplicationDefinition Include="Utils\App.xaml">
+    <ApplicationDefinition Include="Resources\App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
@@ -62,12 +62,12 @@
       <SubType>Designer</SubType>
     </Page>
     <Compile Include="BingRequestor.cs" />
-    <Compile Include="Utils\App.xaml.cs">
+    <Compile Include="Resources\App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Models\SearchResult.cs" />
-    <Compile Include="Utils\BingSearchContainer.cs" />
+    <Compile Include="Resources\BingSearchContainer.cs" />
     <Compile Include="Views\SubtitleDownloader.xaml.cs">
       <DependentUpon>SubtitleDownloader.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -98,9 +98,11 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Utils\App.config" />
+    <None Include="Resources\App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Resources\error.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

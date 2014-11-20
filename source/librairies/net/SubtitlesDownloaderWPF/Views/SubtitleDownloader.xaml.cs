@@ -36,7 +36,7 @@ namespace SubtitlesDownloaderWPF
         /// <param name="error"></param>
         private void OnError(string error)
         {
-            SearchErrors.Add(new SearchError { Timestamp = DateTime.Now, ErrorMessage = error });
+            SearchErrors.Insert(0, new SearchError { Timestamp = DateTime.Now, ErrorMessage = error });
             //errorMenuStripLabel.Text = string.Format("{0} Errors", errorDataGridView.Rows.Count);
             //errorMenuStripLabel.Enabled = true;
         }
