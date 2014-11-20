@@ -103,7 +103,7 @@
                 <TextBox Grid.Row="0" Grid.Column="0" Name="SearTextBox" />
 
                 <!-- Results -->
-                <ListView Grid.Row="1" Grid.Column="0" ItemsSource="{Binding SearchResults}" >
+                <ListView Grid.Row="1" Grid.Column="0" Name="SearchResultListView" ItemsSource="{Binding SearchResults}" MouseDoubleClick="DoubleClickSearchResultListView" >
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem">
                             <Style.Triggers>

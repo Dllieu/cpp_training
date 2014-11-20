@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 using SubtitlesDownloaderWPF.Models;
 using SubtitlesDownloaderWPF.SearchStrategies;
 using SubtitlesDownloaderWPF.SearchStrategies.Bing;
@@ -48,7 +51,7 @@ namespace SubtitlesDownloaderWPF.Views
             {
                 await Task.Run(() =>
                 {
-                    var results = _searchStrategy.SearchSubtitles(files.First());
+                    var results = _searchStrategy.SearchSubtitle(files.First());
                     Dispatcher.Invoke(() =>
                     {
                         SearchResults.Clear();
@@ -101,6 +104,38 @@ namespace SubtitlesDownloaderWPF.Views
         private void ExitApplication(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void DoubleClickSearchResultListView(object sender, MouseButtonEventArgs e)
+        {
+            if (SearchResultListView.SelectedIndex == -1)
+                return;
+
+            var selectedItem = (SucceedResultModel) SearchResultListView.SelectedItem;
+            if (selectedItem == null)
+                return;
+
+            try
+            {
+                // http://stackoverflow.com/questions/4238345/asynchronously-wait-for-taskt-to-complete-with-timeout
+                await Task.Run(() =>
+                {
+                    _searchStrategy.DownloadSubtitle(selectedItem);
+                    //Dispatcher.Invoke(() =>
+                    //{
+                        
+                    //});
+                });
+            }
+            catch (Exception ex)
+            {
+                SearchErrors.Insert(0, new ErrorResultModel { Timestamp = DateTime.Now, ErrorMessage = ex.Message });
+            }
         }
     }
 }

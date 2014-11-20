@@ -2,6 +2,8 @@
 using System.Linq;
 using System;
 using System.Collections.Generic;
+using System.Net;
+using System.Text.RegularExpressions;
 using Bing;
 using SubtitlesDownloaderWPF.Models;
 
@@ -31,11 +33,11 @@ namespace SubtitlesDownloaderWPF.SearchStrategies.Bing
             {
                 new BingWhiteListCandidate {
                     Hostname = "opensubtitles.org",
-                    DownloadLinkRegex = @"opensubtitles.org/.*/download/sub/.*"
+                    DownloadLinkRegex = "\"(http://dl.opensubtitles.org/.*?/download/sub/.*?)\""
                 },
                 new BingWhiteListCandidate {
                     Hostname = "yifysubtitles.com",
-                    DownloadLinkRegex = @"yifysubtitles.com/subtitle/"
+                    DownloadLinkRegex = "yifysubtitles.com/subtitle/"
                 },
             };
 
@@ -106,11 +108,11 @@ namespace SubtitlesDownloaderWPF.SearchStrategies.Bing
         }
 
         /// <summary>
-        /// Request Subtitle From File
+        /// Search Subtitle From File
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
-        public List<SucceedResultModel> SearchSubtitles(string file)
+        public List<SucceedResultModel> SearchSubtitle(string file)
         {
             if (file == null)
                 throw new Exception("Request subtitle from null file");
@@ -126,6 +128,39 @@ namespace SubtitlesDownloaderWPF.SearchStrategies.Bing
             catch (Exception ex)
             {
                 throw new Exception(string.Format("Unexpected exception while requesting bing: \"{0}\"", ex));
+            }
+        }
+
+        /// <summary>
+        /// DownloadSubtitle
+        /// </summary>
+        /// <param name="succeedResult"></param>
+        public void DownloadSubtitle(SucceedResultModel succeedResult)
+        {
+            if (succeedResult == null)
+                throw new Exception("Download subtitle from a null search result");
+
+            var whiteListCandidate = WhiteListCandidates.FirstOrDefault(h => succeedResult.Provider.IndexOf(h.Hostname, StringComparison.OrdinalIgnoreCase) >= 0);
+            if (whiteListCandidate == null)
+            {
+                System.Diagnostics.Process.Start(succeedResult.DownloadLink);
+                return;
+            }
+
+            try
+            {
+                using (var client = new WebClient())
+                {
+                    var htmlCode = client.DownloadString(succeedResult.DownloadLink);
+                    var match = Regex.Match(htmlCode, whiteListCandidate.DownloadLinkRegex);
+                    var realDownloadLink = match.Groups[1].Value;
+                    System.Diagnostics.Process.Start(realDownloadLink);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                throw;
             }
         }
     }
