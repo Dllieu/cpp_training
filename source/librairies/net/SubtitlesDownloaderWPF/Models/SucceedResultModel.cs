@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media;
-
-namespace SubtitlesDownloaderWPF
+﻿namespace SubtitlesDownloaderWPF.Models
 {
-    public class SearchResult
+    public class SucceedResultModel
     {
         public bool IsWhiteListed { get; set; }
 

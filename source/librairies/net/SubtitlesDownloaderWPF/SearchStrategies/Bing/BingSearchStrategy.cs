@@ -3,40 +3,37 @@ using System.Linq;
 using System;
 using System.Collections.Generic;
 using Bing;
+using SubtitlesDownloaderWPF.Models;
 
-namespace SubtitlesDownloaderWPF
+namespace SubtitlesDownloaderWPF.SearchStrategies.Bing
 {
     /// <summary>
     /// Request google
     /// -> get top N best website
     /// -> check which website we whitelisted (they will come first) should be highlited in different color in the GUI
     /// -> if user click one of them, use regexp ? to find the link (if not white listed, it should open the page directly through a browser)
-    /// TODO: thread safety
     /// </summary>
-    public class ResultChoiceProcessor
+    public class BingSearchStrategy : ISearchStrategy
     {
-        public Action<string> OnErrorEvent;
-        public Action<List<WebResult>, List<WebResult>> OnResultsEvent;
-
-        public List<string> AcceptedFileExtension { get; set; }
-        public int ResultPerRequest { get; set; }
-        private HashSet<WhiteListCandidate> WhiteListCandidates { get; set; }
+        private List<string> AcceptedFileExtension { get; set; }
+        private int ResultPerRequest { get; set; }
+        private HashSet<BingWhiteListCandidate> WhiteListCandidates { get; set; }
         private readonly BingRequestor _bingRequestor;
 
         /// <summary>
         /// TODO: init from conf
         /// </summary>
-        public ResultChoiceProcessor(string bingAccountKey/*should take a conf to init whitelist stuff*/)
+        public BingSearchStrategy(string bingAccountKey/*should take a conf to init whitelist stuff*/)
         {
             _bingRequestor = new BingRequestor(bingAccountKey);
 
-            WhiteListCandidates = new HashSet<WhiteListCandidate>
+            WhiteListCandidates = new HashSet<BingWhiteListCandidate>
             {
-                new WhiteListCandidate {
+                new BingWhiteListCandidate {
                     Hostname = "opensubtitles.org",
                     DownloadLinkRegex = @"opensubtitles.org/.*/download/sub/.*"
                 },
-                new WhiteListCandidate {
+                new BingWhiteListCandidate {
                     Hostname = "yifysubtitles.com",
                     DownloadLinkRegex = @"yifysubtitles.com/subtitle/"
                 },
@@ -53,39 +50,32 @@ namespace SubtitlesDownloaderWPF
         }
 
         /// <summary>
-        /// On Error
+        /// BingResultToModelResult
         /// </summary>
-        /// <param name="error"></param>
-        private void OnError(string error)
+        /// <param name="webResult"></param>
+        /// <param name="isWhiteListed"></param>
+        /// <returns></returns>
+        static private SucceedResultModel BingResultToModelResult(WebResult webResult, bool isWhiteListed)
         {
-            var handler = OnErrorEvent;
-            if (handler != null)
-                handler(error);
-        }
+            return new SucceedResultModel
+            {
+                IsWhiteListed = isWhiteListed,
 
-        /// <summary>
-        /// On Results
-        /// </summary>
-        /// <param name="whiteListResults"></param>
-        /// <param name="otherResults"></param>
-        private void OnResults(List<WebResult> whiteListResults, List<WebResult> otherResults)
-        {
-            var handler = OnResultsEvent;
-            if (handler != null)
-                handler(whiteListResults, otherResults);
+                Title = webResult.Title,
+                Provider = webResult.DisplayUrl,
+                DownloadLink = webResult.Url,
+                Description = webResult.Description,
+            };
         }
 
         /// <summary>
         /// Process Raw Results, make white list hostname appear first
         /// </summary>
         /// <param name="rawResults"></param>
-        private void ProcessRawResults(IEnumerable<WebResult> rawResults)
+        private List<SucceedResultModel> ProcessRawResults(IEnumerable<WebResult> rawResults)
         {
             if (rawResults == null)
-            {
-                OnResults(null, null);
-                return;
-            }
+                throw new Exception("Null result from bing");
 
             var whiteListResults = new List<WebResult>(ResultPerRequest);
             var otherResults = new List<WebResult>(ResultPerRequest);
@@ -108,7 +98,11 @@ namespace SubtitlesDownloaderWPF
                 var numberOfItemsToRemove = otherResults.Count + whiteListResults.Count - ResultPerRequest;
                 otherResults.RemoveRange(otherResults.Count - numberOfItemsToRemove, numberOfItemsToRemove);
             }
-            OnResults(whiteListResults, otherResults);
+
+            var result = new List<SucceedResultModel>();
+            whiteListResults.ForEach(r => result.Add(BingResultToModelResult(r, true)));
+            otherResults.ForEach(r => result.Add(BingResultToModelResult(r, false)));
+            return result;
         }
 
         /// <summary>
@@ -116,29 +110,22 @@ namespace SubtitlesDownloaderWPF
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
-        public void RequestSubtitleFromFile(string file)
+        public List<SucceedResultModel> SearchSubtitles(string file)
         {
             if (file == null)
-            {
-                OnError(string.Format("Request subtitle from null file"));
-                return;
-            }
+                throw new Exception("Request subtitle from null file");
 
             var filenameExtension = Path.GetExtension(file);
             if (AcceptedFileExtension.All(s => string.Compare(s, filenameExtension, true) != 0))
-            {
-                OnError(string.Format("format not handled: \"{0}\" ({1})", filenameExtension, file));
-                return;
-            }
+                throw new Exception(string.Format("Format not handled: \"{0}\" ({1})", filenameExtension, file));
 
-            var filenameWithoutExtension = Path.GetFileNameWithoutExtension(file);
             try
             {
-                ProcessRawResults(_bingRequestor.ExecuteQueryInWeb(string.Format("\"{0}\" srt english", filenameWithoutExtension)));
+                return ProcessRawResults(_bingRequestor.ExecuteQueryInWeb(string.Format("\"{0}\" srt english", Path.GetFileNameWithoutExtension(file))));
             }
             catch (Exception ex)
             {
-                OnError(ex.ToString());
+                throw new Exception(string.Format("Unexpected exception while requesting bing: \"{0}\"", ex));
             }
         }
     }

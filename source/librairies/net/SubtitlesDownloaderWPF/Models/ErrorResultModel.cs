@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace SubtitlesDownloaderWPF
+namespace SubtitlesDownloaderWPF.Models
 {
-    public class SearchError
+    public class ErrorResultModel
     {
         public DateTime Timestamp { get; set; }
         public string ErrorMessage { get; set; }

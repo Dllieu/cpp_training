@@ -54,22 +54,23 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Models\SearchError.cs" />
-    <Compile Include="ResultChoiceProcessor.cs" />
-    <Compile Include="WhiteListCandidate.cs" />
-    <Page Include="Views\SubtitleDownloader.xaml">
+    <Compile Include="Models\ErrorResultModel.cs" />
+    <Compile Include="SearchStrategies\Bing\BingSearchStrategy.cs" />
+    <Compile Include="SearchStrategies\Bing\BingWhiteListCandidate.cs" />
+    <Page Include="Views\SubtitleDownloaderView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="BingRequestor.cs" />
+    <Compile Include="SearchStrategies\Bing\BingRequestor.cs" />
     <Compile Include="Resources\App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Models\SearchResult.cs" />
-    <Compile Include="Resources\BingSearchContainer.cs" />
-    <Compile Include="Views\SubtitleDownloader.xaml.cs">
-      <DependentUpon>SubtitleDownloader.xaml</DependentUpon>
+    <Compile Include="Models\SucceedResultModel.cs" />
+    <Compile Include="SearchStrategies\Bing\BingSearchContainer.cs" />
+    <Compile Include="SearchStrategies\ISearchStrategy.cs" />
+    <Compile Include="Views\SubtitleDownloaderView.xaml.cs">
+      <DependentUpon>SubtitleDownloaderView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -102,6 +103,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\error.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\exit.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
