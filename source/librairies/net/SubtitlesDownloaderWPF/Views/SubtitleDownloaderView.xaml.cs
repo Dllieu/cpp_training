@@ -33,11 +33,36 @@ namespace SubtitlesDownloaderWPF.Views
         }
 
         /// <summary>
+        /// SearchSubtitle
+        /// </summary>
+        /// <param name="file"></param>
+        private async void SearchSubtitle(string file)
+        {
+            SearTextBox.Text = file;
+            try
+            {
+                await Task.Run(() =>
+                {
+                    var results = _searchStrategy.SearchSubtitle(file);
+                    Dispatcher.Invoke(() =>
+                    {
+                        SearchResults.Clear();
+                        results.ForEach(SearchResults.Add);
+                    });
+                });
+            }
+            catch (Exception ex)
+            {
+                SearchErrors.Insert(0, new ErrorResultModel { Timestamp = DateTime.Now, ErrorMessage = ex.Message });
+            }
+        }
+
+        /// <summary>
         /// GlobalPanel_OnDrop
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void GlobalPanel_OnDrop(object sender, DragEventArgs e)
+        private void GlobalPanel_OnDrop(object sender, DragEventArgs e)
         {
             if (e == null || e.Data == null)
                 return;
@@ -46,23 +71,21 @@ namespace SubtitlesDownloaderWPF.Views
             if (files == null || !files.Any())
                 return;
 
-            SearTextBox.Text = files.First();
-            try
-            {
-                await Task.Run(() =>
-                {
-                    var results = _searchStrategy.SearchSubtitle(files.First());
-                    Dispatcher.Invoke(() =>
-                    {
-                        SearchResults.Clear();
-                        results.ForEach(SearchResults.Add); 
-                    });
-                });
-            }
-            catch (Exception ex)
-            {
-                SearchErrors.Insert(0, new ErrorResultModel {Timestamp = DateTime.Now, ErrorMessage = ex.Message});
-            }
+            SearchSubtitle(files.First());
+        }
+
+        /// <summary>
+        /// OpenFile
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OpenFile(object sender, RoutedEventArgs e)
+        {
+            var dialog = new Microsoft.Win32.OpenFileDialog();
+
+            var result = dialog.ShowDialog();
+            if (result.HasValue && result.Value)
+                SearchSubtitle(dialog.FileName);
         }
 
         /// <summary>
@@ -107,7 +130,7 @@ namespace SubtitlesDownloaderWPF.Views
         }
 
         /// <summary>
-        /// 
+        /// DoubleClickSearchResultListView
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>

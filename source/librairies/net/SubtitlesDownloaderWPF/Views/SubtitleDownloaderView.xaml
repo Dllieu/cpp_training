@@ -28,24 +28,37 @@
             </Style.Triggers>
         </Style>
 
+        <Style x:Key="AlternatingListViewItemStyle" TargetType="{x:Type ListViewItem}">
+            <Style.Triggers>
+                <Trigger Property="ItemsControl.AlternationIndex" Value="1">
+                    <Setter Property="Background" Value="CornflowerBlue"></Setter>
+                </Trigger>
+                <Trigger Property="ItemsControl.AlternationIndex" Value="2">
+                    <Setter Property="Background" Value="AliceBlue"></Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
         <!-- Custom Images -->
         <BitmapImage x:Key="ErrorImage" UriSource="pack://application:,,,/Resources/error.png" />
         <BitmapImage x:Key="ExitImage" UriSource="pack://application:,,,/Resources/exit.png" />
     </Window.Resources>
 
     <!-- Global Grid -->
+    <!--<GridSplitter></GridSplitter>-->
     <Grid>
         <DockPanel Dock="Top" Name="GlobalPanel" AllowDrop="True" Drop="GlobalPanel_OnDrop">
             <!-- Menu -->
             <Menu DockPanel.Dock="Top">
                 <MenuItem Header="_File">
+                    <MenuItem Header="_Open File" Click="OpenFile"/>
                     <MenuItem Header="_Exit" Click="ExitApplication">
                         <MenuItem.Icon>
                             <Image Height="15" Source="{StaticResource ExitImage}"/>
                         </MenuItem.Icon>
                     </MenuItem>
-                    <!--<MenuItem Header="_Exit" Click="ExitApplication"/>-->
                 </MenuItem>
+
                 <MenuItem Header="_View">
                     <MenuItem Header="_Error" Name="ErrorMenuItem" IsChecked="{Binding ElementName=SearchErrorsListView, Path=IsVisible, Mode=OneWay}" Click="ShowOrHideErrorsResult_Click"/>
                     <MenuItem Header="_Status Bar" Name="ErroStatusBarMenuItem" IsChecked="{Binding ElementName=MainStatusBar, Path=IsVisible, Mode=OneWay}" Click="ShowOrhideMainStatusBar_Click"/>
@@ -87,6 +100,16 @@
             </StatusBar>
 
             <!-- MainGrid -->
+            <Grid Name="MainGrid2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="220" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*" />
+                </Grid.RowDefinitions>
+
+                <TextBox Grid.Row="0" Grid.Column="0" Name="Explorer" Background="Green"/>
+            </Grid>
             <Grid Name="MainGrid">
                 <!-- Column/Row Definition -->
                 <Grid.ColumnDefinitions>
@@ -103,11 +126,17 @@
                 <TextBox Grid.Row="0" Grid.Column="0" Name="SearTextBox" />
 
                 <!-- Results -->
-                <ListView Grid.Row="1" Grid.Column="0" Name="SearchResultListView" ItemsSource="{Binding SearchResults}" MouseDoubleClick="DoubleClickSearchResultListView" >
+                <ListView VerticalAlignment="Stretch" Grid.Row="1" Grid.Column="0" AlternationCount="2" Name="SearchResultListView" ItemsSource="{Binding SearchResults}" MouseDoubleClick="DoubleClickSearchResultListView" >
+                    <ListView.Background>
+                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                            <GradientStop Color="#FFEDEDFF" Offset="0"/>
+                            <GradientStop Color="White" Offset="1"/>
+                        </LinearGradientBrush>
+                    </ListView.Background>
                     <ListView.ItemContainerStyle>
-                        <Style TargetType="ListViewItem">
+                        <Style TargetType="ListViewItem" BasedOn="{StaticResource AlternatingListViewItemStyle}">
                             <Style.Triggers>
-                                <!-- For some reason designer give a unresolvable warning altough the item source is defined, but it can find the property during runtime -->
+                                <!-- Designer give a unresolvable warning (underlying datasource is unknown at compile time because of style layer), but it can find the property during runtime -->
                                 <DataTrigger Binding="{Binding Path=IsWhiteListed}" Value="True">
                                     <Setter Property="Background" Value="LightGreen" />
                                 </DataTrigger>
