@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using SubtitlesDownloaderWPF.Models;
 using SubtitlesDownloaderWPF.SearchStrategies;
 using SubtitlesDownloaderWPF.SearchStrategies.Bing;
 
+// todo : presenter comme github (presenter juste url avec une arrow si click il y a les details)
 namespace SubtitlesDownloaderWPF.Views
 {
     /// <summary>
@@ -20,6 +20,7 @@ namespace SubtitlesDownloaderWPF.Views
         public ObservableCollection<SucceedResultModel> SearchResults { get; private set; }
         public ObservableCollection<ErrorResultModel> SearchErrors { get; private set; }
         private readonly ISearchStrategy _searchStrategy;
+        private readonly int _timeout;
 
         public SubtitleDownloaderView()
         {
@@ -28,8 +29,31 @@ namespace SubtitlesDownloaderWPF.Views
 
             // TODO : bingAccountKey in conf
             _searchStrategy = new BingSearchStrategy(Environment.GetCommandLineArgs()[1]);
+            _timeout = 10000;
 
             InitializeComponent();
+        }
+
+        /// <summary>
+        /// CallFunctorOrTimeout
+        /// return true if we could call the fucntor within timeout timeline
+        /// </summary>
+        /// <param name="functor"></param>
+        /// <param name="timeout"></param>
+        /// <returns></returns>
+        static private async Task<bool> CallFunctorOrTimeout(Action<CancellationToken> functor, int timeout)
+        {
+            var tokenSource = new CancellationTokenSource();
+            var token = tokenSource.Token;
+            var task = new Task(() => functor(token));
+            task.Start();
+
+            if (await Task.WhenAny(task, Task.Delay(timeout, token)) != task)
+                return false; // timeout
+
+            // We re-await the task so that any exceptions/cancellation is rethrown.
+            await task;
+            return true;
         }
 
         /// <summary>
@@ -41,15 +65,18 @@ namespace SubtitlesDownloaderWPF.Views
             SearTextBox.Text = file;
             try
             {
-                await Task.Run(() =>
-                {
-                    var results = _searchStrategy.SearchSubtitle(file);
-                    Dispatcher.Invoke(() =>
+                var result = await CallFunctorOrTimeout(token =>
                     {
-                        SearchResults.Clear();
-                        results.ForEach(SearchResults.Add);
-                    });
-                });
+                        var results = _searchStrategy.SearchSubtitle(file);
+                        Dispatcher.Invoke(() =>
+                        {
+                            SearchResults.Clear();
+                            results.ForEach(SearchResults.Add);
+                        });
+                    }, _timeout);
+
+                if (!result)
+                    throw new Exception(string.Format("Search subtitle timeout {0}ms for file '{1}'", _timeout, file));
             }
             catch (Exception ex)
             {
@@ -145,15 +172,8 @@ namespace SubtitlesDownloaderWPF.Views
 
             try
             {
-                // http://stackoverflow.com/questions/4238345/asynchronously-wait-for-taskt-to-complete-with-timeout
-                await Task.Run(() =>
-                {
-                    _searchStrategy.DownloadSubtitle(selectedItem);
-                    //Dispatcher.Invoke(() =>
-                    //{
-                        
-                    //});
-                });
+                if (! await CallFunctorOrTimeout(token => _searchStrategy.DownloadSubtitle(selectedItem), _timeout))
+                    throw new Exception(string.Format("Download subtitle timeout {0}ms on '{1}'", _timeout, selectedItem.DownloadLink));
             }
             catch (Exception ex)
             {

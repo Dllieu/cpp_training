@@ -59,12 +59,23 @@ namespace SubtitlesDownloaderWPF.SearchStrategies.Bing
         /// <returns></returns>
         static private SucceedResultModel BingResultToModelResult(WebResult webResult, bool isWhiteListed)
         {
+            // Quick and dirty
+            string provider;
+            try
+            {
+                provider = new Uri(webResult.Url).Host;
+            }
+            catch (Exception)
+            {
+                provider = webResult.DisplayUrl;
+            }
+
             return new SucceedResultModel
             {
                 IsWhiteListed = isWhiteListed,
 
                 Title = webResult.Title,
-                Provider = webResult.DisplayUrl,
+                Provider = provider,
                 DownloadLink = webResult.Url,
                 Description = webResult.Description,
             };
