@@ -35,10 +35,10 @@ namespace SubtitlesDownloaderWPF.SearchStrategies.Bing
                     Hostname = "opensubtitles.org",
                     DownloadLinkRegex = "\"(http://dl.opensubtitles.org/.*?/download/sub/.*?)\""
                 },
-                new BingWhiteListCandidate {
-                    Hostname = "yifysubtitles.com",
-                    DownloadLinkRegex = "yifysubtitles.com/subtitle/"
-                },
+                //new BingWhiteListCandidate {
+                //    Hostname = "subscene.com",
+                //    DownloadLinkRegex = "\"(http://subscene.com/subtitle/download.*?)\""
+                //},
             };
 
             AcceptedFileExtension = new List<string>
@@ -48,6 +48,8 @@ namespace SubtitlesDownloaderWPF.SearchStrategies.Bing
                 ".mp4",
                 ".mkv"
             };
+
+            // TODO : Not taken in account by bing
             ResultPerRequest = 10;
         }
 
@@ -165,6 +167,8 @@ namespace SubtitlesDownloaderWPF.SearchStrategies.Bing
                     var htmlCode = client.DownloadString(succeedResult.DownloadLink);
                     var match = Regex.Match(htmlCode, whiteListCandidate.DownloadLinkRegex);
                     var realDownloadLink = match.Groups[1].Value;
+
+                    // Just open a browser with the download link
                     System.Diagnostics.Process.Start(realDownloadLink);
                 }
             }

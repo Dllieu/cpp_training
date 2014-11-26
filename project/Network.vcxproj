@@ -11,13 +11,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\source\librairies\generic\IdentifierInterface.h" />
-    <ClInclude Include="..\source\librairies\generic\Visitor.h" />
+    <ClInclude Include="..\source\librairies\network\ITwitchCallback.h" />
+    <ClInclude Include="..\source\librairies\network\TcpClient.h" />
+    <ClInclude Include="..\source\librairies\network\TwitchClient.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\source\librairies\network\TwitchClient.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{CD33CD06-C9D7-43C9-ADE5-3C2B83BBD20A}</ProjectGuid>
-    <RootNamespace>DesignPattern</RootNamespace>
-    <ProjectName>Generic</ProjectName>
+    <ProjectGuid>{B41B1378-0407-4BDB-A8A8-2AB4F1642169}</ProjectGuid>
+    <RootNamespace>Containers</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -45,21 +48,18 @@
     <Import Project="props\Common.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+  <PropertyGroup />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir)\..\source\librairies\;C:/Projects/external_lib/boost_1_53_0/boost_1_53_0</AdditionalIncludeDirectories>
-      <PreprocessToFile>true</PreprocessToFile>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\dependencies\lib\boost\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WIN32_WINNT=0x0501;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
-    <Lib>
-      <AdditionalDependencies>
-      </AdditionalDependencies>
-    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -67,6 +67,9 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\dependencies\lib\boost\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WIN32_WINNT=0x0501;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

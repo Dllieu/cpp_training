@@ -116,7 +116,7 @@
                     <Setter Property="Background" Value="Tomato"></Setter>
                 </Trigger>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#FFA00C0C" />
+                    <Setter Property="Background" Value="OrangeRed" />
                 </Trigger>
             </Style.Triggers>
         </Style>

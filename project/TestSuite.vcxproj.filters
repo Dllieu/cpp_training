@@ -29,6 +29,12 @@
     <Filter Include="Source Files\Containers">
       <UniqueIdentifier>{1651a1e8-3301-46ad-af81-6b088e242243}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Network">
+      <UniqueIdentifier>{5df49e21-ccc8-480a-a2ed-60516699cb67}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Mocking">
+      <UniqueIdentifier>{217cb8ca-0929-4cad-8505-633ceb6f2777}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\tests\testsuite\Initializer.cpp">
@@ -99,6 +105,12 @@
     </ClCompile>
     <ClCompile Include="..\source\tests\testsuite\CustomContainerTestSuite.cpp">
       <Filter>Source Files\Containers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\tests\testsuite\TwitchTestSuite.cpp">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\tests\testsuite\MockTestSuite.cpp">
+      <Filter>Source Files\Mocking</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

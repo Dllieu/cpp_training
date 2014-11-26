@@ -65,39 +65,45 @@ namespace TwitchBot
 
         public void Connect(TextBlock chatTextBlock)
         {
-            using (var client = new TcpClient("199.9.253.199", 6667))
+            // recup liste des chats dispo a partir de http://twitchstatus.com/
+            try
+            {
+                using (var client = new TcpClient("199.9.249.252", 80))
                 using (var stream = client.GetStream())
-                    using (var reader = new StreamReader(stream))
-                        using (var writer = new StreamWriter(stream) { NewLine = "\r\n", AutoFlush = true })
+                using (var reader = new StreamReader(stream))
+                using (var writer = new StreamWriter(stream) { NewLine = "\r\n", AutoFlush = true })
+                {
+                    writer.WriteLine(string.Format("PASS {0}", Password));
+                    writer.WriteLine(string.Format("NICK {0}", Login));
+                    writer.WriteLine(string.Format("JOIN #{0}", Channel));
+
+                    // 1 - receive list of all users
+                    // 2 - receive status about the rights
+                    // 3 - receive anything else
+                    for (; ; )
+                    {
+                        Thread.Sleep(1);
+                        var line = reader.ReadLine();
+                        if (string.IsNullOrEmpty(line))
+                            continue;
+
+                        if (ProcessMessage(line, chatTextBlock))
+                            continue;
+
+                        if (line.StartsWith("PING"))
                         {
-                            writer.WriteLine(string.Format("PASS {0}", Password));
-                            writer.WriteLine(string.Format("NICK {0}", Login));
-                            writer.WriteLine(string.Format("JOIN #{0}", Channel));
-
-                            // 1 - receive list of all users
-                            // 2 - receive status about the rights
-                            // 3 - receive anything else
-                            for (;;)
-                            {
-                                Thread.Sleep(1);
-                                var line = reader.ReadLine();
-                                if (string.IsNullOrEmpty(line))
-                                    continue;
-
-                                if (ProcessMessage(line, chatTextBlock))
-                                    continue;
-
-                                if (line.StartsWith("PING"))
-                                {
-                                    writer.WriteLine(line.Replace("PING", "PONG"));
-                                    continue;
-                                }
-
-                                Console.WriteLine(line);
-                            }
+                            writer.WriteLine(line.Replace("PING", "PONG"));
+                            continue;
                         }
 
-
+                        Console.WriteLine(line);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
 
             //if (socket_ == null)
             //    socket_ = new Socket(EndPoint.AddressFamily, SocketType.Stream, ProtocolType.Udp); // CHECK

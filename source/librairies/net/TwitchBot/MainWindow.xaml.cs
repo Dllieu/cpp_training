@@ -26,7 +26,7 @@ namespace TwitchBot
         {
             InitializeComponent();
 
-            client_ = new TwitchClient("NotABotz", "oauth:3qy8u4gjs1tufelk88vzzvovg3g1fwo", "gunnermaniac3");
+            client_ = new TwitchClient("NotABotz", "oauth:3qy8u4gjs1tufelk88vzzvovg3g1fwo", "pandaxgaming");
             Task.Factory.StartNew(() => client_.Connect(ChatTextBlock));
         }
     }
