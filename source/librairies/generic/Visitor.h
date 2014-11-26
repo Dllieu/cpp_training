@@ -1,3 +1,7 @@
+//--------------------------------------------------------------------------------
+// (C) Copyright 2014-2015 Stephane Molina, All rights reserved.
+// See https://github.com/Dllieu for updates, documentation, and revision history.
+//--------------------------------------------------------------------------------
 #ifndef __DESIGNPATTERN_VISITOR_H__
 #define __DESIGNPATTERN_VISITOR_H__
 

@@ -1,3 +1,7 @@
+//--------------------------------------------------------------------------------
+// (C) Copyright 2014-2015 Stephane Molina, All rights reserved.
+// See https://github.com/Dllieu for updates, documentation, and revision history.
+//--------------------------------------------------------------------------------
 // http://ultra.sdk.free.fr/misc/docs/Addison.Wesley.C++.Template.Metaprogramming.Concepts.Tools.and.Techniques.from.Boost.and.Beyond.pdf
 // From Addison.Wesley.C++.Template.Metaprogramming.Concepts.Tools.and.Techniques.from.Boost.and.Beyond.pdf
 

@@ -1,3 +1,7 @@
+//--------------------------------------------------------------------------------
+// (C) Copyright 2014-2015 Stephane Molina, All rights reserved.
+// See https://github.com/Dllieu for updates, documentation, and revision history.
+//--------------------------------------------------------------------------------
 #include <boost/test/unit_test.hpp>
 #include <turtle/mock.hpp>
 
@@ -65,7 +69,7 @@ namespace
 BOOST_AUTO_TEST_CASE( SimpleCallWithConstraint )
 {
     // Check that it's called once with specific login and password, it will return true when called
-    MOCK_EXPECT( mockBackend.connect ).with( login, boost::bind( &customConstraint, _1, boost::cref( password ) ) )
+    MOCK_EXPECT( mockBackend.connect ).with( login, std::bind( &customConstraint, _1, boost::cref( password ) ) )
                                       .once()
                                       .returns( true );
 

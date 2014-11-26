@@ -1,3 +1,7 @@
+//--------------------------------------------------------------------------------
+// (C) Copyright 2014-2015 Stephane Molina, All rights reserved.
+// See https://github.com/Dllieu for updates, documentation, and revision history.
+//--------------------------------------------------------------------------------
 #ifndef __TOOLS_MEMORY_POOL_H__
 #define __TOOLS_MEMORY_POOL_H__
 
