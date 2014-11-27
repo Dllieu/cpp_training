@@ -329,3 +329,29 @@ label:
             goto label;
     }
 }
+
+namespace
+{
+    class BaseVirtualFunctionHidden
+    {
+    public:
+        virtual void f() {}
+    };
+
+    class VirtualFunctionHidden : public BaseVirtualFunctionHidden
+    {
+    public:
+        void f( int x ) {}
+    };
+
+    void callHiddenVirtualFunction()
+    {
+        std::unique_ptr< VirtualFunctionHidden > implem( new VirtualFunctionHidden() );
+        implem->f( 6 );
+
+        implem.get()->BaseVirtualFunctionHidden::f();
+        // implem->f(); // won't compile
+        // Otherwise, your derived class function hides the virtual function, just like any other case where a derived
+        // class declares functions with the same name as base class functions. You can put using A::f; in class B to unhide the name
+    }
+}

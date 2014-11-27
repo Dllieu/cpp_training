@@ -58,18 +58,11 @@ namespace // Fixture
 
 BOOST_FIXTURE_TEST_SUITE( MockTestSuite, Fixture )
 
-namespace
-{
-    bool    customConstraint( const std::string& value, const std::string& expected )
-    {
-        return value == expected;
-    }
-}
-
 BOOST_AUTO_TEST_CASE( SimpleCallWithConstraint )
 {
     // Check that it's called once with specific login and password, it will return true when called
-    MOCK_EXPECT( mockBackend.connect ).with( login, std::bind( &customConstraint, _1, boost::cref( password ) ) )
+    MOCK_EXPECT( mockBackend.connect ).with( [this] ( const std::string& value ) -> bool { return this->login == value; },
+                                             password )
                                       .once()
                                       .returns( true );
 

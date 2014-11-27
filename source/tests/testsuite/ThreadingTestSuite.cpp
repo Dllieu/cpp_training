@@ -2,6 +2,7 @@
 // (C) Copyright 2014-2015 Stephane Molina, All rights reserved.
 // See https://github.com/Dllieu for updates, documentation, and revision history.
 //--------------------------------------------------------------------------------
+// http://www.codeproject.com/Articles/153898/Yet-another-implementation-of-a-lock-free-circular
 #include <boost/test/unit_test.hpp>
 #include <boost/thread.hpp>
 #include <boost/bind.hpp>

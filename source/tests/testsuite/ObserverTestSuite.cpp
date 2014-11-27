@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE( BasicObserverTestSuite )
     subject.addObserver( observer );
     subject.notify( notificationMessage );
 
-    Observer* realObserver = dynamic_cast<Observer*>( observer.get() );
+    std::shared_ptr< Observer > realObserver = std::dynamic_pointer_cast< Observer >( observer );
     BOOST_REQUIRE( realObserver );
     BOOST_CHECK_EQUAL( realObserver->lastUpdateMessage, notificationMessage );
 }
