@@ -61,7 +61,7 @@ BOOST_FIXTURE_TEST_SUITE( MockTestSuite, Fixture )
 BOOST_AUTO_TEST_CASE( SimpleCallWithConstraint )
 {
     // Check that it's called once with specific login and password, it will return true when called
-    MOCK_EXPECT( mockBackend.connect ).with( [this] ( const std::string& value ) -> bool { return this->login == value; },
+    MOCK_EXPECT( mockBackend.connect ).with( [this] ( const std::string& value ) -> bool { return /*this->*/login == value; },
                                              password )
                                       .once()
                                       .returns( true );
