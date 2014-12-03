@@ -4,6 +4,7 @@
 //--------------------------------------------------------------------------------
 #include <boost/test/unit_test.hpp>
 #include <set>
+#include <iostream>
 
 BOOST_AUTO_TEST_SUITE( Observer )
 

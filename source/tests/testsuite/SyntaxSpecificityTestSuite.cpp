@@ -4,6 +4,7 @@
 //--------------------------------------------------------------------------------
 #include <boost/test/unit_test.hpp>
 #include <typeinfo>
+#include <iostream>
 
 // Operator that can't be specialized
 // sizeof . .* .-> :: ?:
@@ -346,7 +347,7 @@ namespace
 
     void callHiddenVirtualFunction()
     {
-        std::unique_ptr< VirtualFunctionHidden > implem( new VirtualFunctionHidden() );
+        std::unique_ptr< VirtualFunctionHidden > implem = std::make_unique< VirtualFunctionHidden >();
         implem->f( 6 );
 
         implem.get()->BaseVirtualFunctionHidden::f();

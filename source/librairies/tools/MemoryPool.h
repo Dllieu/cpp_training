@@ -23,7 +23,7 @@ private:
     size_t                          unitSize_;
     size_t                          blockSize_;
 
-    std::unique_ptr<char>           memoryBlock_;
+    std::unique_ptr<char[]>           memoryBlock_;
 
 private:
     struct Unit

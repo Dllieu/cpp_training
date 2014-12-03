@@ -75,7 +75,7 @@ namespace
 // possibliy avoiding pipeline stall if there are dependencies in the instructions of any one block.
 BOOST_AUTO_TEST_CASE( PerfTestSuite )
 {
-    unsigned maxIteration = 500;
+    unsigned maxIteration = 1000;
     BOOST_CHECK( elapsedCase1( maxIteration ) > elapsedCase2( maxIteration ) );
 }
 

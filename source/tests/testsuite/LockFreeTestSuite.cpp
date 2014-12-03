@@ -5,6 +5,7 @@
 #include <boost/test/unit_test.hpp>
 #include <thread>
 #include <atomic>
+#include <iostream>
 
 BOOST_AUTO_TEST_SUITE( LockFree )
 

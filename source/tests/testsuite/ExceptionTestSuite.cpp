@@ -26,7 +26,7 @@ namespace
         Foo( int i )
             try : x( ++i ) // not undefined because ',' make each statements independents
                 , y( ++i )
-                , z( new int(++i) ) // during the stack unwinding, in case of a throw, this won't leak
+                , z( std::make_unique< int >(++i) ) // during the stack unwinding, in case of a throw, this won't leak
         {
             // constructor body
         }

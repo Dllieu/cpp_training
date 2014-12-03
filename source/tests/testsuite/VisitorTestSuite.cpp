@@ -143,7 +143,7 @@ namespace
 
 BOOST_AUTO_TEST_CASE( BasicVisitorTestSuite )
 {
-    std::unique_ptr< AbstractBasicVisitor > v( new BasicVisitor() );
+    std::unique_ptr< AbstractBasicVisitor > v = std::make_unique<  BasicVisitor >();
     VisitableA  a;
     VisitableB  b;
 

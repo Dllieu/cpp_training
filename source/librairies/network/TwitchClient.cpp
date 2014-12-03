@@ -32,7 +32,7 @@ bool    TwitchClient::connect()
     // TODO : check and take one ip/port from http://twitchstatus.com/
     try
     {
-        tcpStream_.reset( new boost::asio::ip::tcp::iostream( "199.9.249.252", "80" ) );
+        tcpStream_ = std::make_unique< boost::asio::ip::tcp::iostream >( "199.9.249.252", "80" );
         if ( ! *tcpStream_.get() )
             tcpStream_.reset();
     }
@@ -40,5 +40,5 @@ bool    TwitchClient::connect()
     {
         tcpStream_.reset();
     }
-    return tcpStream_;
+    return tcpStream_.operator bool();
 }

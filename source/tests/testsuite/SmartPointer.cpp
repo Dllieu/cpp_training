@@ -24,7 +24,7 @@ namespace
 BOOST_AUTO_TEST_CASE( MakeSmartPointer )
 {
     std::unique_ptr< A > legacy( legacyMakeA( "legacy" ) );
-    auto goodWay = std::make_shared< A >( "good way" ); // make_unique in C++14
+    auto goodWay = std::make_unique< A >( "good way" );
 
     std::string stringDeleted;
     {
