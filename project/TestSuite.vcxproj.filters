@@ -82,9 +82,6 @@
     <ClCompile Include="..\source\tests\testsuite\LockFreeTestSuite.cpp">
       <Filter>Source Files\Threading</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\tests\testsuite\SmartPointer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\tests\testsuite\SingletonTestSuite.cpp">
       <Filter>Source Files\DesignPattern</Filter>
     </ClCompile>
@@ -111,6 +108,12 @@
     </ClCompile>
     <ClCompile Include="..\source\tests\testsuite\MockTestSuite.cpp">
       <Filter>Source Files\Mocking</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\tests\testsuite\SmartPointer.cpp">
+      <Filter>Source Files\STL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\tests\testsuite\FunctorTestSuite.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
