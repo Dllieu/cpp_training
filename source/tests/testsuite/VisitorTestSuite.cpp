@@ -157,4 +157,48 @@ BOOST_AUTO_TEST_CASE( BasicVisitorTestSuite )
     BOOST_CHECK( b.haveBeenVisited );
 }
 
+// http://stackoverflow.com/questions/11796121/implementing-the-visitor-pattern-using-c-templates
+namespace
+{
+    // Visitor template declaration
+template<typename... Types>
+class Visitorr;
+
+// specialization for single type    
+template<typename T>
+class Visitorr<T> {
+public:
+    virtual void visit(T & visitable) = 0;
+};
+
+// specialization for multiple types
+template<typename T, typename... Types>
+class Visitorr<T, Types...> : public Visitorr<Types...> {
+public:
+    // promote the function(s) from the base class
+    using Visitorr<Types...>::visit;
+
+    virtual void visit(T & visitable) = 0;
+};
+
+template<typename... Types>
+class Visitable {
+public:
+    virtual void accept(Visitorr<Types...>& visitor) = 0;
+};
+
+template<typename Derived, typename... Types>
+class VisitableImpl : public Visitable<Types...> {
+public:
+    virtual void accept(Visitorr<Types...>& visitor) {
+        visitor.visit(static_cast<Derived&>(*this));
+    }
+};
+}
+
+BOOST_AUTO_TEST_CASE( BasicVisitorTestSuitekjg )
+{
+
+}
+
 BOOST_AUTO_TEST_SUITE_END() // Visitor

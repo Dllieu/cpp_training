@@ -15,6 +15,7 @@
     <ClCompile Include="..\source\librairies\tools\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\source\librairies\tools\HashCombine.h" />
     <ClInclude Include="..\source\librairies\tools\MemoryPool.h" />
     <ClInclude Include="..\source\librairies\tools\Timer.h" />
   </ItemGroup>

@@ -21,5 +21,8 @@
     <ClInclude Include="..\source\librairies\tools\MemoryPool.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\source\librairies\tools\HashCombine.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
