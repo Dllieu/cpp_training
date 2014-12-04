@@ -73,6 +73,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\source\tests\testsuite\BoostTestSuiteTricks.cpp" />
     <ClCompile Include="..\source\tests\testsuite\BranchPredictionTestSuite.cpp" />
     <ClCompile Include="..\source\tests\testsuite\CustomContainerTestSuite.cpp" />
     <ClCompile Include="..\source\tests\testsuite\FunctorTestSuite.cpp" />

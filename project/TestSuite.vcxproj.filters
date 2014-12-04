@@ -118,5 +118,8 @@
     <ClCompile Include="..\source\tests\testsuite\HashingTestSuite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\tests\testsuite\BoostTestSuiteTricks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

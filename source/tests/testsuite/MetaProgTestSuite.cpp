@@ -3,7 +3,6 @@
 // See https://github.com/Dllieu for updates, documentation, and revision history.
 //--------------------------------------------------------------------------------
 #include <boost/test/unit_test.hpp>
-#include <boost/bind.hpp>
 #include <boost/mpl/if.hpp>
 #include <boost/mpl/bool.hpp>
 #include <iostream>
@@ -207,7 +206,7 @@ namespace
         std::cout << std::endl;
     }
 
-    template <typename T, typename... Ts>
+    template <typename T, typename ...Ts>
     void    customPrint( T& t, Ts&... ts )
     {
         std::cout << t;
@@ -217,13 +216,13 @@ namespace
         customPrint( ts... );
     }
 
-    template <typename... Ts>
+    template <typename ...Ts>
     void forwardToCustomPrint( Ts&&... ts )
     {
         customPrint( ts... );
     }
 
-    template <typename... Ts>
+    template <typename ...Ts>
     bool forwardTest( Ts&&... ts )
     {
         forwardToCustomPrint( std::forward<Ts>( ts )... );

@@ -31,7 +31,7 @@ namespace tools
     }
 
     // based on facebook folly
-    template <class Hash, typename T, typename... Ts>
+    template <class Hash, typename T, typename ...Ts>
     size_t  hashCombineGeneric(const T& t, const Ts&... ts)
     {
         size_t seed = Hash::hash(t);
@@ -55,7 +55,7 @@ namespace tools
         }
     };
 
-    template <typename T, typename... Ts>
+    template <typename T, typename ...Ts>
     size_t hashCombine(const T& t, const Ts&... ts)
     {
         return hashCombineGeneric< StdHasher >(t, ts...);

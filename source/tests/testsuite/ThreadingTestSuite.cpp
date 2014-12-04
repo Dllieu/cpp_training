@@ -5,7 +5,6 @@
 // http://www.codeproject.com/Articles/153898/Yet-another-implementation-of-a-lock-free-circular
 #include <boost/test/unit_test.hpp>
 #include <boost/thread.hpp>
-#include <boost/bind.hpp>
 #include <string>
 #include <iostream>
 #include <thread>
@@ -107,13 +106,11 @@ BOOST_AUTO_TEST_CASE( ThreadSwitchTestSuite )
 {
     ThreadSwitchEstimator   threadEstimator( 2 );
 
-    std::thread     thread1( boost::bind( &ThreadSwitchEstimator::startComputing, boost::ref( threadEstimator ) ) );
-    std::thread     thread2( boost::bind( &ThreadSwitchEstimator::startComputing, boost::ref( threadEstimator ) ) );
+    std::thread     thread1( std::bind( &ThreadSwitchEstimator::startComputing, std::ref( threadEstimator ) ) );
+    std::thread     thread2( std::bind( &ThreadSwitchEstimator::startComputing, std::ref( threadEstimator ) ) );
 
     thread1.join();
     thread2.join();
-
-    // std::thread cause Memory Leak in Visual Studio 2012 compiler... (vc 110)
 }
 
 BOOST_AUTO_TEST_SUITE_END() // Threading

@@ -161,7 +161,7 @@ BOOST_AUTO_TEST_CASE( BasicVisitorTestSuite )
 namespace
 {
     // Visitor template declaration
-template<typename... Types>
+template<typename ...Types>
 class Visitorr;
 
 // specialization for single type    
@@ -172,7 +172,7 @@ public:
 };
 
 // specialization for multiple types
-template<typename T, typename... Types>
+template<typename T, typename ...Types>
 class Visitorr<T, Types...> : public Visitorr<Types...> {
 public:
     // promote the function(s) from the base class
@@ -181,13 +181,13 @@ public:
     virtual void visit(T & visitable) = 0;
 };
 
-template<typename... Types>
+template<typename ...Types>
 class Visitable {
 public:
     virtual void accept(Visitorr<Types...>& visitor) = 0;
 };
 
-template<typename Derived, typename... Types>
+template<typename Derived, typename ...Types>
 class VisitableImpl : public Visitable<Types...> {
 public:
     virtual void accept(Visitorr<Types...>& visitor) {
