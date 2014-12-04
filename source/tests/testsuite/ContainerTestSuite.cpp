@@ -11,6 +11,8 @@
 #include <unordered_map>
 #include <bitset>
 
+#include "tools/HashCombine.h"
+
 BOOST_AUTO_TEST_SUITE( Container )
 
 BOOST_AUTO_TEST_CASE( EraseRemoveTestSuite )
@@ -180,16 +182,15 @@ namespace
 
     struct CustomHash
     {
-        std::size_t     operator()( const CustomKey& customKey ) const
+        inline std::size_t     operator()( const CustomKey& customKey ) const
         {
-            return std::hash< std::string >()( customKey.literalKey )
-                ^ ( customKey.numberKey << 1 );
+            return tools::hashCombine( customKey.literalKey, customKey.numberKey );
         }
     };
 
     struct CustomEqual
     {
-        bool        operator()( const CustomKey& k1, const CustomKey& k2 ) const
+        inline bool        operator()( const CustomKey& k1, const CustomKey& k2 ) const
         {
             return k1.literalKey == k2.literalKey
                 && k1.numberKey == k2.numberKey;

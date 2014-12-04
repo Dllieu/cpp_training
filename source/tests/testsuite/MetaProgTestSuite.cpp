@@ -6,7 +6,9 @@
 #include <boost/bind.hpp>
 #include <boost/mpl/if.hpp>
 #include <boost/mpl/bool.hpp>
+#include <iostream>
 
+#include "tools/HashCombine.h"
 #include "tools/Timer.h"
 
 BOOST_AUTO_TEST_SUITE( MetaProg )
@@ -197,5 +199,41 @@ typename if other types (int, char, ...) may be expected
 template <template <typename> class/*typename*/ Foo>
 class MyContainer
 { /*...*/ };
+
+namespace
+{
+    void    customPrint()
+    {
+        std::cout << std::endl;
+    }
+
+    template <typename T, typename... Ts>
+    void    customPrint( T& t, Ts&... ts )
+    {
+        std::cout << t;
+        if (sizeof...(ts) != 0)
+            std::cout << ' ';
+
+        customPrint( ts... );
+    }
+
+    template <typename... Ts>
+    void forwardToCustomPrint( Ts&&... ts )
+    {
+        customPrint( ts... );
+    }
+
+    template <typename... Ts>
+    bool forwardTest( Ts&&... ts )
+    {
+        forwardToCustomPrint( std::forward<Ts>( ts )... );
+        return true;
+    }
+}
+
+BOOST_AUTO_TEST_CASE( ForwardTestSuite )
+{
+    BOOST_CHECK( forwardTest( 5, 98.21, 78 ) );
+}
 
 BOOST_AUTO_TEST_SUITE_END() // MetaProg
