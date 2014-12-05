@@ -76,7 +76,7 @@
     <ClCompile Include="..\source\tests\testsuite\BoostTestSuiteTricks.cpp" />
     <ClCompile Include="..\source\tests\testsuite\BranchPredictionTestSuite.cpp" />
     <ClCompile Include="..\source\tests\testsuite\CustomContainerTestSuite.cpp" />
-    <ClCompile Include="..\source\tests\testsuite\FunctorTestSuite.cpp" />
+    <ClCompile Include="..\source\tests\testsuite\FunctionCallTestSuite.cpp" />
     <ClCompile Include="..\source\tests\testsuite\HashingTestSuite.cpp" />
     <ClCompile Include="..\source\tests\testsuite\LockFreeTestSuite.cpp" />
     <ClCompile Include="..\source\tests\testsuite\MockTestSuite.cpp" />
