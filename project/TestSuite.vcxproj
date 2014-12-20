@@ -73,7 +73,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\source\tests\testsuite\BoostTestSuiteTricks.cpp" />
     <ClCompile Include="..\source\tests\testsuite\BranchPredictionTestSuite.cpp" />
     <ClCompile Include="..\source\tests\testsuite\CustomContainerTestSuite.cpp" />
     <ClCompile Include="..\source\tests\testsuite\FunctionCallTestSuite.cpp" />
@@ -91,7 +90,7 @@
     <ClCompile Include="..\source\tests\testsuite\ExceptionTestSuite.cpp" />
     <ClCompile Include="..\source\tests\testsuite\FeatureTestSuite.cpp" />
     <ClCompile Include="..\source\tests\testsuite\Initializer.cpp" />
-    <ClCompile Include="..\source\tests\testsuite\Interview.cpp" />
+    <ClCompile Include="..\source\tests\testsuite\ProblemsTestSuite.cpp" />
     <ClCompile Include="..\source\tests\testsuite\MacroTestSuite.cpp" />
     <ClCompile Include="..\source\tests\testsuite\MemoryPoolTestSuite.cpp" />
     <ClCompile Include="..\source\tests\testsuite\MetaProgTestSuite.cpp" />

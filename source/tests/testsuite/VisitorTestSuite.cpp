@@ -2,9 +2,10 @@
 // (C) Copyright 2014-2015 Stephane Molina, All rights reserved.
 // See https://github.com/Dllieu for updates, documentation, and revision history.
 //--------------------------------------------------------------------------------
-#include <iostream>
 #include <memory>
+#include <iostream>
 #include <boost/test/unit_test.hpp>
+#include <boost/variant.hpp>
 
 #include "generic/Visitor.h"
 
@@ -12,13 +13,7 @@ BOOST_AUTO_TEST_SUITE( Visitor )
 
 namespace
 {
-    struct AbstractVisitable
-    {
-        virtual ~AbstractVisitable() {};
-        virtual void    accept( designpattern::AbstractVisitor& visitor ) const = 0;
-    };
-
-    struct Option : public AbstractVisitable
+    struct Option : public designpattern::AbstractVisitable
     {
         Option() : haveBeenVisited( false ) {}
 
@@ -30,7 +25,7 @@ namespace
         mutable bool haveBeenVisited;
     };
 
-    struct Future : public AbstractVisitable
+    struct Future : public designpattern::AbstractVisitable
     {
         Future() : haveBeenVisited( false ) {}
 
@@ -157,48 +152,137 @@ BOOST_AUTO_TEST_CASE( BasicVisitorTestSuite )
     BOOST_CHECK( b.haveBeenVisited );
 }
 
-// http://stackoverflow.com/questions/11796121/implementing-the-visitor-pattern-using-c-templates
+//http://stackoverflow.com/questions/7867555/best-way-to-do-variant-visitation-with-lambdas
+
+// TODO : http://www.drdobbs.com/generic-programmingtypelists-and-applica/184403813?_requestid=1305388
 namespace
 {
-    // Visitor template declaration
-template<typename ...Types>
-class Visitorr;
 
-// specialization for single type    
-template<typename T>
-class Visitorr<T> {
-public:
-    virtual void visit(T & visitable) = 0;
-};
-
-// specialization for multiple types
-template<typename T, typename ...Types>
-class Visitorr<T, Types...> : public Visitorr<Types...> {
-public:
-    // promote the function(s) from the base class
-    using Visitorr<Types...>::visit;
-
-    virtual void visit(T & visitable) = 0;
-};
-
-template<typename ...Types>
-class Visitable {
-public:
-    virtual void accept(Visitorr<Types...>& visitor) = 0;
-};
-
-template<typename Derived, typename ...Types>
-class VisitableImpl : public Visitable<Types...> {
-public:
-    virtual void accept(Visitorr<Types...>& visitor) {
-        visitor.visit(static_cast<Derived&>(*this));
-    }
-};
 }
 
-BOOST_AUTO_TEST_CASE( BasicVisitorTestSuitekjg )
-{
+//namespace
+//{
+//    typedef boost::variant< std::string > var_t;
+//
+//    template <typename ReturnType, typename... Lambdas>
+//    struct lambda_visitor;
+//
+//    template <typename ReturnType, typename Lambda1, typename... Lambdas>
+//    struct lambda_visitor< ReturnType, Lambda1, Lambdas...> :
+//
+//
+//    template <typename ReturnType, typename Lambda1, typename... Lambdas>
+//    struct lambda_visitor< ReturnType, Lambda1, Lambdas...>
+//        : public lambda_visitor<ReturnType, Lambdas...>, public Lambda1{
+//        using Lambda1::operator();
+//        using lambda_visitor< ReturnType, Lambdas...>::operator();
+//        typedef ReturnType ReturnType_t;
+//
+//        lambda_visitor(Lambda1 l1, Lambdas... lambdas) : Lambda1(l1), lambda_visitor< ReturnType, Lambdas...>(lambdas...) {
+//        }
+//
+//        lambda_visitor(Lambda1 && l1, Lambdas && ... lambdas) : Lambda1(l1), lambda_visitor< ReturnType, Lambdas...>(lambdas...) {
+//        }
+//    };
+//
+//    template <typename ReturnType, typename Lambda1>
+//    struct lambda_visitor<ReturnType, Lambda1>
+//        : public boost::static_visitor<ReturnType>, public Lambda1{
+//        using Lambda1::operator();
+//        typedef ReturnType ReturnType_t;
+//
+//        lambda_visitor(Lambda1 l1) : boost::static_visitor<ReturnType >(), Lambda1(l1) {
+//        }
+//
+//        lambda_visitor(Lambda1 && l1) : boost::static_visitor<ReturnType >(), Lambda1(l1) {
+//        }
+//    };
+//
+//    template <typename ReturnType>
+//    struct lambda_visitor<ReturnType> : public boost::static_visitor<ReturnType>{
+//
+//        typedef ReturnType ReturnType_t;
+//        lambda_visitor() : boost::static_visitor<ReturnType >() {
+//        }
+//    };
+//
+//    template <typename ReturnType>
+//    struct default_blank_visitor {
+//
+//        typedef ReturnType ReturnType_t;
+//        inline ReturnType operator() (const boost::blank&) const {
+//            return (ReturnType)0;
+//        };
+//    };
+//
+//    template<>
+//    struct default_blank_visitor<void> {
+//
+//        typedef void ReturnType_t;
+//        inline void operator() (const boost::blank&) const {};
+//    };
+//
+//    template <typename ReturnType, typename... Lambdas>
+//    lambda_visitor<ReturnType, default_blank_visitor< ReturnType >, Lambdas...> make_lambda_visitor(Lambdas... lambdas) {
+//        return
+//        {
+//            default_blank_visitor<ReturnType >(), lambdas...
+//        };
+//        // you can use the following instead if your compiler doesn't
+//        // support list-initialization yet
+//        //return lambda_visitor<ReturnType, default_blank_visitor<ReturnType> , Lambdas...>( default_blank_visitor<ReturnType>(), lambdas...);
+//    };
+//    /*
+//    template <typename ReturnType, typename... Lambdas>
+//    lambda_visitor<ReturnType, default_blank_visitor< ReturnType >, Lambdas...> make_lambda_visitor(Lambdas && ... lambdas) {
+//    return
+//    {
+//    default_blank_visitor<ReturnType > (), lambdas...
+//    };
+//    // you can use the following instead if your compiler doesn't
+//    // support list-initialization yet
+//    //return lambda_visitor<ReturnType, default_blank_visitor<ReturnType> , Lambdas...>( default_blank_visitor<ReturnType>(), lambdas...);
+//    };*/
+//
+//    template <typename ReturnType, typename... Lambdas>
+//    lambda_visitor<ReturnType, Lambdas...> make_lambda_visitor_override_blank(Lambdas... lambdas) {
+//        return
+//        {
+//            lambdas...
+//        };
+//        // you can use the following instead if your compiler doesn't
+//        // support list-initialization yet
+//        //return lambda_visitor<ReturnType, Lambdas...>(lambdas...);
+//    }
+//}
 
+namespace
+{
+    
+}
+
+
+BOOST_AUTO_TEST_CASE( asdasd )
+{
+    auto v = designpattern::makeVariadicVisitor([&](const Option& option) { std::cout << "OPTION" << std::endl; },
+                                                [&](const Future& option) { std::cout << "FUTURE" << std::endl; },
+                                                [&](int option) { std::cout << "FUTURE" << std::endl; });
+
+
+    Option o0;
+    o0.accept(v);
+
+    Future f;
+    f.accept(v);
+    //designpattern::makeSuperVisitor(5, 4.0);
+
+    //auto superVisitor = designpattern::makeSuperVisitor(
+    //    [&](const Option& option) { std::cout << "option super visitor" << std::endl; }
+    //    //,[&](const Future& future) { std::cout << "future" << std::endl; }
+    //);
+
+    //Option o0;
+    //o0.accept(superVisitor);
 }
 
 BOOST_AUTO_TEST_SUITE_END() // Visitor

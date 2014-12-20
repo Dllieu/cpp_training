@@ -11,9 +11,6 @@
     <Filter Include="Source Files\DesignPattern">
       <UniqueIdentifier>{aaedfbce-5910-4f83-bae6-12a094be0b68}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Interviews">
-      <UniqueIdentifier>{2d1694ef-7db5-408d-aedc-90e14aba5110}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\MetaProgramming">
       <UniqueIdentifier>{7b9f038a-93ec-4302-93d7-742c2119735f}</UniqueIdentifier>
     </Filter>
@@ -35,6 +32,12 @@
     <Filter Include="Source Files\Mocking">
       <UniqueIdentifier>{217cb8ca-0929-4cad-8505-633ceb6f2777}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\ImpracticalTest">
+      <UniqueIdentifier>{f71aa018-5c94-4e0e-8a7d-4f91cb31eb4e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Problems">
+      <UniqueIdentifier>{2d1694ef-7db5-408d-aedc-90e14aba5110}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\tests\testsuite\Initializer.cpp">
@@ -52,14 +55,11 @@
     <ClCompile Include="..\source\tests\testsuite\MacroTestSuite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\tests\testsuite\Interview.cpp">
-      <Filter>Source Files\Interviews</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\tests\testsuite\ExceptionTestSuite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\source\tests\testsuite\SyntaxSpecificityTestSuite.cpp">
-      <Filter>Source Files\Interviews</Filter>
+      <Filter>Source Files\Problems</Filter>
     </ClCompile>
     <ClCompile Include="..\source\tests\testsuite\ByteTestSuite.cpp">
       <Filter>Source Files</Filter>
@@ -88,9 +88,6 @@
     <ClCompile Include="..\source\tests\testsuite\StandardDeviationTestSuite.cpp">
       <Filter>Source Files\Pricing</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\tests\testsuite\BranchPredictionTestSuite.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\tests\testsuite\STLTestSuite.cpp">
       <Filter>Source Files\STL</Filter>
     </ClCompile>
@@ -115,11 +112,14 @@
     <ClCompile Include="..\source\tests\testsuite\HashingTestSuite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\tests\testsuite\BoostTestSuiteTricks.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\source\tests\testsuite\BranchPredictionTestSuite.cpp">
+      <Filter>Source Files\ImpracticalTest</Filter>
     </ClCompile>
     <ClCompile Include="..\source\tests\testsuite\FunctionCallTestSuite.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ImpracticalTest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\tests\testsuite\ProblemsTestSuite.cpp">
+      <Filter>Source Files\Problems</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

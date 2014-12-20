@@ -15,12 +15,31 @@
 
 namespace designpattern
 {
-
 class AbstractVisitor
 {
 public:
     virtual ~AbstractVisitor() {};
 };
+
+struct AbstractVisitable
+{
+    virtual ~AbstractVisitable() {};
+
+    // Can be implemented as calling : designpattern::genericVisit( visitor, this );
+    virtual void    accept(AbstractVisitor& visitor) const = 0;
+};
+
+template <class Visitable>
+inline bool     genericVisit(AbstractVisitor& visitor, const Visitable* visitable)
+{
+    if (visitable != nullptr)
+        if (AbstractAcyclicVisitor<Visitable>* realVisitor = dynamic_cast< AbstractAcyclicVisitor<Visitable>* >(&visitor))
+        {
+            realVisitor->visit(*visitable);
+            return true;
+        }
+    return false;
+}
 
 // Virtual inheritance ensures that the same base class appearing two or more times in an inheritance graph has all of its instances merged
 // (which is the case for the RealVisitor which will implement several AbstractAcyclicVisitor (diamond inheritance case)
@@ -30,18 +49,6 @@ class AbstractAcyclicVisitor : public virtual AbstractVisitor
 public:
     virtual void    visit( const Visitable& visitable ) = 0;
 };
-
-template <class Visitable>
-inline bool     genericVisit( AbstractVisitor& visitor, const Visitable* visitable )
-{
-    if ( visitable )
-        if ( AbstractAcyclicVisitor<Visitable>* realVisitor = dynamic_cast< AbstractAcyclicVisitor<Visitable>* >( & visitor ) )
-        {
-            realVisitor->visit( *visitable );
-            return true;
-        }
-    return false;
-}
 
 // Generic Lambda Visitor
 template <typename T>
@@ -57,6 +64,44 @@ struct function_traits< ReturnType( ClassType::* )( Arg ) const >
     typedef typename std::decay< Arg >::type argumentType;
 };
 
+template <typename...> struct VariadicVisitor;
+
+template <typename T>
+class VariadicVisitor<T> : public AbstractAcyclicVisitor< typename function_traits< T >::argumentType >
+{
+public:
+    VariadicVisitor(T&& t)
+        : t_(std::move(t))
+    {
+        // NOTHING
+    }
+
+    virtual void visit(const typename function_traits< T >::argumentType& args) override { t_(args); }
+
+protected:
+    T t_;
+};
+
+template <typename T, typename... Ts>
+class VariadicVisitor<T, Ts...> : public VariadicVisitor<T>,
+                                  public VariadicVisitor<Ts...>
+{
+public:
+    VariadicVisitor(T&& t, Ts&&... ts)
+        : VariadicVisitor<T>(std::forward<T>(t))
+        , VariadicVisitor<Ts...>(std::forward<Ts>(ts)...)
+    {
+        // NOTHING
+    }
+};
+
+template <typename... Ts>
+VariadicVisitor<Ts...> makeVariadicVisitor(Ts&&... ts)
+{
+    return VariadicVisitor<Ts...>(std::forward<Ts>(ts)...);
+}
+
+// Deprecated VariadicVisitor (prior to variadic template)
 #define VISITOR_INHERITANCE( z, n, gen ) gen< typename function_traits< L##n >::argumentType >
 #define MEMBER_DECL( z, n, nil ) L##n _l##n;
 #define MEMBER_ASSIGN( z, n, nil ) _l##n( std::move( l##n ) )
@@ -65,24 +110,24 @@ struct function_traits< ReturnType( ClassType::* )( Arg ) const >
 #define EFFECTIVE_VISITOR_PARAM( z, n, nil ) std::forward< L##n >( l##n )
 #define DECAY_TYPE( z, n, nil ) typename std::decay< L##n >::type
 
-#define MAKE_VISITOR_1( n, gen ) \
+#define MAKE_DEPRECATED_VISITOR_1( n, gen ) \
     template < BOOST_PP_ENUM_PARAMS( n, typename L ) > \
-    struct BOOST_PP_CAT( Visitor, n ) : BOOST_PP_ENUM( n, VISITOR_INHERITANCE, gen ) \
+    struct BOOST_PP_CAT( DeprecatedVisitor, n ) : BOOST_PP_ENUM( n, VISITOR_INHERITANCE, gen ) \
     {\
     BOOST_PP_REPEAT( n, MEMBER_DECL, ~ ) \
-    BOOST_PP_CAT( Visitor, n ) ( BOOST_PP_ENUM_BINARY_PARAMS( n, L, l ) ) : BOOST_PP_ENUM( n, MEMBER_ASSIGN, ~ ) {} \
+    BOOST_PP_CAT( DeprecatedVisitor, n ) ( BOOST_PP_ENUM_BINARY_PARAMS( n, L, l ) ) : BOOST_PP_ENUM( n, MEMBER_ASSIGN, ~ ) {} \
     BOOST_PP_REPEAT( n, VISIT_DECL, ~ ) \
     };\
     \
     template < BOOST_PP_ENUM_PARAMS( n, typename L ) > \
-    BOOST_PP_CAT( Visitor, n ) < BOOST_PP_ENUM( n, DECAY_TYPE, ~ ) > \
+    BOOST_PP_CAT( DeprecatedVisitor, n ) < BOOST_PP_ENUM( n, DECAY_TYPE, ~ ) > \
     makeVisitor( BOOST_PP_ENUM( n, FORMAL_VISITOR_PARAM, ~ ) ) \
     {\
-        return BOOST_PP_CAT( Visitor, n ) < BOOST_PP_ENUM( n, DECAY_TYPE, ~ ) > ( BOOST_PP_ENUM( n, EFFECTIVE_VISITOR_PARAM, ~ ) ); \
+        return BOOST_PP_CAT( DeprecatedVisitor, n ) < BOOST_PP_ENUM( n, DECAY_TYPE, ~ ) > ( BOOST_PP_ENUM( n, EFFECTIVE_VISITOR_PARAM, ~ ) ); \
     }
 
-#define MAKE_VISITOR( z, n, gen ) MAKE_VISITOR_1( BOOST_PP_INC( n ), gen )
-BOOST_PP_REPEAT( 5, MAKE_VISITOR, AbstractAcyclicVisitor ) // tell how many VISITOR param you want to handle (from 1 to n)
+#define MAKE_DEPRECATED_VISITOR( z, n, gen ) MAKE_DEPRECATED_VISITOR_1( BOOST_PP_INC( n ), gen )
+BOOST_PP_REPEAT( 5, MAKE_DEPRECATED_VISITOR, AbstractAcyclicVisitor ) // tell how many VISITOR param you want to handle (from 1 to n)
 
 #undef VISITOR_INHERITANCE
 #undef MEMBER_DECL
@@ -91,8 +136,8 @@ BOOST_PP_REPEAT( 5, MAKE_VISITOR, AbstractAcyclicVisitor ) // tell how many VISI
 #undef FORMAL_VISITOR_PARAM
 #undef EFFECTIVE_VISITOR_PARAM
 #undef DECAY_TYPE
-#undef MAKE_VISITOR_1
-#undef MAKE_VISITOR
+#undef MAKE_DEPRECATED_VISITOR_1
+#undef MAKE_DEPRECATED_VISITOR
 
 //template <  typename L0 >
 //struct Visitor1 :  AbstractAcyclicVisitor< typename function_traits< L0 >::argumentType >
