@@ -90,7 +90,7 @@
     <ClCompile Include="..\source\tests\testsuite\ExceptionTestSuite.cpp" />
     <ClCompile Include="..\source\tests\testsuite\FeatureTestSuite.cpp" />
     <ClCompile Include="..\source\tests\testsuite\Initializer.cpp" />
-    <ClCompile Include="..\source\tests\testsuite\ProblemsTestSuite.cpp" />
+    <ClCompile Include="..\source\tests\testsuite\AlgoTestSuite.cpp" />
     <ClCompile Include="..\source\tests\testsuite\MacroTestSuite.cpp" />
     <ClCompile Include="..\source\tests\testsuite\MemoryPoolTestSuite.cpp" />
     <ClCompile Include="..\source\tests\testsuite\MetaProgTestSuite.cpp" />

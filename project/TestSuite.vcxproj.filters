@@ -35,9 +35,6 @@
     <Filter Include="Source Files\ImpracticalTest">
       <UniqueIdentifier>{f71aa018-5c94-4e0e-8a7d-4f91cb31eb4e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Problems">
-      <UniqueIdentifier>{2d1694ef-7db5-408d-aedc-90e14aba5110}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\tests\testsuite\Initializer.cpp">
@@ -57,9 +54,6 @@
     </ClCompile>
     <ClCompile Include="..\source\tests\testsuite\ExceptionTestSuite.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\tests\testsuite\SyntaxSpecificityTestSuite.cpp">
-      <Filter>Source Files\Problems</Filter>
     </ClCompile>
     <ClCompile Include="..\source\tests\testsuite\ByteTestSuite.cpp">
       <Filter>Source Files</Filter>
@@ -118,8 +112,11 @@
     <ClCompile Include="..\source\tests\testsuite\FunctionCallTestSuite.cpp">
       <Filter>Source Files\ImpracticalTest</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\tests\testsuite\ProblemsTestSuite.cpp">
-      <Filter>Source Files\Problems</Filter>
+    <ClCompile Include="..\source\tests\testsuite\SyntaxSpecificityTestSuite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\tests\testsuite\AlgoTestSuite.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
