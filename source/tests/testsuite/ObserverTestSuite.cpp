@@ -5,8 +5,45 @@
 #include <boost/test/unit_test.hpp>
 #include <set>
 #include <iostream>
+#include "generic/Observer.h"
 
 BOOST_AUTO_TEST_SUITE( ObserverTestSuite )
+
+namespace
+{
+    struct ObserverA
+    {
+        virtual void foo(const std::string& s)
+        {
+            std::cout << "A: " << s << std::endl;
+        }
+    };
+
+    struct ObserverB : ObserverA
+    {
+        virtual void foo(const std::string& s)
+        {
+            std::cout << "B: " << s << std::endl;
+        }
+    };
+
+    struct ObserverC : ObserverA
+    {
+        virtual void foo(const std::string& s)
+        {
+            std::cout << "C: " << s << std::endl;
+            BOOST_CHECK(true);
+        }
+    };
+}
+
+BOOST_AUTO_TEST_CASE( GenericObserverTestSuite )
+{
+    auto genericObservable = designpattern::Observable<ObserverA>();
+
+    genericObservable.subscribe(std::make_shared<ObserverC>());
+    genericObservable.notify(&ObserverA::foo, "hello");
+}
 
 namespace
 {
@@ -48,7 +85,7 @@ namespace
         std::set< std::shared_ptr< AbstractObserver > >  observers;
     };
 
-    class Observer : public AbstractObserver
+    class BasicObserver : public AbstractObserver
     {
     public:
         void    update( const std::string& message )
@@ -64,15 +101,15 @@ namespace
 BOOST_AUTO_TEST_CASE( BasicObserverTestSuite )
 {
     Subject                                 subject;
-    std::shared_ptr< AbstractObserver >     observer = std::make_shared< Observer >();
+    std::shared_ptr< AbstractObserver >     observer = std::make_shared< BasicObserver >();
     std::string                             notificationMessage( "News!" );
 
     subject.addObserver( observer );
     subject.notify( notificationMessage );
 
-    std::shared_ptr< Observer > realObserver = std::dynamic_pointer_cast< Observer >( observer );
+    std::shared_ptr< BasicObserver > realObserver = std::dynamic_pointer_cast< BasicObserver >(observer);
     BOOST_REQUIRE( realObserver );
     BOOST_CHECK_EQUAL( realObserver->lastUpdateMessage, notificationMessage );
 }
 
-BOOST_AUTO_TEST_SUITE_END() // Observer
+BOOST_AUTO_TEST_SUITE_END() // ObserverTestSuite

@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\source\librairies\generic\IdentifierInterface.h" />
+    <ClInclude Include="..\source\librairies\generic\Observer.h" />
     <ClInclude Include="..\source\librairies\generic\Visitor.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

@@ -8,16 +8,13 @@
     <Filter Include="Source Files\DesignPatterns">
       <UniqueIdentifier>{a2dda478-d441-49cf-a908-bb5527d3b6df}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Identifiers">
-      <UniqueIdentifier>{1d76276f-d1fc-4958-b1f8-f4379581653c}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\librairies\generic\Visitor.h">
       <Filter>Source Files\DesignPatterns</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\librairies\generic\IdentifierInterface.h">
-      <Filter>Source Files\Identifiers</Filter>
+    <ClInclude Include="..\source\librairies\generic\Observer.h">
+      <Filter>Source Files\DesignPatterns</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

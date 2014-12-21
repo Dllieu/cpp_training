@@ -183,7 +183,7 @@ BOOST_AUTO_TEST_CASE( IsBaseOfTestSuite )
 }
 
 /*
-typename before 'Foo' won't compile:
+typename before 'Foo' won't compile (until C++17):
  - class keyword is forced when dealing with template template parameters
 
 Stroustrup originally used class to specify types in templates to avoid introducing a new keyword.
