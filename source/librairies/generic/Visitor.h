@@ -5,12 +5,6 @@
 #ifndef __DESIGNPATTERN_VISITOR_H__
 #define __DESIGNPATTERN_VISITOR_H__
 
-#include <boost/preprocessor/repetition/enum_binary_params.hpp>
-#include <boost/preprocessor/repetition/enum_params.hpp>
-#include <boost/preprocessor/repetition/repeat.hpp>
-#include <boost/preprocessor/repetition/enum.hpp>
-#include <boost/preprocessor/arithmetic/inc.hpp>
-#include <boost/preprocessor/cat.hpp>
 #include <functional>
 
 namespace designpattern
@@ -42,17 +36,19 @@ inline bool     genericVisit(AbstractVisitor& visitor, const Visitable& visitabl
     return false;
 }
 
-// DO NOT USE THIS class directly, JUST AIMED TO BE INHERITED
 template <typename RealVisitable>
 class AbstractVisitable
 {
 public:
-    virtual ~AbstractVisitable(){}
     bool    accept(AbstractVisitor& visitor) const
     {
         return genericVisit(visitor, static_cast<const RealVisitable&>(*this));
     }
-};
+
+private:
+    virtual ~AbstractVisitable(){}; // prevent explit use of AbstractVisitable making destructor private
+    friend RealVisitable;
+}; 
 
 // Generic Lambda Visitor
 template <typename T>

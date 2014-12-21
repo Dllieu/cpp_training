@@ -6,7 +6,7 @@
 #include <set>
 #include <iostream>
 
-BOOST_AUTO_TEST_SUITE( Observer )
+BOOST_AUTO_TEST_SUITE( ObserverTestSuite )
 
 namespace
 {

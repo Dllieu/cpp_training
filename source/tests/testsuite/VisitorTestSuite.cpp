@@ -5,7 +5,6 @@
 #include <memory>
 #include <iostream>
 #include <boost/test/unit_test.hpp>
-#include <boost/variant.hpp>
 
 #include "generic/Visitor.h"
 
