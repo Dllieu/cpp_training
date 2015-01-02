@@ -10,14 +10,81 @@
 #include <memory>
 #include <stack>
 #include <set>
+#include <queue>
+#include <climits>
 
 BOOST_AUTO_TEST_SUITE( Interview )
 
+namespace
+{
+    inline std::queue<unsigned, std::deque<unsigned>>  vectorToSortedQueue( std::vector< unsigned >& v )
+    {
+        BOOST_REQUIRE(!v.empty());
+        std::sort(std::begin(v), std::end(v));
+        return std::queue<unsigned, std::deque<unsigned>>(std::deque<unsigned>(std::begin(v), std::end(v)));
+    }
+
+    std::pair< unsigned, unsigned >    getMinMaxValues(const std::vector<std::queue<unsigned, std::deque<unsigned>>>& queues, unsigned& posMinElement)
+    {
+        std::pair< unsigned, unsigned > minMaxValues(UINT_MAX, 0);
+        auto f = [&](unsigned pos, unsigned value)
+        {
+            if ((minMaxValues.first = std::min(minMaxValues.first, value)) == value)
+                posMinElement = pos;
+            minMaxValues.second = std::max(minMaxValues.second, value);
+        };
+        for ( unsigned i = 0; i < queues.size(); ++i )
+            f(i, queues[i].front());
+
+        return minMaxValues;
+    }
+
+    // dequeue smallest element
+    inline bool    iterate(std::vector<std::queue<unsigned, std::deque<unsigned>>>& queues, unsigned currentMinPos)
+    {
+        queues[currentMinPos].pop();
+        return !queues[currentMinPos].empty();
+    }
+
+    template <typename... Ts>
+    std::pair< unsigned, unsigned >    getSmallestRange( Ts&... vectors )
+    {
+        BOOST_REQUIRE( sizeof...(Ts) > 0 );
+        std::vector< std::queue<unsigned, std::deque<unsigned>> > sortedQueues{ vectorToSortedQueue(vectors)... };
+
+        std::pair< unsigned, unsigned > smallestRange;
+        auto minDiff = UINT_MAX;
+        unsigned currentMinPos;
+        do
+        {
+            auto currentRange = getMinMaxValues(sortedQueues, currentMinPos);
+            if (currentRange.second - currentRange.first < minDiff)
+            {
+                minDiff = currentRange.second - currentRange.first;
+                smallestRange = currentRange;
+            }
+        } while (iterate(sortedQueues, currentMinPos));
+
+        return smallestRange;
+    }
+}
+
+// You have k lists of sorted integers. Find the smallest range that includes at least one number from each of the k lists.
+BOOST_AUTO_TEST_CASE( SmallestRangeTestSuite )
+{
+    std::vector<unsigned> v1{ 4, 10, 15, 24, 26 };
+    std::vector<unsigned> v2{ 0, 9, 12, 20 };
+    std::vector<unsigned> v3{ 5, 18, 22, 30 };
+
+    auto result = getSmallestRange(v1, v2, v3);
+    // The smallest range here would be [20, 24] as it contains 24 from list 1, 20 from list 2, and 22 from list 3
+    BOOST_CHECK(result.first == 20 && result.second == 24);
+}
 
 BOOST_AUTO_TEST_CASE( MinimumSumTestSuite )
 {
     // Minimal sum of two numbers given a list of integers
-    std::vector< unsigned >  v = boost::assign::list_of( 1 )( 2 )( 7 )( 9 )( 8 );
+    std::vector< unsigned >  v { 1, 2, 7, 9, 8 };
 
     auto minimalSum = [] ( std::vector< unsigned > values /* per value */ )
     {
