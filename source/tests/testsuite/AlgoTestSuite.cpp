@@ -17,10 +17,10 @@ BOOST_AUTO_TEST_SUITE( Interview )
 
 namespace
 {
-    inline std::queue<unsigned, std::deque<unsigned>>  vectorToSortedQueue( std::vector< unsigned >& v )
+    inline std::queue<unsigned, std::deque<unsigned>>  sortedVectorToQueue( std::vector< unsigned >& v )
     {
         BOOST_REQUIRE(!v.empty());
-        std::sort(std::begin(v), std::end(v));
+        BOOST_REQUIRE(std::is_sorted(std::begin(v), std::end(v)));
         return std::queue<unsigned, std::deque<unsigned>>(std::deque<unsigned>(std::begin(v), std::end(v)));
     }
 
@@ -50,7 +50,7 @@ namespace
     std::pair< unsigned, unsigned >    getSmallestRange( Ts&... vectors )
     {
         BOOST_REQUIRE( sizeof...(Ts) > 0 );
-        std::vector< std::queue<unsigned, std::deque<unsigned>> > sortedQueues{ vectorToSortedQueue(vectors)... };
+        std::vector< std::queue<unsigned, std::deque<unsigned>> > sortedQueues{ sortedVectorToQueue(vectors)... };
 
         std::pair< unsigned, unsigned > smallestRange;
         auto minDiff = UINT_MAX;
