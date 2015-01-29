@@ -7,7 +7,6 @@
 #include <boost/mpl/bool.hpp>
 #include <iostream>
 
-#include "tools/HashCombine.h"
 #include "tools/Timer.h"
 
 BOOST_AUTO_TEST_SUITE( MetaProg )

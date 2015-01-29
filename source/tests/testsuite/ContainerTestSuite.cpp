@@ -11,7 +11,7 @@
 #include <unordered_map>
 #include <bitset>
 
-#include "tools/HashCombine.h"
+#include "generic/HashCombine.h"
 
 BOOST_AUTO_TEST_SUITE( Container )
 
@@ -184,7 +184,7 @@ namespace
     {
         inline std::size_t     operator()( const CustomKey& customKey ) const
         {
-            return tools::hashCombine( customKey.literalKey, customKey.numberKey );
+            return generics::hashCombine(customKey.literalKey, customKey.numberKey);
         }
     };
 

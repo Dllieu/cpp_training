@@ -5,6 +5,8 @@
 #ifndef __NETWORK_TCPCLIENT_H__
 #define __NETWORK_TCPCLIENT_H__
 
+#include <string>
+
 namespace network
 {
     class TcpClient

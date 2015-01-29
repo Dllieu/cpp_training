@@ -16,5 +16,8 @@
     <ClInclude Include="..\source\librairies\generic\Observer.h">
       <Filter>Source Files\DesignPatterns</Filter>
     </ClInclude>
+    <ClInclude Include="..\source\librairies\generic\HashCombine.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

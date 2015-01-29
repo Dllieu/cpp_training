@@ -2,12 +2,12 @@
 // (C) Copyright 2014-2015 Stephane Molina, All rights reserved.
 // See https://github.com/Dllieu for updates, documentation, and revision history.
 //--------------------------------------------------------------------------------
-#ifndef __TOOLS_HASHCOMBINE_H__
-#define __TOOLS_HASHCOMBINE_H__
+#ifndef __GENERICS_HASHCOMBINE_H__
+#define __GENERICS_HASHCOMBINE_H__
 
 #include <functional>
 
-namespace tools
+namespace generics
 {
     // the Hash128to64 function from Google's cityhash (available under the MIT License).
     inline uint64_t Hash128to64(const uint64_t upper, const uint64_t lower)
@@ -62,4 +62,4 @@ namespace tools
     }
 }
 
-#endif /* ! __TOOLS_HASHCOMBINE_H__ */
+#endif /* ! __GENERICS_HASHCOMBINE_H__ */

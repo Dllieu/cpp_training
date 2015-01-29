@@ -68,4 +68,25 @@ BOOST_AUTO_TEST_CASE( TraitsTestSuite )
     BOOST_CHECK( forwardClass.forwardB() == realClass.realB() );
 }
 
+namespace
+{
+    template < typename T >
+    std::enable_if_t< std::is_pointer< T >::value >     callWithPointer( T, bool& isPointer ) { isPointer = true; }
+
+    template < typename T, std::size_t sz >
+    void callWithPointer( T(&)[sz], bool& isPointer ) { isPointer = false; }
+}
+
+BOOST_AUTO_TEST_CASE( ArrayParameterTestSuite )
+{
+    bool isPointer = false;
+    int i[5];
+
+    callWithPointer( &i, isPointer );
+    BOOST_CHECK( isPointer );
+
+    callWithPointer( i, isPointer );
+    BOOST_CHECK( !isPointer );
+}
+
 BOOST_AUTO_TEST_SUITE_END() // TypeTraits
