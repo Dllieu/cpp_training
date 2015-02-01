@@ -88,7 +88,7 @@ namespace
     class BasicObserver : public AbstractObserver
     {
     public:
-        void    update( const std::string& message )
+        void    update( const std::string& message ) override
         {
             std::cout << "Update received: " << message << std::endl;
             lastUpdateMessage = message;

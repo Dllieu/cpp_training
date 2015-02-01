@@ -76,7 +76,7 @@ public:
         // NOTHING
     }
 
-    virtual void visit(const typename function_traits< T >::argumentType& args) override { t_(args); }
+    void visit(const typename function_traits< T >::argumentType& args) override { t_(args); }
 
 protected:
     T t_;

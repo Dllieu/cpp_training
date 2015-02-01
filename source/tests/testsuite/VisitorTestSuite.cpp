@@ -75,7 +75,7 @@ namespace
     {
         VisitableA() : haveBeenVisited( false ) {}
 
-        void    accept( const AbstractBasicVisitor* v ) const
+        void    accept( const AbstractBasicVisitor* v ) const override
         {
             if ( v )
                 v->visit( *this );
@@ -88,7 +88,7 @@ namespace
     {
         VisitableB() : haveBeenVisited( false ) {}
 
-        void    accept( const AbstractBasicVisitor* v ) const
+        void    accept( const AbstractBasicVisitor* v ) const override
         {
             if ( v )
                 v->visit( *this );
@@ -99,12 +99,12 @@ namespace
 
     struct BasicVisitor : public AbstractBasicVisitor
     {
-        void    visit( const VisitableA& v ) const
+        void    visit( const VisitableA& v ) const override
         {
             v.haveBeenVisited = true;
         }
 
-        void    visit( const VisitableB& v ) const
+        void    visit( const VisitableB& v ) const override
         {
             v.haveBeenVisited = true;
         }

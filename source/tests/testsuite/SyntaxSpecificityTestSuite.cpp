@@ -6,8 +6,19 @@
 #include <typeinfo>
 #include <iostream>
 
-// Operator that can't be specialized
-// sizeof . .* .-> :: ?:
+// - Operator that can't be specialized
+// . .* :: ?:
+// new delete sizeof typeid
+// static_cast dynamic_cast const_cast reinterpret_cast
+
+// - Operator that can be specialized
+// operator new operator delete
+// operator new[] operator delete[]
+// + - * / % ^ & | ~
+// ! = < > += -= *= /= %=
+// ^= &= |= << >> >>= <<= == !=
+// <= >= && || ++ -- , ->* ->
+// () []
 
 namespace
 {
@@ -289,19 +300,19 @@ namespace
     // make sur that children class inherits members of A only once
     struct B : virtual public A
     {
-        virtual void ambigous2() {}
+        virtual void ambigous2() override {}
     };
 
     // make sur that children class inherits members of A only once
     struct C : virtual public A
     {
-        virtual void ambigous2() {}
+        virtual void ambigous2() override {}
     };
 
     struct D : public B, public C
     {
         // Virtual functions must have a unique "final overrider" that overrides all other instances of that function in its inheritance heirarchy
-        virtual void ambigous2() {}
+        virtual void ambigous2() override {}
     };
 
     void    callVirtualInheritance()

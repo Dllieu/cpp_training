@@ -140,7 +140,7 @@ namespace
     class ShapeCRTP : public Shape
     {
     public:
-        virtual Shape*  clone() const
+        virtual Shape*  clone() const override
         {
             // default copy constructor
             return new Derived( static_cast< const Derived& >( *this ) );
