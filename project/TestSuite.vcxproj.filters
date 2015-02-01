@@ -118,5 +118,11 @@
     <ClCompile Include="..\source\tests\testsuite\AlgoTestSuite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\tests\testsuite\OptimizationTricks.cpp">
+      <Filter>Source Files\ImpracticalTest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\tests\testsuite\FactoryTestSuite.cpp">
+      <Filter>Source Files\DesignPattern</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

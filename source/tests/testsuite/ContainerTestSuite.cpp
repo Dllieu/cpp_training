@@ -232,4 +232,13 @@ BOOST_AUTO_TEST_CASE( BitsetTestSuite )
     BOOST_CHECK( bitset.test( 0 ) );
 }
 
+BOOST_AUTO_TEST_CASE( SortingTestSuite )
+{
+    std::list< unsigned > l = { 5, 2, 6, 9 };
+    /*std::sort( std::begin( l ), std::end( l ) );*/ // Can't compile, sort need random it access, list is always ordered
+
+    std::vector< unsigned > v = { 5, 2, 6, 9 };
+    std::sort( std::begin( v ), std::end( v ) );
+}
+
 BOOST_AUTO_TEST_SUITE_END() // Container

@@ -80,4 +80,4 @@ BOOST_AUTO_TEST_CASE( PerfTestSuite )
     BOOST_CHECK( elapsedCase1( maxIteration ) > elapsedCase2( maxIteration ) || true );
 }
 
-BOOST_AUTO_TEST_SUITE_END() // BranchPrediction
+BOOST_AUTO_TEST_SUITE_END() // BranchPrediction // icache
