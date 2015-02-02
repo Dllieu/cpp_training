@@ -123,4 +123,33 @@ BOOST_AUTO_TEST_CASE( VirtualMethodCall )
     }
 }
 
+BOOST_AUTO_TEST_CASE( LambdaDetails )
+{
+    int captured = 42;
+
+    // generate something close to:
+    // struct l0_t {
+    // int& captured;
+    // l0_t(int& _captured) : captured(_captured) {}
+    // void operator()(int x) const { captured += x; }
+    // } l0(captured);
+    auto l0 = [&captured]( int x ){ captured += x; };
+    auto l1 = [&captured]( int x ){ captured -= x; };
+    auto l2 = [&captured]( int x ){ captured = x + 1; };
+
+    // The type of the lambda-expression (which is also the type of the closure object) is a unique, unnamed non union class type — called the closure type
+    // Each lambda has a different type : l0, l1 and l2 have no common type., so either use boost::variant (but need to explicitly tell the type when getting the lambda) or std::function (same signature so it's accepted)
+    // variant cannot be "empty", and for such a lambda-variant therefore it is not default-constructible. For std::function you will be able to default-construct it
+    std::vector< std::function< void ( int ) >/*boost::variant< decltype( l0 ), decltype( l1 ), decltype( l2 ) >*/ > fs;
+    fs.emplace_back( l0 );
+    fs.emplace_back( l1 );
+    fs.emplace_back( l2 );
+
+    // auto f = boost::get< decltype( l2 ) >( fs[ 2 ] );
+    for ( auto& f : fs )
+        f( 0 );
+
+    BOOST_CHECK( captured == 1 );
+}
+
 BOOST_AUTO_TEST_SUITE_END() // FunctionCallTestSuite

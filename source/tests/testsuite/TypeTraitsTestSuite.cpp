@@ -7,6 +7,18 @@
 
 BOOST_AUTO_TEST_SUITE( TypeTraits )
 
+namespace
+{
+    // T&& is a universal , it can either mean lvalue (&) or rvalue (&&)
+    template <typename T>
+    T&& forward( T&& param )
+    {
+        if ( std::is_lvalue_reference< T >::value )
+            return param; // if lvalue, return lvalue ( T& or const T& )
+        return std::move( param );
+    }
+}
+
 BOOST_AUTO_TEST_CASE( DecayTestSuite )
 {
     BOOST_CHECK( ( std::is_same<int, std::decay<int&>::type>::value ) );
@@ -14,6 +26,10 @@ BOOST_AUTO_TEST_CASE( DecayTestSuite )
     BOOST_CHECK( ( std::is_same<int, std::decay<const int&>::type>::value ) );
     BOOST_CHECK( ( std::is_same<int*, std::decay<int[2]>::type>::value ) );
     BOOST_CHECK( ( std::is_same<int(*)(int), std::decay<int (int)>::type>::value ) );
+
+    int i = 5;
+    BOOST_CHECK( ( std::is_same< decltype( forward(i) ), int& >::value ) );
+    BOOST_CHECK( ( std::is_same< decltype( forward(5) ), int&& >::value ) );
 }
 
 namespace

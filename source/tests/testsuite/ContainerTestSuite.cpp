@@ -64,6 +64,8 @@ BOOST_AUTO_TEST_CASE( ContainerTestSuite )
     // - deque if a lot of insertion / deletion at the begin / end
     // - list otherwise
 
+    // emplace_back will construct the object in place as opposed to copying or moving
+
     int i = 5;
     {
         // - Ordered
