@@ -20,6 +20,8 @@
 // <= >= && || ++ -- , ->* ->
 // () []
 
+// Unnamed namespace is private to the translation unit and this can be used to shield global variables and functions
+// with same names occurring in different translation units so that no link conflicts arise
 namespace
 {
     // if referenced it won't link since no header included define this variable
@@ -183,10 +185,11 @@ namespace
             // if cannot cast a ref -> throw std::bad_cast exception
 
             // about static_cast
-            // can perform conversions between pointers to related classes, not only from the derived class to its base (use dynamic_cast)
+            // can perform conversions between pointers to related classes, derived class to its base (like dynamic_cast no run-time performance penalty)
             // can also from a base class to its derived (Derived* d = static_cast< Derived* >( &baseClass )  (dynamic_cast would return 0))
-            // can also be used to perform any other non-pointer conversion that could also be performed implicitly or convert numeric data types (enum to int, float to int)
-            // no run-time type check is made, so static_cast return as if nothing went wrong which could lead to undefined behavior at run time
+            // can also be used to perform any other non-pointer conversion that could also be performed implicitly or convert numeric data types (enum to int, float to int) : static_cast<T>(e) == T v(e); when std::is_pointer(e)
+            // no run-time type check is made, so static_cast return as if nothing went wrong which could lead to undefined behavior at run time but no run-time performance penalty
+            // static_cast can induce a copy constructor to be called : static_cast<std::string>("bla")
 
             // about const_cast
             // modify the constness
@@ -365,5 +368,18 @@ namespace
         // implem->f(); // won't compile
         // Otherwise, your derived class function hides the virtual function, just like any other case where a derived
         // class declares functions with the same name as base class functions. You can put using A::f; in class B to unhide the name
+    }
+}
+
+namespace
+{
+    std::string returnCopy() { return "returnCopy"; }
+    // binding a temporary object to a reference to const on the stack lengthens the lifetime of the temporary to the lifetime of the reference itself,
+    // and thus avoids what would otherwise be a common dangling-reference error.
+    void extendLifetime()
+    {
+        /* defined */
+        const std::string& extendLifeDefinedBehavior = returnCopy();
+        //std::string& undefinedBehavior = returnCopy();
     }
 }

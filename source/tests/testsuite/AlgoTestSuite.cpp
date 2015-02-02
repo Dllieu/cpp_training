@@ -76,7 +76,7 @@ BOOST_AUTO_TEST_CASE( SmallestRangeTestSuite )
     std::vector<unsigned> v2{ 0, 9, 12, 20 };
     std::vector<unsigned> v3{ 5, 18, 22, 30 };
 
-    auto result = getSmallestRange(v1, v2, v3);
+    const auto& result = getSmallestRange(v1, v2, v3);
     // The smallest range here would be [20, 24] as it contains 24 from list 1, 20 from list 2, and 22 from list 3
     BOOST_CHECK(result.first == 20 && result.second == 24);
 }
