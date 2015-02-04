@@ -40,7 +40,7 @@ template <typename RealVisitable>
 class AbstractVisitable
 {
 public:
-    bool    accept(AbstractVisitor& visitor) const
+    inline bool    accept(AbstractVisitor& visitor) const
     {
         return genericVisit(visitor, static_cast<const RealVisitable&>(*this));
     }
@@ -76,7 +76,7 @@ public:
         // NOTHING
     }
 
-    void visit(const typename function_traits< T >::argumentType& args) override { t_(args); }
+    inline void visit(const typename function_traits< T >::argumentType& args) override { t_(args); }
 
 protected:
     T t_;
@@ -96,7 +96,7 @@ public:
 };
 
 template <typename... Ts>
-VariadicVisitor<Ts...> makeVariadicVisitor(Ts&&... ts)
+inline VariadicVisitor<Ts...> makeVariadicVisitor(Ts&&... ts)
 {
     return VariadicVisitor<Ts...>(std::forward<Ts>(ts)...);
 }

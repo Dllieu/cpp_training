@@ -85,9 +85,6 @@
     <ClCompile Include="..\source\tests\testsuite\STLTestSuite.cpp">
       <Filter>Source Files\STL</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\tests\testsuite\TypeTraitsTestSuite.cpp">
-      <Filter>Source Files\STL</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\tests\testsuite\ContainerTestSuite.cpp">
       <Filter>Source Files\Containers</Filter>
     </ClCompile>
@@ -123,6 +120,9 @@
     </ClCompile>
     <ClCompile Include="..\source\tests\testsuite\FactoryTestSuite.cpp">
       <Filter>Source Files\DesignPattern</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\tests\testsuite\TypeTraitsTestSuite.cpp">
+      <Filter>Source Files\MetaProgramming</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

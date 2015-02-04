@@ -283,6 +283,7 @@ namespace
          Foo f;
          std::cout << ( 0 ? 1 : f ) << std::endl; // display "123"
          const char* str = f.bar();
+         str != nullptr ? (void)f : (void)f.bar(); // void cast for skipping the conversion resolution
 
          int u;
          u = 1, 2, 3; // u = 1, other sequences are independants
@@ -374,12 +375,13 @@ namespace
 namespace
 {
     std::string returnCopy() { return "returnCopy"; }
-    // binding a temporary object to a reference to const on the stack lengthens the lifetime of the temporary to the lifetime of the reference itself,
-    // and thus avoids what would otherwise be a common dangling-reference error.
     void extendLifetime()
     {
-        /* defined */
+        // binding a temporary object to a reference to const on the stack lengthens the lifetime of the temporary to the lifetime of the reference itself,
+        // and thus avoids what would otherwise be a common dangling-reference error.
         const std::string& extendLifeDefinedBehavior = returnCopy();
-        //std::string& undefinedBehavior = returnCopy();
+        // Temporary objects are destroyed as the last step in evaluating the full-expression (1.9) that (lexically) contains the point where they were created.
+        std::string& undefinedBehavior = returnCopy(); // ok because step of evaluation
+        std::cout << undefinedBehavior << std::endl; // undefined behavior
     }
 }

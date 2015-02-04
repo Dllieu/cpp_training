@@ -3,8 +3,10 @@
 // See https://github.com/Dllieu for updates, documentation, and revision history.
 //--------------------------------------------------------------------------------
 #include <boost/test/unit_test.hpp>
+#include <csignal>
+#include <iostream>
 
-BOOST_AUTO_TEST_SUITE( Exception )
+BOOST_AUTO_TEST_SUITE( ExceptionTestSuite )
 
 namespace
 {
@@ -50,4 +52,50 @@ BOOST_AUTO_TEST_CASE( InitListTestSuite )
     delete f;
 }
 
-BOOST_AUTO_TEST_SUITE_END() // Exception
+namespace
+{
+    struct A
+    {
+        ~A()
+        {
+            BOOST_CHECK( std::uncaught_exception() ); // can do fancy stuff like if ( std::uncaught_exception() ) ...
+
+            // Returns: An exception_ptr object that refers to the currently handled exception (15.3) or a copy of the currently handled exception, or a null exception_ptr object if no exception is being handled.
+            // The referenced object shall remain valid at least as long as there is an exception_ptr object that refers to it.
+            // std::exception_ptr   current_exception() noexcept;
+            BOOST_CHECK( ! std::current_exception() );
+        }
+    };
+}
+
+BOOST_AUTO_TEST_CASE( CurrentAdnUncaughtException )
+{
+    try
+    {
+        A a;
+        throw std::runtime_error( "Let's throw" );
+        // at this point the exception is uncaught
+    }
+    catch (...)
+    {
+        // Exception is now caught
+        BOOST_CHECK( ! std::uncaught_exception() );
+        BOOST_CHECK( std::current_exception() );
+    }
+}
+
+BOOST_AUTO_TEST_CASE( HandlingSignal )
+{
+    // SIGTERM  termination request, sent to the program
+    // SIGSEGV  invalid memory access (segmentation fault)
+    // SIGINT   external interrupt, usually initiated by the user
+    // SIGILL   invalid program image, such as invalid instruction
+    // SIGABRT  abnormal termination condition, as is e.g. initiated by std::abort()
+    // SIGFPE   erroneous arithmetic operation such as divide by zero
+    auto handler = std::signal( SIGSEGV, []( int signal ) { BOOST_CHECK( true ); } );
+
+    // Real signal will be handled but will still terminate the runtime execution
+    std::raise( SIGSEGV ); // *(int*) 0 = 0; // memory access violation
+}
+
+BOOST_AUTO_TEST_SUITE_END() // ExceptionTestSuite
