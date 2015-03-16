@@ -11,12 +11,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\source\librairies\tools\MemoryPool.cpp" />
-    <ClCompile Include="..\source\librairies\tools\Timer.cpp" />
+    <ClCompile Include="..\source\tools\MemoryPool.cpp" />
+    <ClCompile Include="..\source\tools\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\source\librairies\tools\MemoryPool.h" />
-    <ClInclude Include="..\source\librairies\tools\Timer.h" />
+    <ClInclude Include="..\source\tools\MemoryPool.h" />
+    <ClInclude Include="..\source\tools\Timer.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{20278279-B699-4587-B872-7A746661D354}</ProjectGuid>

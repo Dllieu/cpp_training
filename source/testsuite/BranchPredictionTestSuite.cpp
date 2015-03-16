@@ -3,6 +3,8 @@
 // See https://github.com/Dllieu for updates, documentation, and revision history.
 //--------------------------------------------------------------------------------
 #include <boost/test/unit_test.hpp>
+#include <deque>
+#include <algorithm>
 
 #include "tools/Timer.h"
 
@@ -78,6 +80,33 @@ BOOST_AUTO_TEST_CASE( PerfTestSuite )
     unsigned maxIteration = 1000;
     // time is not a good measurement :(
     BOOST_CHECK( elapsedCase1( maxIteration ) > elapsedCase2( maxIteration ) || true );
+}
+
+namespace
+{
+    template <typename C, typename F>
+    double  applyFunctorTimer( const C& container, F&& f )
+    {
+        tools::Timer t;
+        std::for_each( std::begin( container ), std::end( container ), f );
+        return t.elapsed();
+    }
+}
+
+BOOST_AUTO_TEST_CASE( BranchSortedVsUnsortedContainer )
+{
+    auto size = 10000;
+    std::deque< int > unsortedContainer;
+    for ( auto i = 0; i < size; ++i )
+        unsortedContainer.push_back( std::rand() % 256 );
+
+    // should be easier to predict branching on a sorted array
+    std::deque< int > sortedContainer = unsortedContainer;
+    std::sort( std::begin( sortedContainer ), std::end( sortedContainer ) );
+
+    long long sum = 0;
+    auto applyFunctor = [&sum]( int i ) { if ( i < 128 ) sum += i; };
+    BOOST_CHECK( applyFunctorTimer( unsortedContainer, applyFunctor ) >= applyFunctorTimer( sortedContainer, applyFunctor ) || true );
 }
 
 BOOST_AUTO_TEST_SUITE_END() // BranchPrediction // icache

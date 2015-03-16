@@ -76,10 +76,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\source\librairies\subtitlesDownloader\cli\Scanner.h" />
+    <ClInclude Include="..\source\cli\subtitlesDownloader\Scanner.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\source\librairies\subtitlesDownloader\cli\Scanner.cpp" />
+    <ClCompile Include="..\source\cli\subtitlesDownloader\Scanner.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

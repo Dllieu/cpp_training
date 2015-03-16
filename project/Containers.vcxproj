@@ -66,8 +66,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\source\librairies\containers\VectorGrowthPolicy.h" />
-    <ClInclude Include="..\source\librairies\containers\SparseArray.h" />
+    <ClInclude Include="..\source\containers\VectorGrowthPolicy.h" />
+    <ClInclude Include="..\source\containers\SparseArray.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

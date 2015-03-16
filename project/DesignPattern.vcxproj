@@ -11,9 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\source\librairies\generic\HashCombine.h" />
-    <ClInclude Include="..\source\librairies\generic\Observer.h" />
-    <ClInclude Include="..\source\librairies\generic\Visitor.h" />
+    <ClInclude Include="..\source\generic\HashCombine.h" />
+    <ClInclude Include="..\source\generic\Observer.h" />
+    <ClInclude Include="..\source\generic\Visitor.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{CD33CD06-C9D7-43C9-ADE5-3C2B83BBD20A}</ProjectGuid>

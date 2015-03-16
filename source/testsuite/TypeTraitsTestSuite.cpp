@@ -3,6 +3,7 @@
 // See https://github.com/Dllieu for updates, documentation, and revision history.
 //--------------------------------------------------------------------------------
 #include <boost/test/unit_test.hpp>
+#include <boost/type_index.hpp>
 #include <type_traits>
 
 BOOST_AUTO_TEST_SUITE( TypeTraits )
@@ -82,6 +83,14 @@ BOOST_AUTO_TEST_CASE( TraitsTestSuite )
 
     BOOST_CHECK( forwardClass.forwardA() == realClass.realA() );
     BOOST_CHECK( forwardClass.forwardB() == realClass.realB() );
+}
+
+BOOST_AUTO_TEST_CASE( VariableTypeTestSuite )
+{
+    ForwardClass forwardClass;
+    (void)forwardClass; // unreferenced local variable
+    // class ::anonymous::ForwardClass
+    BOOST_CHECK( ! boost::typeindex::type_id_with_cvr< decltype( forwardClass ) >().pretty_name().empty() );
 }
 
 namespace

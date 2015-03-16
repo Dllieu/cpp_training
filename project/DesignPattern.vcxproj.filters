@@ -10,13 +10,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\source\librairies\generic\Visitor.h">
+    <ClInclude Include="..\source\generic\Visitor.h">
       <Filter>Source Files\DesignPatterns</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\librairies\generic\Observer.h">
+    <ClInclude Include="..\source\generic\Observer.h">
       <Filter>Source Files\DesignPatterns</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\librairies\generic\HashCombine.h">
+    <ClInclude Include="..\source\generic\HashCombine.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

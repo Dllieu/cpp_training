@@ -7,10 +7,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\source\librairies\containers\SparseArray.h">
+    <ClInclude Include="..\source\containers\SparseArray.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\librairies\containers\VectorGrowthPolicy.h">
+    <ClInclude Include="..\source\containers\VectorGrowthPolicy.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -35,94 +35,100 @@
     <Filter Include="Source Files\ImpracticalTest">
       <UniqueIdentifier>{f71aa018-5c94-4e0e-8a7d-4f91cb31eb4e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\SyntaxSpecific">
+      <UniqueIdentifier>{f3ad7e35-65da-4332-9f5c-1df8395a7801}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\source\tests\testsuite\Initializer.cpp">
+    <ClCompile Include="..\source\testsuite\Initializer.cpp">
       <Filter>Source Files\Intern</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\tests\testsuite\ObserverTestSuite.cpp">
+    <ClCompile Include="..\source\testsuite\ObserverTestSuite.cpp">
       <Filter>Source Files\DesignPattern</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\tests\testsuite\VisitorTestSuite.cpp">
+    <ClCompile Include="..\source\testsuite\VisitorTestSuite.cpp">
       <Filter>Source Files\DesignPattern</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\tests\testsuite\MemoryPoolTestSuite.cpp">
+    <ClCompile Include="..\source\testsuite\MemoryPoolTestSuite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\tests\testsuite\MacroTestSuite.cpp">
+    <ClCompile Include="..\source\testsuite\MacroTestSuite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\tests\testsuite\ExceptionTestSuite.cpp">
+    <ClCompile Include="..\source\testsuite\ExceptionTestSuite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\tests\testsuite\ByteTestSuite.cpp">
+    <ClCompile Include="..\source\testsuite\ByteTestSuite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\tests\testsuite\FeatureTestSuite.cpp">
+    <ClCompile Include="..\source\testsuite\FeatureTestSuite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\tests\testsuite\CRTPTestSuite.cpp">
+    <ClCompile Include="..\source\testsuite\CRTPTestSuite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\tests\testsuite\MetaProgTestSuite.cpp">
+    <ClCompile Include="..\source\testsuite\MetaProgTestSuite.cpp">
       <Filter>Source Files\MetaProgramming</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\tests\testsuite\TMPExercicesTestSuite.cpp">
+    <ClCompile Include="..\source\testsuite\TMPExercicesTestSuite.cpp">
       <Filter>Source Files\MetaProgramming</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\tests\testsuite\ThreadingTestSuite.cpp">
+    <ClCompile Include="..\source\testsuite\ThreadingTestSuite.cpp">
       <Filter>Source Files\Threading</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\tests\testsuite\LockFreeTestSuite.cpp">
+    <ClCompile Include="..\source\testsuite\LockFreeTestSuite.cpp">
       <Filter>Source Files\Threading</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\tests\testsuite\SingletonTestSuite.cpp">
+    <ClCompile Include="..\source\testsuite\SingletonTestSuite.cpp">
       <Filter>Source Files\DesignPattern</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\tests\testsuite\StandardDeviationTestSuite.cpp">
+    <ClCompile Include="..\source\testsuite\StandardDeviationTestSuite.cpp">
       <Filter>Source Files\Pricing</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\tests\testsuite\STLTestSuite.cpp">
+    <ClCompile Include="..\source\testsuite\STLTestSuite.cpp">
       <Filter>Source Files\STL</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\tests\testsuite\ContainerTestSuite.cpp">
+    <ClCompile Include="..\source\testsuite\ContainerTestSuite.cpp">
       <Filter>Source Files\Containers</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\tests\testsuite\CustomContainerTestSuite.cpp">
+    <ClCompile Include="..\source\testsuite\CustomContainerTestSuite.cpp">
       <Filter>Source Files\Containers</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\tests\testsuite\TwitchTestSuite.cpp">
+    <ClCompile Include="..\source\testsuite\TwitchTestSuite.cpp">
       <Filter>Source Files\Network</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\tests\testsuite\MockTestSuite.cpp">
+    <ClCompile Include="..\source\testsuite\MockTestSuite.cpp">
       <Filter>Source Files\Mocking</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\tests\testsuite\SmartPointer.cpp">
+    <ClCompile Include="..\source\testsuite\SmartPointer.cpp">
       <Filter>Source Files\STL</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\tests\testsuite\HashingTestSuite.cpp">
+    <ClCompile Include="..\source\testsuite\HashingTestSuite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\tests\testsuite\BranchPredictionTestSuite.cpp">
+    <ClCompile Include="..\source\testsuite\BranchPredictionTestSuite.cpp">
       <Filter>Source Files\ImpracticalTest</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\tests\testsuite\FunctionCallTestSuite.cpp">
+    <ClCompile Include="..\source\testsuite\FunctionCallTestSuite.cpp">
       <Filter>Source Files\ImpracticalTest</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\tests\testsuite\SyntaxSpecificityTestSuite.cpp">
+    <ClCompile Include="..\source\testsuite\AlgoTestSuite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\tests\testsuite\AlgoTestSuite.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\tests\testsuite\OptimizationTricks.cpp">
+    <ClCompile Include="..\source\testsuite\OptimizationTricks.cpp">
       <Filter>Source Files\ImpracticalTest</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\tests\testsuite\FactoryTestSuite.cpp">
+    <ClCompile Include="..\source\testsuite\FactoryTestSuite.cpp">
       <Filter>Source Files\DesignPattern</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\tests\testsuite\TypeTraitsTestSuite.cpp">
+    <ClCompile Include="..\source\testsuite\TypeTraitsTestSuite.cpp">
       <Filter>Source Files\MetaProgramming</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\testsuite\SyntaxSpecificityTestSuite.cpp">
+      <Filter>Source Files\SyntaxSpecific</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\testsuite\ArgumentTestSuite.cpp">
+      <Filter>Source Files\SyntaxSpecific</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

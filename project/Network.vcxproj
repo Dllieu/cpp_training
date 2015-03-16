@@ -11,12 +11,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\source\librairies\network\ITwitchCallback.h" />
-    <ClInclude Include="..\source\librairies\network\TcpClient.h" />
-    <ClInclude Include="..\source\librairies\network\TwitchClient.h" />
+    <ClInclude Include="..\source\network\ITwitchCallback.h" />
+    <ClInclude Include="..\source\network\TcpClient.h" />
+    <ClInclude Include="..\source\network\TwitchClient.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\source\librairies\network\TwitchClient.cpp" />
+    <ClCompile Include="..\source\network\TwitchClient.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{B41B1378-0407-4BDB-A8A8-2AB4F1642169}</ProjectGuid>

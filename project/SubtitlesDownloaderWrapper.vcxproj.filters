@@ -7,12 +7,12 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\source\librairies\subtitlesDownloader\cli\Scanner.h">
+    <ClInclude Include="..\source\cli\subtitlesDownloader\Scanner.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\source\librairies\subtitlesDownloader\cli\Scanner.cpp">
+    <ClCompile Include="..\source\cli\subtitlesDownloader\Scanner.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

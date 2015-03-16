@@ -7,18 +7,18 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\source\librairies\tools\Timer.cpp">
+    <ClCompile Include="..\source\tools\Timer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\librairies\tools\MemoryPool.cpp">
+    <ClCompile Include="..\source\tools\MemoryPool.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\source\librairies\tools\Timer.h">
+    <ClInclude Include="..\source\tools\Timer.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\librairies\tools\MemoryPool.h">
+    <ClInclude Include="..\source\tools\MemoryPool.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

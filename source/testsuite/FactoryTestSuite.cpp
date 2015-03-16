@@ -62,22 +62,25 @@ namespace
     };
 
     template <class... Args>
-    static A* create( TypeToCreate id, Args&&... args )
+    static std::unique_ptr< A > create( TypeToCreate id, Args&&... args )
     {
+        std::unique_ptr< A > result;
         switch ( id )
         {
             case TypeToCreate::A:
-                return create( factory_tag< A >{}, std::forward< Args >( args )... );
+                result.reset( create( factory_tag< A >{}, std::forward< Args >( args )... ) );
+                break;
 
             case TypeToCreate::B:
-                return create( factory_tag< B >{}, std::forward< Args >( args )... );
+                result.reset( create( factory_tag< B >{}, std::forward< Args >( args )... ) );
+                break;
 
             case TypeToCreate::C:
-                return create( factory_tag< C >{}, std::forward< Args >( args )... );
-
-            default:
-                return nullptr;
+                result.reset( create( factory_tag< C >{}, std::forward< Args >( args )... ) );
+                break;
         }
+
+        return result;
     }
 }
 
@@ -90,6 +93,34 @@ BOOST_AUTO_TEST_CASE( CallTestSuite )
 
     std::unique_ptr< A > c( create( TypeToCreate::C, "b" ) );
     BOOST_CHECK( c.get() );
+}
+
+namespace
+{
+    class W
+    {
+    public:
+        W() {}
+        W( const W& w ) { std::cout << " copy constructor W " << std::endl; }
+        W& operator=( const W& w ) { std::cout << " copy operator W " << std::endl; }
+    };
+
+    class Z
+    {
+    public:
+        Z() = default;
+        
+        Z( const Z& ) = default;
+        W w;
+        std::string s;
+    };
+}
+
+BOOST_AUTO_TEST_CASE( defaultCopy )
+{
+    //auto e = W();
+    Z z;
+    Z zz = z;
 }
 
 BOOST_AUTO_TEST_SUITE_END() // FactoryTestSuite

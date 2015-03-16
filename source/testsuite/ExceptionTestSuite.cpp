@@ -4,9 +4,26 @@
 //--------------------------------------------------------------------------------
 #include <boost/test/unit_test.hpp>
 #include <csignal>
-#include <iostream>
 
 BOOST_AUTO_TEST_SUITE( ExceptionTestSuite )
+
+// Modern C++ implementations reduce the overhead of using exceptions to a few percent (3%) and that’s compared to no error handling. Writing code with error-return codes and tests is not free either.
+// As a rule of thumb, exception handling is extremely cheap when you don’t throw an exception. It costs nothing on some implementations.
+// All the cost is incurred when you throw an exception: that is, “normal code” is faster than code using error-return codes and tests. You incur cost only when you have an error.
+
+// The old model :
+//   - Visual Studio (vc100 only?), when building a 32-bit target, will register a handler in every function that has local variables with non-trivial destructor. Basically, it sets up a try/finally handler
+// The main model used today for exceptions (Itanium ABI, VC++ 64 bits) is the Zero-Cost model exceptions.
+// The idea is that instead of losing time by setting up a guard and explicitly checking for the presence of exceptions everywhere, the compiler generates a side table that maps any point that may throw an exception (Program Counter) to the a list of handlers.
+// When an exception is thrown, this list is consulted to pick the right handler (if any) and stack is unwound.
+// Compared to the typical if (error) strategy:
+//   - the Zero-Cost model, as the name implies, is free when no exception occurs
+//   - it cost around 10x/20x an if when an exception does occur
+//   - The cost, however, is not trivial to measure:
+// The side-table is generally cold, and thus fetching it from memory takes a long time
+// Determining the right handler involves RTTI: many RTTI descriptors to fetch, scattered around memory, and complex operations to run (basically a dynamic_cast test for each handler)
+// so, mostly cache misses, and thus not trivial compared to pure CPU code.
+// So, yes, exceptions are slow on the exceptional path, but they are otherwise quicker than explicit checks (if strategy) in general.
 
 namespace
 {
@@ -48,6 +65,7 @@ namespace
 BOOST_AUTO_TEST_CASE( InitListTestSuite )
 {
     // If the object was allocated in a new-expression, the matching deallocation function, if any, is called to free the storage occupied by the object
+    // Exception thrown from a constructor invoked by new does not cause memory leak
     Foo* f = new Foo( 2 ); // if Foo throw, no memory is leaked
     delete f;
 }
