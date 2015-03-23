@@ -9,6 +9,7 @@
 #include <iostream>
 #include <thread>
 #include <future>
+#include <numeric>
 
 BOOST_AUTO_TEST_SUITE( Threading )
 
@@ -111,6 +112,65 @@ BOOST_AUTO_TEST_CASE( ThreadSwitchTestSuite )
 
     thread1.join();
     thread2.join();
+}
+
+namespace
+{
+    template <typename IT, typename T>
+    struct AccumulateBlock
+    {
+        void    operator()( IT first, IT last, T& t )
+        {
+            t = std::accumulate( first, last, t );
+        }
+    };
+
+    template <typename IT, typename T>
+    T   ParallelAccumulate( IT first, IT last, T init )
+    {
+        auto size = std::distance( first, last );
+        if ( ! size )
+            return init;
+
+        auto taskMinPerThread = 25;
+
+        using ul_t = unsigned long;
+        ul_t maxThread = ( size - 1 ) / taskMinPerThread + 1;
+        ul_t hardwareThreadAvailable = std::thread::hardware_concurrency();
+
+        auto threadSize = std::min( hardwareThreadAvailable != 0 ? hardwareThreadAvailable : 2, maxThread );
+        auto blockSize = size / threadSize;
+
+        std::vector< T > results( threadSize );
+        std::vector< std::thread > threads( threadSize - 1 ); // minus current thread
+
+        auto blockStart = first;
+        for ( ul_t i = 0; i < threads.size(); ++i )
+        {
+            auto blockEnd = blockStart;
+            std::advance( blockEnd, blockSize );
+
+            threads[i] = std::thread( [ blockStart, blockEnd, i, &results ]() { AccumulateBlock< IT, T >()( blockStart, blockEnd, results[i] ); } );
+            blockStart = blockEnd;
+        }
+        AccumulateBlock< IT, T >()( blockStart, last, results.back() );
+
+        std::for_each( std::begin( threads ), std::end( threads ), []( std::thread& thread ) { thread.join(); } );
+        return std::accumulate( std::begin( results ), std::end( results ), init );
+    }
+}
+
+BOOST_AUTO_TEST_CASE( ParallelAccumulateTestSuite )
+{
+    auto n = 100;
+    std::vector< int > v;
+    v.reserve( n );
+
+    while ( n > 0 )
+        v.push_back( n-- );
+
+    auto result = ParallelAccumulate( std::begin( v ), std::end( v ), 0 );
+    BOOST_CHECK( ParallelAccumulate( std::begin( v ), std::end( v ), 0 ) == ( 1 + v.size() ) * ( v.size() / 2 ) );
 }
 
 BOOST_AUTO_TEST_SUITE_END() // Threading
