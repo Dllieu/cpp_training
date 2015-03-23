@@ -169,7 +169,6 @@ BOOST_AUTO_TEST_CASE( ParallelAccumulateTestSuite )
     while ( n > 0 )
         v.push_back( n-- );
 
-    auto result = ParallelAccumulate( std::begin( v ), std::end( v ), 0 );
     BOOST_CHECK( ParallelAccumulate( std::begin( v ), std::end( v ), 0 ) == ( 1 + v.size() ) * ( v.size() / 2 ) );
 }
 
