@@ -12,6 +12,7 @@
 #include <thread>
 #include <future>
 #include <numeric>
+#include <queue>
 #include <unordered_map>
 
 BOOST_AUTO_TEST_SUITE( Threading )
@@ -153,7 +154,7 @@ namespace
             auto blockEnd = blockStart;
             std::advance( blockEnd, blockSize );
 
-            threads[i] = std::thread( [ blockStart, blockEnd, i, &results ]() { AccumulateBlock< IT, T >()( blockStart, blockEnd, results[i] ); } );
+            threads[i] = std::thread( [ blockStart, blockEnd, i, &results ] { AccumulateBlock< IT, T >()( blockStart, blockEnd, results[i] ); } );
             blockStart = blockEnd;
         }
         AccumulateBlock< IT, T >()( blockStart, last, results.back() );
@@ -212,7 +213,7 @@ BOOST_AUTO_TEST_CASE( ReadWriteSharedMutexTestSuite )
     const auto nbThread = 20;
     std::vector< std::thread >  threads;
     for ( auto i = 0; i < nbThread; ++i )
-        threads.emplace_back( std::thread( [ &m, &nbThread, i ] ()
+        threads.emplace_back( std::thread( [ &m, &nbThread, i ]
                 {
                     m.updateOrInsert( i, i );
                     for ( auto j = 0; j < nbThread; ++j )
@@ -224,6 +225,75 @@ BOOST_AUTO_TEST_CASE( ReadWriteSharedMutexTestSuite )
 
     for ( auto i = 0; i < nbThread; ++i )
         BOOST_CHECK( m.getEntry( i ).is_initialized() );
+}
+
+BOOST_AUTO_TEST_CASE( ConditionVariableTestSuite )
+{
+    std::queue< int >           q;
+    std::condition_variable     conditionVariable;
+    std::mutex                  mutex;
+
+    const auto valueExpected = 5;
+    std::thread workerThread( [ & ]
+        {
+            // std::unique_lock allow more freedom compared to lock_guard, such as modifying explicitly the ownership of the lock (internal state to keep this information,
+            // which make it less efficient compared to lock_guard, only use unique_lock if needed)
+            std::unique_lock< std::mutex > lock( mutex );
+            // release lock while waiting to be notified, reown the lock when checking the state and keep the lock active if the state is valid
+            conditionVariable.wait( lock, [ &q ] { return ! q.empty(); } );
+            auto tmp = q.front();
+            q.pop();
+            // No need to keep the lock, can process tmp directly
+            lock.unlock();
+
+            BOOST_CHECK( tmp == valueExpected );
+        } );
+
+    std::thread producerThread( [ & ]
+        {
+            std::lock_guard< std::mutex > lock( mutex );
+            q.push( valueExpected );
+            conditionVariable.notify_one();
+        } );
+
+    workerThread.join();
+    producerThread.join();
+}
+
+namespace
+{
+    struct WrapperWithMutex
+    {
+        explicit WrapperWithMutex( int initValue ) : n( initValue ) {}
+
+        int         n;
+        std::mutex  mutex;
+    };
+}
+
+BOOST_AUTO_TEST_CASE( MultipleLockTestSuite )
+{
+    WrapperWithMutex w1( 1 );
+    WrapperWithMutex w2( 4 );
+
+    auto l = []( WrapperWithMutex& lhs, WrapperWithMutex& rhs, int n )
+        {
+            std::unique_lock< std::mutex > l1( lhs.mutex, std::defer_lock );
+            std::unique_lock< std::mutex > l2( rhs.mutex, std::defer_lock );
+
+            std::lock( l1, l2 );
+
+            lhs.n += n;
+            rhs.n *= n;
+        };
+
+    std::thread t1( l, std::ref( w1 ), std::ref( w2 ), 2 );
+    std::thread t2( l, std::ref( w2 ), std::ref( w1 ), 10 );
+
+    t1.join();
+    t2.join();
+
+    BOOST_CHECK( w1.n == 30 && w2.n == 18 );
 }
 
 BOOST_AUTO_TEST_SUITE_END() // Threading
