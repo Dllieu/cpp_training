@@ -7,8 +7,6 @@ visual studio 2013 (vc120) project
 extra dependencies (such as boost) in dependencies (see dependencies/README.MD)
 
 ## TODO
-boost::shared_mutex
-
 default / delete method
 
 pimpl with std::unique_ptr
