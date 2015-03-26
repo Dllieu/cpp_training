@@ -5,11 +5,14 @@
 // http://www.codeproject.com/Articles/153898/Yet-another-implementation-of-a-lock-free-circular
 #include <boost/test/unit_test.hpp>
 #include <boost/thread.hpp>
+#include <boost/optional.hpp>
+#include <boost/thread/shared_mutex.hpp>
 #include <string>
 #include <iostream>
 #include <thread>
 #include <future>
 #include <numeric>
+#include <unordered_map>
 
 BOOST_AUTO_TEST_SUITE( Threading )
 
@@ -170,6 +173,56 @@ BOOST_AUTO_TEST_CASE( ParallelAccumulateTestSuite )
         v.push_back( n-- );
 
     BOOST_CHECK( ParallelAccumulate( std::begin( v ), std::end( v ), 0 ) == ( 1 + v.size() ) * ( v.size() / 2 ) );
+}
+
+namespace
+{
+    class MultipleReadSingleWrite
+    {
+    public:
+        boost::optional< int >     getEntry( int key ) const
+        {
+            // several thread can acquire this mutex
+            boost::shared_lock< boost::shared_mutex >   lock( sharedMutex_ );
+
+            auto it = map_.find( key );
+            return it == std::end( map_ ) ? 0 : it->second;
+        }
+
+        void            updateOrInsert( int key, int value )
+        {
+            // This lock have more priority than the shared one, it will still wait the shared to unlock first
+            std::lock_guard< boost::shared_mutex >   lock( sharedMutex_ );
+
+            map_[ key ] = value;
+        }
+
+    private:
+        std::unordered_map< int, int >     map_;
+        // Can be use when multiple update on a 
+        mutable boost::shared_mutex                 sharedMutex_;
+    };
+}
+
+BOOST_AUTO_TEST_CASE( ReadWriteSharedMutexTestSuite )
+{
+    MultipleReadSingleWrite m;
+
+    const auto nbThread = 20;
+    std::vector< std::thread >  threads;
+    for ( auto i = 0; i < nbThread; ++i )
+        threads.emplace_back( std::thread( [ &m, &nbThread, i ] ()
+                {
+                    m.updateOrInsert( i, i );
+                    for ( auto j = 0; j < nbThread; ++j )
+                        m.getEntry( j );
+                } ) );
+
+    for ( auto i = 0; i < nbThread; ++i )
+        threads[ i ].join();
+
+    for ( auto i = 0; i < nbThread; ++i )
+        BOOST_CHECK( m.getEntry( i ).is_initialized() );
 }
 
 BOOST_AUTO_TEST_SUITE_END() // Threading
