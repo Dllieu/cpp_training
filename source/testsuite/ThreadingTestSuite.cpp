@@ -186,7 +186,7 @@ namespace
             boost::shared_lock< boost::shared_mutex >   lock( sharedMutex_ );
 
             auto it = map_.find( key );
-            return it == std::end( map_ ) ? 0 : it->second;
+            return it == std::end( map_ ) ? boost::optional< int >() : it->second;
         }
 
         void            updateOrInsert( int key, int value )
@@ -199,8 +199,9 @@ namespace
 
     private:
         std::unordered_map< int, int >     map_;
-        // Can be use when multiple update on a 
-        mutable boost::shared_mutex                 sharedMutex_;
+
+        // Make sense when multiple read, single write and vice versa
+        mutable boost::shared_mutex        sharedMutex_;
     };
 }
 
