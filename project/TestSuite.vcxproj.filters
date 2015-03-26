@@ -130,5 +130,8 @@
     <ClCompile Include="..\source\testsuite\ArgumentTestSuite.cpp">
       <Filter>Source Files\SyntaxSpecific</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\testsuite\FutureTestSuite.cpp">
+      <Filter>Source Files\Threading</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

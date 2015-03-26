@@ -9,30 +9,14 @@
 #include <boost/thread/shared_mutex.hpp>
 #include <string>
 #include <iostream>
+#include <condition_variable>
+#include <mutex>
 #include <thread>
-#include <future>
 #include <numeric>
 #include <queue>
 #include <unordered_map>
 
 BOOST_AUTO_TEST_SUITE( Threading )
-
-namespace
-{
-    unsigned    accumulate( unsigned from, unsigned to )
-    {
-        auto result = from;
-        while ( from < to ) result += ++from;
-        return result;
-    }
-}
-
-BOOST_AUTO_TEST_CASE( FutureTestSuite )
-{
-    unsigned from = 0, to = 100000;
-    std::future< unsigned > f = std::async( accumulate, from, to );
-    BOOST_CHECK( f.get() /* join until result is not received */ == accumulate( from, to ) );
-}
 
 BOOST_AUTO_TEST_CASE( ThreadGroupTestSuite )
 {
@@ -77,12 +61,10 @@ namespace
         }
 
     private:
+        std::recursive_mutex                                            mutex_;
         unsigned                                                        timeoutInSeconds_;
         unsigned                                                        numberOfContext_;
         std::chrono::time_point< std::chrono::high_resolution_clock >   clock_;
-
-        std::recursive_mutex                                            mutex_;
-
 
         double  elapsed()
         {
@@ -199,10 +181,10 @@ namespace
         }
 
     private:
-        std::unordered_map< int, int >     map_;
-
         // Make sense when multiple read, single write and vice versa
         mutable boost::shared_mutex        sharedMutex_;
+
+        std::unordered_map< int, int >     map_;
     };
 }
 
@@ -240,7 +222,7 @@ BOOST_AUTO_TEST_CASE( ConditionVariableTestSuite )
             // which make it less efficient compared to lock_guard, only use unique_lock if needed)
             std::unique_lock< std::mutex > lock( mutex );
             // release lock while waiting to be notified, reown the lock when checking the state and keep the lock active if the state is valid
-            conditionVariable.wait( lock, [ &q ] { return ! q.empty(); } );
+            conditionVariable.wait( lock, [ &q ] { return ! q.empty(); } ); // since we wait only once in this example, future is more adapted in this context
             auto tmp = q.front();
             q.pop();
             // No need to keep the lock, can process tmp directly
