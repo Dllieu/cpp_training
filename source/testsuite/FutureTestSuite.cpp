@@ -7,8 +7,15 @@
 #include <future>
 #include <iostream>
 
-// future is linked to a shared state (reads result from it)
-// what create and modify the shared state are asynchronous provider: std::packaged_task / std::async / std::promise
+// - A future is an object that can retrieve a value from some provider object or function, properly synchronizing this access if in different threads.
+// - "Valid" futures are future objects associated to a shared state, and are constructed by calling one of the following functions:
+//      std::async
+//      std::promise::get_future
+//      std::packaged_task::get_future
+// 
+// - future objects are only useful when they are valid. Default-constructed future objects are not valid (unless move-assigned a valid future).
+// - Calling future::get on a valid future blocks the thread until the provider makes the shared state ready (either by setting a value or an exception to it). This way, two threads can be synchronized by one waiting for the other to set a value.
+// - The lifetime of the shared state lasts at least until the last object with which it is associated releases it or is destroyed. Therefore, if associated to a future, the shared state can survive the object from which it was obtained in the first place (if any).
 BOOST_AUTO_TEST_SUITE( Future )
 
 namespace
@@ -36,6 +43,7 @@ BOOST_AUTO_TEST_CASE( AsyncTestSuite )
     while ( f.wait_for( span ) == std::future_status::timeout ) // simulate a wait (wait for the shared state to be ready), but unlock the current thread every 100ms
         std::cout << '.' << std::endl;
 
+    BOOST_CHECK( f.wait_for( std::chrono::seconds( 0 ) ) == std::future_status::ready );
     BOOST_CHECK( f.get() /* join until result is not received in the shared state */ == accumulate( from, to ) );
 }
 
@@ -83,9 +91,44 @@ BOOST_AUTO_TEST_CASE( PromiseTestSuite )
     std::thread t( [ &f, expectedValue ] { BOOST_CHECK( f.get() == expectedValue ); } );
 
     std::chrono::milliseconds( 200 );
-    p.set_value( expectedValue );
+
+    // only way to check the status of a future right now
+    if ( expectedValue == 0 )
+        // Another way to store an exception in a future is to destroy the std::promise or std::packaged_task associated with the future without calling either of the set functions on the promise or invoking the packaged task
+        p.set_exception( std::make_exception_ptr( std::logic_error( "this can't happen" ) ) );
+    else
+        p.set_value( expectedValue );
 
     t.join();
+}
+
+BOOST_AUTO_TEST_CASE( SharedFutureTestSuite )
+{
+    std::promise< void >        readyPromise, p1, p2;
+    // steal ownership (future -> shared_future) future always let the ownership to the shared_future
+    // from this point it's thread safe to manipulate shared_future
+    std::shared_future< void >  sharedFuture( readyPromise.get_future() ); 
+
+    auto f1 = std::async( std::launch::async, [ &p1, sharedFuture ]()
+        {
+            p1.set_value();
+            sharedFuture.wait(); // waits for the signal from readyPromise
+        } );
+
+    auto f2 = std::async( std::launch::async, [ &p2, sharedFuture ]()
+        {
+            p2.set_value();
+            sharedFuture.wait(); // waits for the signal from readyPromise
+        } );
+ 
+    // wait for the threads to become ready
+    p1.get_future().wait();
+    p2.get_future().wait();
+
+    // signal the threads to go
+    readyPromise.set_value();
+
+    BOOST_CHECK( true );
 }
 
 BOOST_AUTO_TEST_SUITE_END() // Future
