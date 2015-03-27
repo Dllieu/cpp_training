@@ -9,5 +9,5 @@ extra dependencies (such as boost) in dependencies (see dependencies/README.MD)
 ## TODO
 packaged_task
 default / delete method
-pimpl with std::unique_ptr
+pimpl with std::unique_ptr (http://herbsutter.com/gotw/_100/ : destructor=default / movecpy=default +  on cpp)
 
