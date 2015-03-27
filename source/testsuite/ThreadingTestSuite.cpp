@@ -88,6 +88,8 @@ in it's cache effectively become useless. The one big distinction here is that w
 the processor's Translation Lookaside Buffer (TLB) or equivalent gets flushed making memory accesses much more expensive for a while.
 This does not happen during a thread switch.
 
+
+See http://blog.tsunanet.net/2010/11/how-long-does-it-take-to-make-context.html
 */
 BOOST_AUTO_TEST_CASE( ThreadSwitchTestSuite )
 {
