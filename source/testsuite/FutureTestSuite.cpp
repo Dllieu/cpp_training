@@ -6,6 +6,7 @@
 #include <boost/test/unit_test.hpp>
 #include <future>
 #include <iostream>
+#include "threading\SpawnTask.h"
 
 // - A future is an object that can retrieve a value from some provider object or function, properly synchronizing this access if in different threads.
 // - "Valid" futures are future objects associated to a shared state, and are constructed by calling one of the following functions:
@@ -20,6 +21,9 @@ BOOST_AUTO_TEST_SUITE( FutureTestSuite )
 
 namespace
 {
+    // test purpose
+    const int EXPECTED_VALUE = 10;
+
     unsigned    accumulate( unsigned from, unsigned to )
     {
         auto result = from;
@@ -59,11 +63,10 @@ BOOST_AUTO_TEST_CASE( PackagedTaskTest )
     // Therefore it can survive the packaged_task object that obtained it in the first place if associated also to a future.
 
     // Do pretty much the same as std::async but can chose when the computation start
-    const auto expectedValue = 10;
-    std::packaged_task< int () > packagedTask( [ expectedValue ]
+    std::packaged_task< int () > packagedTask( []
         {
             std::this_thread::sleep_for( std::chrono::milliseconds( 500 ) );
-            return expectedValue;
+            return EXPECTED_VALUE;
         } );
 
     auto f = packagedTask.get_future();
@@ -72,9 +75,15 @@ BOOST_AUTO_TEST_CASE( PackagedTaskTest )
     std::thread t( std::move( packagedTask ) ); // std::packaged_task is movable
 
     std::this_thread::sleep_for( std::chrono::milliseconds( 500 ) );
-    BOOST_CHECK( f.get() == expectedValue ); // if packagedTask is not started before the get, this will wait indefinitly
+    BOOST_CHECK( f.get() == EXPECTED_VALUE ); // if packagedTask is not started before the get, this will wait indefinitly
 
     t.join();
+}
+
+BOOST_AUTO_TEST_CASE( SpawnTaskTest )
+{
+    auto f = threading::spawnTask( []( int i ) { std::this_thread::sleep_for( std::chrono::milliseconds( 500 ) ); return i; }, EXPECTED_VALUE );
+    BOOST_CHECK( f.get() == EXPECTED_VALUE );
 }
 
 BOOST_AUTO_TEST_CASE( PromiseTest )
@@ -85,20 +94,19 @@ BOOST_AUTO_TEST_CASE( PromiseTest )
     //    The promise object is the asynchronous provider and is expected to set a value for the shared state at some point.
     //    The future object is an asynchronous return object that can retrieve the value of the shared state, waiting for it to be ready, if necessary.
     // - The lifetime of the shared state lasts at least until the last object with which it is associated releases it or is destroyed. Therefore it can survive the promise object that obtained it in the first place if associated also to a future.
-    const auto expectedValue = 10;
     std::promise< int > p;
 
     auto f = p.get_future();
-    std::thread t( [ &f, expectedValue ] { BOOST_CHECK( f.get() == expectedValue ); } );
+    std::thread t( [ &f ] { BOOST_CHECK( f.get() == EXPECTED_VALUE ); } );
 
     std::this_thread::sleep_for( std::chrono::milliseconds( 200 ) );
 
     // only way to check the status of a future right now
-    if ( expectedValue == 0 )
+    if ( EXPECTED_VALUE == 0 )
         // Another way to store an exception in a future is to destroy the std::promise or std::packaged_task associated with the future without calling either of the set functions on the promise or invoking the packaged task
         p.set_exception( std::make_exception_ptr( std::logic_error( "this can't happen" ) ) );
     else
-        p.set_value( expectedValue );
+        p.set_value( EXPECTED_VALUE );
 
     t.join();
 }
@@ -152,14 +160,14 @@ namespace
         // Reorders the elements in the range [first, last) in such a way that all elements for which the predicate p returns true precede the elements for which predicate p returns false.
         // Relative order of the elements is not preserved.
         // Return iterator to the first element of the second group
-        auto partitionedChunk = std::partition( std::begin( input ), std::end( input ), [ &pivot ]( const T& t ) { return t < pivot; } );
+        auto partitionedChunk = std::partition( std::begin( input ), std::end( input ), [ &pivot ]( const T& t ) { return t < pivot; } ); // Not optimum
 
         std::list< T > unsortedLowerChunk;
         unsortedLowerChunk.splice( std::end( unsortedLowerChunk ), input, std::begin( input ), partitionedChunk );
 
         // Only call quickSort on one of the chunk as we can process the other chunk with the current thread
         // possibily start the sorting process of the upperChunk in another thread
-        auto futureSortedUpperChunk = std::async( parallelQuickSort< T >, std::move( input ) ); // let the implem chose the policy
+        auto futureSortedUpperChunk = std::async( parallelQuickSort< T >, std::move( input ) ); // let the implem chose the policy to avoid oversubscription
 
         result.splice( std::begin( result ), parallelQuickSort( std::move( unsortedLowerChunk ) ) );
         result.splice( std::end( result ), futureSortedUpperChunk.get() );

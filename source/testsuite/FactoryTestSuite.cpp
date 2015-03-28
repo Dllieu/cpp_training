@@ -12,13 +12,13 @@ namespace
     template <typename T> struct factory_tag { };
 
     template <typename T, typename... Args>
-    typename std::enable_if< std::is_constructible< T, Args... >::value, T* >::type     create( factory_tag<T>, Args&&... args )
+    typename std::enable_if_t< std::is_constructible< T, Args... >::value, T* >     create( factory_tag<T>, Args&&... args )
     {
         return new T( std::forward<Args>(args)... );
     }
 
     template <typename T, typename... Args>
-    typename std::enable_if< ! std::is_constructible< T, Args... >::value, T* >::type   create( factory_tag<T>, Args&&... )
+    typename std::enable_if_t< ! std::is_constructible< T, Args... >::value, T* >   create( factory_tag<T>, Args&&... )
     {
         return nullptr;
     }

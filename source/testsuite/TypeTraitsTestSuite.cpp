@@ -22,11 +22,11 @@ namespace
 
 BOOST_AUTO_TEST_CASE( DecayTest )
 {
-    BOOST_CHECK( ( std::is_same<int, std::decay<int&>::type>::value ) );
-    BOOST_CHECK( ( std::is_same<int, std::decay<int&&>::type>::value ) );
-    BOOST_CHECK( ( std::is_same<int, std::decay<const int&>::type>::value ) );
-    BOOST_CHECK( ( std::is_same<int*, std::decay<int[2]>::type>::value ) );
-    BOOST_CHECK( ( std::is_same<int(*)(int), std::decay<int (int)>::type>::value ) );
+    BOOST_CHECK( ( std::is_same<int, std::decay_t<int&> >::value ) );
+    BOOST_CHECK( ( std::is_same<int, std::decay_t<int&&> >::value ) );
+    BOOST_CHECK( ( std::is_same<int, std::decay_t<const int&> >::value ) );
+    BOOST_CHECK( ( std::is_same<int*, std::decay_t<int[2]> >::value ) );
+    BOOST_CHECK( ( std::is_same<int(*)(int), std::decay_t<int (int)>>::value ) );
 
     int i = 5;
     BOOST_CHECK( ( std::is_same< decltype( forward(i) ), int& >::value ) );
@@ -66,7 +66,7 @@ namespace
 }
 
 #define IMPLEMFORWARDCLASS( methodName, methodFromRealClassToBeForwarded ) \
-    std::decay< std::result_of< decltype ( &RealClass::##methodFromRealClassToBeForwarded )( RealClass ) >::type >::type ForwardClass::##methodName() \
+    std::decay_t< std::result_of_t< decltype ( &RealClass::##methodFromRealClassToBeForwarded )( RealClass ) > > ForwardClass::##methodName() \
     { \
         return realClass_.##methodFromRealClassToBeForwarded(); \
     }
