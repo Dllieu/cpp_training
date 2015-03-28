@@ -10,7 +10,7 @@
 
 namespace threading
 {
-    // Might lead to massive oversubscription
+    // Not much use, kind of similar to std::async with std::launch::async policy, will lead to massive oversubscription
     template < typename FUNCTOR, typename... ARGS >
     std::future< typename std::result_of< FUNCTOR ( ARGS&&... ) >::type >   spawnTask( FUNCTOR&& functor, ARGS&&... args )
     {
