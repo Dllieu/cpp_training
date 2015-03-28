@@ -30,7 +30,7 @@ namespace
     }
 }
 
-BOOST_AUTO_TEST_CASE( IteratorTestSuite )
+BOOST_AUTO_TEST_CASE( IteratorTest )
 {
     std::vector< int > v = boost::assign::list_of( 9 )( 5 )( 3 )( 2 )( 1 );
     bool isD1 = isDecreasing( v );
@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE( IteratorTestSuite )
     BOOST_CHECK( isD1 == isD2 && isD1 == false );
 }
 
-BOOST_AUTO_TEST_CASE( SortTestSuite )
+BOOST_AUTO_TEST_CASE( SortTest )
 {
     std::vector< int > v = boost::assign::list_of( 6 )( 8 )( 3 );
 
@@ -55,7 +55,7 @@ BOOST_AUTO_TEST_CASE( SortTestSuite )
     BOOST_CHECK( std::is_sorted( &v[0], &v[0] + v.size() ) );
 }
 
-BOOST_AUTO_TEST_CASE( TupleTestSuite )
+BOOST_AUTO_TEST_CASE( TupleTest )
 {
     int i;
     std::string s;
@@ -78,7 +78,7 @@ namespace
     }
 }
 
-BOOST_AUTO_TEST_CASE( SwapTestSuite )
+BOOST_AUTO_TEST_CASE( SwapTest )
 {
     int a = 5;
     int b = a + 1;

@@ -88,7 +88,6 @@
     <ClCompile Include="..\source\testsuite\LockFreeTestSuite.cpp" />
     <ClCompile Include="..\source\testsuite\MockTestSuite.cpp" />
     <ClCompile Include="..\source\testsuite\OptimizationTricks.cpp" />
-    <ClCompile Include="..\source\testsuite\TwitchTestSuite.cpp" />
     <ClCompile Include="..\source\testsuite\SingletonTestSuite.cpp" />
     <ClCompile Include="..\source\testsuite\SmartPointer.cpp" />
     <ClCompile Include="..\source\testsuite\StandardDeviationTestSuite.cpp" />

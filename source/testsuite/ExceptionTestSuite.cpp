@@ -62,7 +62,7 @@ namespace
     };
 }
 
-BOOST_AUTO_TEST_CASE( InitListTestSuite )
+BOOST_AUTO_TEST_CASE( InitListTest )
 {
     // If the object was allocated in a new-expression, the matching deallocation function, if any, is called to free the storage occupied by the object
     // Exception thrown from a constructor invoked by new does not cause memory leak

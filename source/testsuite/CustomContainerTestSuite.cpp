@@ -33,7 +33,7 @@ namespace
     }
 }
 
-BOOST_AUTO_TEST_CASE( SparseArrayTestSuite )
+BOOST_AUTO_TEST_CASE( SparseArrayTest )
 {
     SparseArray< double, PricingResult::PRICINGRESULT_SIZE > sparseArray;
 

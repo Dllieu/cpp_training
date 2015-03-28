@@ -16,7 +16,7 @@
 // - future objects are only useful when they are valid. Default-constructed future objects are not valid (unless move-assigned a valid future).
 // - Calling future::get on a valid future blocks the thread until the provider makes the shared state ready (either by setting a value or an exception to it). This way, two threads can be synchronized by one waiting for the other to set a value.
 // - The lifetime of the shared state lasts at least until the last object with which it is associated releases it or is destroyed. Therefore, if associated to a future, the shared state can survive the object from which it was obtained in the first place (if any).
-BOOST_AUTO_TEST_SUITE( Future )
+BOOST_AUTO_TEST_SUITE( FutureTestSuite )
 
 namespace
 {
@@ -30,10 +30,11 @@ namespace
     }
 }
 
-BOOST_AUTO_TEST_CASE( AsyncTestSuite )
+BOOST_AUTO_TEST_CASE( AsyncTest )
 {
     unsigned from = 0, to = 10000;
     
+    // First argument is an optional policy:
     // std::launch::async will execute the function in a separate thread
     // std::launch::deferred will defer the evaluation on the first wait on the future (does not spawn another thread)
     // If both the std::launch::async and std::launch::deferred flags are set in policy, it is up to the implementation whether to perform asynchronous execution or lazy evaluation.
@@ -47,7 +48,7 @@ BOOST_AUTO_TEST_CASE( AsyncTestSuite )
     BOOST_CHECK( f.get() /* join until result is not received in the shared state */ == accumulate( from, to ) );
 }
 
-BOOST_AUTO_TEST_CASE( PackagedTaskTestSuite )
+BOOST_AUTO_TEST_CASE( PackagedTaskTest )
 {
     // - A packaged_task wraps a callable element and allows its result to be retrieved asynchronously.
     // - It is similar to std::function, but transferring its result automatically to a future object.
@@ -70,13 +71,13 @@ BOOST_AUTO_TEST_CASE( PackagedTaskTestSuite )
     // Start the computation of the packagedTask in another thread
     std::thread t( std::move( packagedTask ) ); // std::packaged_task is movable
 
-    std::chrono::milliseconds( 500 );
+    std::this_thread::sleep_for( std::chrono::milliseconds( 500 ) );
     BOOST_CHECK( f.get() == expectedValue ); // if packagedTask is not started before the get, this will wait indefinitly
 
     t.join();
 }
 
-BOOST_AUTO_TEST_CASE( PromiseTestSuite )
+BOOST_AUTO_TEST_CASE( PromiseTest )
 {
     // - A promise is an object that can store a value of type T to be retrieved by a future object (possibly in another thread), offering a synchronization point.
     // - On construction, promise objects are associated to a new shared state on which they can store either a value of type T or an exception derived from std::exception.
@@ -90,7 +91,7 @@ BOOST_AUTO_TEST_CASE( PromiseTestSuite )
     auto f = p.get_future();
     std::thread t( [ &f, expectedValue ] { BOOST_CHECK( f.get() == expectedValue ); } );
 
-    std::chrono::milliseconds( 200 );
+    std::this_thread::sleep_for( std::chrono::milliseconds( 200 ) );
 
     // only way to check the status of a future right now
     if ( expectedValue == 0 )
@@ -102,7 +103,7 @@ BOOST_AUTO_TEST_CASE( PromiseTestSuite )
     t.join();
 }
 
-BOOST_AUTO_TEST_CASE( SharedFutureTestSuite )
+BOOST_AUTO_TEST_CASE( SharedFutureTest )
 {
     std::promise< void >        readyPromise, p1, p2;
     // steal ownership (future -> shared_future) future always let the ownership to the shared_future
@@ -131,4 +132,52 @@ BOOST_AUTO_TEST_CASE( SharedFutureTestSuite )
     BOOST_CHECK( true );
 }
 
-BOOST_AUTO_TEST_SUITE_END() // Future
+namespace
+{
+    // input: 5 3 4 6 1
+    // pivot: 5
+    // quickSort( 3 1 4 ) // order not preserved with partition
+    // quickSort( 6 )
+    template < typename T >
+    std::list< T >  parallelQuickSort( std::list< T > input /* copy */ )
+    {
+        if ( input.empty() || input.size() == 1 )
+            return input;
+
+        std::list< T > result;
+        // Transfers elements from 'input' into 'result', inserting them at 'std::begin( result )'. This effectively inserts those elements into the container and removes them from input, altering the sizes of both containers.
+        result.splice( std::begin( result ), input, std::begin( input ) /* only transfer std::begin( input ) to result */ );
+        const auto& pivot = result.front();
+
+        // Reorders the elements in the range [first, last) in such a way that all elements for which the predicate p returns true precede the elements for which predicate p returns false.
+        // Relative order of the elements is not preserved.
+        // Return iterator to the first element of the second group
+        auto partitionedChunk = std::partition( std::begin( input ), std::end( input ), [ &pivot ]( const T& t ) { return t < pivot; } );
+
+        std::list< T > unsortedLowerChunk;
+        unsortedLowerChunk.splice( std::end( unsortedLowerChunk ), input, std::begin( input ), partitionedChunk );
+
+        // Only call quickSort on one of the chunk as we can process the other chunk with the current thread
+        // possibily start the sorting process of the upperChunk in another thread
+        auto futureSortedUpperChunk = std::async( parallelQuickSort< T >, std::move( input ) ); // let the implem chose the policy
+
+        result.splice( std::begin( result ), parallelQuickSort( std::move( unsortedLowerChunk ) ) );
+        result.splice( std::end( result ), futureSortedUpperChunk.get() );
+
+        return result;
+    }
+}
+
+BOOST_AUTO_TEST_CASE( ParallelQuickSortTest )
+{
+    // list to use splice
+    std::list< int >  v { 5, 3, 6, 9, 4, 2, 8, 10 };
+
+    auto isSorted = [ &v ] { return std::is_sorted( std::begin( v ), std::end( v ) ); };
+
+    BOOST_CHECK( ! isSorted() );
+    v = parallelQuickSort( v );
+    BOOST_CHECK( isSorted() );
+}
+
+BOOST_AUTO_TEST_SUITE_END() // FutureTestSuite

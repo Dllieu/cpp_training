@@ -15,7 +15,7 @@
 
 BOOST_AUTO_TEST_SUITE( Container )
 
-BOOST_AUTO_TEST_CASE( EraseRemoveTestSuite )
+BOOST_AUTO_TEST_CASE( EraseRemoveTest )
 {
     auto isOdd = []( int a ) { return ( a & 1 ) == 1; /* & < == */ };
 
@@ -47,7 +47,7 @@ BOOST_AUTO_TEST_CASE( EraseRemoveTestSuite )
     }
 }
 
-BOOST_AUTO_TEST_CASE( ContainerTestSuite )
+BOOST_AUTO_TEST_CASE( ContainerTest )
 {
     // Base container : forward_list / list / vector (priority_queue) / deque (stack - queue) / set (map)
 
@@ -200,7 +200,7 @@ namespace
     };
 }
 
-BOOST_AUTO_TEST_CASE( UnorderedMapTestSuite )
+BOOST_AUTO_TEST_CASE( UnorderedMapTest )
 {
     // template < class Key,                                    // unordered_map::key_type
     //        class T,                                      // unordered_map::mapped_type
@@ -220,7 +220,7 @@ BOOST_AUTO_TEST_CASE( UnorderedMapTestSuite )
     BOOST_CHECK( it->second == "element 0" );
 }
 
-BOOST_AUTO_TEST_CASE( BitsetTestSuite )
+BOOST_AUTO_TEST_CASE( BitsetTest )
 {
     std::bitset< 3 >    bitset( "100" );
 
@@ -234,7 +234,7 @@ BOOST_AUTO_TEST_CASE( BitsetTestSuite )
     BOOST_CHECK( bitset.test( 0 ) );
 }
 
-BOOST_AUTO_TEST_CASE( SortingTestSuite )
+BOOST_AUTO_TEST_CASE( SortingTest )
 {
     std::list< unsigned > l = { 5, 2, 6, 9 };
     /*std::sort( std::begin( l ), std::end( l ) );*/ // Can't compile, sort need random it access, list is always ordered

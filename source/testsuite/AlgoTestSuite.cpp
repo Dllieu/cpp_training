@@ -13,7 +13,7 @@
 #include <queue>
 #include <climits>
 
-BOOST_AUTO_TEST_SUITE( Interview )
+BOOST_AUTO_TEST_SUITE( Algo )
 
 namespace
 {
@@ -70,7 +70,7 @@ namespace
 }
 
 // You have k lists of sorted integers. Find the smallest range that includes at least one number from each of the k lists.
-BOOST_AUTO_TEST_CASE( SmallestRangeTestSuite )
+BOOST_AUTO_TEST_CASE( SmallestRangeTest )
 {
     std::vector<unsigned> v1{ 4, 10, 15, 24, 26 };
     std::vector<unsigned> v2{ 0, 9, 12, 20 };
@@ -81,7 +81,7 @@ BOOST_AUTO_TEST_CASE( SmallestRangeTestSuite )
     BOOST_CHECK(result.first == 20 && result.second == 24);
 }
 
-BOOST_AUTO_TEST_CASE( MinimumSumTestSuite )
+BOOST_AUTO_TEST_CASE( MinimumSumTest )
 {
     // Minimal sum of two numbers given a list of integers
     std::vector< unsigned >  v { 1, 2, 7, 9, 8 };
@@ -131,7 +131,7 @@ namespace
     }
 }
 
-BOOST_AUTO_TEST_CASE( PermutationTestSuite )
+BOOST_AUTO_TEST_CASE( PermutationTest )
 {
     std::string toBePermuted( "abc" );
 
@@ -154,7 +154,7 @@ BOOST_AUTO_TEST_CASE( PermutationTestSuite )
     BOOST_CHECK( resultWithoutSTL == resultWithSTL );
 }
 
-BOOST_AUTO_TEST_CASE( ProductOfArrayTestSuite )
+BOOST_AUTO_TEST_CASE( ProductOfArrayTest )
 {
     // Given an array A[N] containing N numbers. Crate an array Output[N] where Output[i] is equal to the product of all the elements of A[N] except A[i]
     // Do this in O(n)
@@ -237,14 +237,14 @@ namespace
     {
         Parent() { std::cout << "Create " << name() << std::endl; }
         virtual ~Parent() { std::cout << "Destroy " << name() << std::endl; }
-        virtual std::string name() { return "Parent"; }
+        virtual std::string name() const { return "Parent"; }
     };
 
     struct Child : public Parent
     {
         Child() { std::cout << "Create " << name() << std::endl; }
         ~Child() { std::cout << "Destroy " << name() << std::endl; }
-        std::string name() override { return "Child"; }
+        std::string name() const override { return "Child"; }
     };
 
     std::string    f1( Parent p ) { return p.name(); } // Destroy parent at the end but doesn't create one with the magic of rvalue ref
@@ -261,4 +261,4 @@ BOOST_AUTO_TEST_CASE( HierarchyTestCase )
     BOOST_CHECK( f3( &child ) == "Child" );
 }
 
-BOOST_AUTO_TEST_SUITE_END() // Interview
+BOOST_AUTO_TEST_SUITE_END() // Algo

@@ -16,9 +16,9 @@
 #include <queue>
 #include <unordered_map>
 
-BOOST_AUTO_TEST_SUITE( Threading )
+BOOST_AUTO_TEST_SUITE( ThreadingTestSuite )
 
-BOOST_AUTO_TEST_CASE( ThreadGroupTestSuite )
+BOOST_AUTO_TEST_CASE( ThreadGroupTest )
 {
     boost::thread_group threadGroup;
 
@@ -91,7 +91,7 @@ This does not happen during a thread switch.
 
 See http://blog.tsunanet.net/2010/11/how-long-does-it-take-to-make-context.html
 */
-BOOST_AUTO_TEST_CASE( ThreadSwitchTestSuite )
+BOOST_AUTO_TEST_CASE( ThreadSwitchTest )
 {
     ThreadSwitchEstimator   threadEstimator( 2 );
 
@@ -148,7 +148,7 @@ namespace
     }
 }
 
-BOOST_AUTO_TEST_CASE( ParallelAccumulateTestSuite )
+BOOST_AUTO_TEST_CASE( ParallelAccumulateTest )
 {
     auto n = 100;
     std::vector< int > v;
@@ -190,7 +190,7 @@ namespace
     };
 }
 
-BOOST_AUTO_TEST_CASE( ReadWriteSharedMutexTestSuite )
+BOOST_AUTO_TEST_CASE( ReadWriteSharedMutexTest )
 {
     MultipleReadSingleWrite m;
 
@@ -211,7 +211,7 @@ BOOST_AUTO_TEST_CASE( ReadWriteSharedMutexTestSuite )
         BOOST_CHECK( m.getEntry( i ).is_initialized() );
 }
 
-BOOST_AUTO_TEST_CASE( ConditionVariableTestSuite )
+BOOST_AUTO_TEST_CASE( ConditionVariableTest )
 {
     std::queue< int >           q;
     std::condition_variable     conditionVariable;
@@ -255,7 +255,7 @@ namespace
     };
 }
 
-BOOST_AUTO_TEST_CASE( MultipleLockTestSuite )
+BOOST_AUTO_TEST_CASE( MultipleLockTest )
 {
     WrapperWithMutex w1( 1 );
     WrapperWithMutex w2( 4 );
@@ -280,4 +280,4 @@ BOOST_AUTO_TEST_CASE( MultipleLockTestSuite )
     BOOST_CHECK( w1.n == 30 && w2.n == 18 );
 }
 
-BOOST_AUTO_TEST_SUITE_END() // Threading
+BOOST_AUTO_TEST_SUITE_END() // ThreadingTestSuite

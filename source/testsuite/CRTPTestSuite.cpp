@@ -71,7 +71,7 @@ namespace
     };
 }
 
-BOOST_AUTO_TEST_CASE( PerfTestSuite )
+BOOST_AUTO_TEST_CASE( PerfTest )
 {
     auto testRange = 5000000;
     {
@@ -119,7 +119,7 @@ namespace
     };
 }
 
-BOOST_AUTO_TEST_CASE( EqualityTestSuite )
+BOOST_AUTO_TEST_CASE( EqualityTest )
 {
     ValueType v1(5), v2(6), v3(5);
 
@@ -155,7 +155,7 @@ DERIVE_SHAPE_CRTP( Circle )
 
 #undef DERIVE_SHAPE_CRTP
 
-BOOST_AUTO_TEST_CASE( PolymorphicCopyConstructionTestSuite )
+BOOST_AUTO_TEST_CASE( PolymorphicCopyConstructionTest )
 {
     Square b;
     delete b.clone();

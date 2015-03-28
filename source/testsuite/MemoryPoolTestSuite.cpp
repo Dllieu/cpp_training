@@ -50,7 +50,7 @@ namespace
     }
 }
 
-BOOST_AUTO_TEST_CASE( MemoryPoolTestSuite )
+BOOST_AUTO_TEST_CASE( MemoryPoolTest )
 {
     unsigned int to = 1000000;
     double noAllocator, pool, basic;
@@ -114,7 +114,7 @@ namespace
     }
 }
 
-BOOST_AUTO_TEST_CASE( SlowMemoryPoolTestSuite )
+BOOST_AUTO_TEST_CASE( SlowMemoryPoolTest )
 {
     // slower because boost::function (even function from c++11) :
     //     - can't be inlined by the compiler

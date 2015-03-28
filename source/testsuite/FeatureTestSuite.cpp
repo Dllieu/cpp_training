@@ -6,7 +6,7 @@
 
 BOOST_AUTO_TEST_SUITE( Feature )
 
-BOOST_AUTO_TEST_CASE( DeclTypeTestSuite )
+BOOST_AUTO_TEST_CASE( DeclTypeTest )
 {
     {
         int a = 0;

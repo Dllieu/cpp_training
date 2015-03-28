@@ -75,7 +75,7 @@ namespace
 // In addition to the reasons already mentionned (locality favoring 2, loop overhead favoring 1),
 // it's possible that the compiler could optimize them differently: case 1 gives it the possibility of interleaving instructions from the three blocks,
 // possibliy avoiding pipeline stall if there are dependencies in the instructions of any one block.
-BOOST_AUTO_TEST_CASE( PerfTestSuite )
+BOOST_AUTO_TEST_CASE( PerfTest )
 {
     unsigned maxIteration = 1000;
     // time is not a good measurement :(

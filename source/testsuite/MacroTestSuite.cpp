@@ -4,12 +4,12 @@
 //--------------------------------------------------------------------------------
 #include <boost/test/unit_test.hpp>
 
-BOOST_AUTO_TEST_SUITE( Macro )
+BOOST_AUTO_TEST_SUITE( MacroTestSuite )
 
 #define LOG_TYPE( type ) \
     BOOST_TEST_MESSAGE( #type << ": " << sizeof( type ) )
 
-BOOST_AUTO_TEST_CASE( TypeTestSuite )
+BOOST_AUTO_TEST_CASE( TypeTest )
 {
     LOG_TYPE( bool );
     LOG_TYPE( char );

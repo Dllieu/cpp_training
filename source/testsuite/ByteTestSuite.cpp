@@ -34,7 +34,7 @@ namespace
 }
 
 
-BOOST_AUTO_TEST_CASE( AddTestSuite )
+BOOST_AUTO_TEST_CASE( AddTest )
 {
     BOOST_CHECK( 9 + 8 == add( 9, 8 ) );
 }
@@ -57,7 +57,7 @@ namespace
     }
 }
 
-BOOST_AUTO_TEST_CASE( MultiplyTestSuite )
+BOOST_AUTO_TEST_CASE( MultiplyTest )
 {
     BOOST_CHECK( 9 * 8 == multiply( 9, 8 ) );
 }
@@ -79,7 +79,7 @@ namespace
 }
 
 
-BOOST_AUTO_TEST_CASE( DivideTestSuite )
+BOOST_AUTO_TEST_CASE( DivideTest )
 {
     BOOST_CHECK( 53 / 6 == divide( 53, 6 ) );
 }
@@ -93,7 +93,7 @@ namespace
     }
 }
 
-BOOST_AUTO_TEST_CASE( PowTestSuite )
+BOOST_AUTO_TEST_CASE( PowTest )
 {
     BOOST_CHECK( isPowerOf2( 4 ) && ! isPowerOf2( 5 ) );
 }

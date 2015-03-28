@@ -8,7 +8,7 @@
 // No reason to not apply these optimizations if applicable, minimum gain though
 BOOST_AUTO_TEST_SUITE( OptimizationTricks )
 
-BOOST_AUTO_TEST_CASE( CompareTo0IfPossibleTestSuite )
+BOOST_AUTO_TEST_CASE( CompareTo0IfPossibleTest )
 {
     // In typical processors testing against zero, or testing sign (negative/positive) are simple condition code checks. This means that instructions can be re-ordered to omit a test instruction
     auto test = 0;

@@ -13,7 +13,7 @@ namespace
 {
     struct ObserverA
     {
-        virtual void foo(const std::string& s)
+        virtual void foo(const std::string& s) const
         {
             std::cout << "A: " << s << std::endl;
         }
@@ -21,7 +21,7 @@ namespace
 
     struct ObserverB : ObserverA
     {
-        virtual void foo(const std::string& s)
+        void foo(const std::string& s)  const override
         {
             std::cout << "B: " << s << std::endl;
         }
@@ -29,7 +29,7 @@ namespace
 
     struct ObserverC : ObserverA
     {
-        virtual void foo(const std::string& s)
+        void foo(const std::string& s) const override
         {
             std::cout << "C: " << s << std::endl;
             BOOST_CHECK(true);
@@ -37,7 +37,7 @@ namespace
     };
 }
 
-BOOST_AUTO_TEST_CASE( GenericObserverTestSuite )
+BOOST_AUTO_TEST_CASE( GenericObserverTest )
 {
     auto genericObservable = designpattern::Observable<ObserverA>();
 
@@ -98,7 +98,7 @@ namespace
     };
 }
 
-BOOST_AUTO_TEST_CASE( BasicObserverTestSuite )
+BOOST_AUTO_TEST_CASE( BasicObserverTest )
 {
     Subject                                 subject;
     std::shared_ptr< AbstractObserver >     observer = std::make_shared< BasicObserver >();

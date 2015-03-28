@@ -84,7 +84,7 @@ namespace
     }
 }
 
-BOOST_AUTO_TEST_CASE( CallTestSuite )
+BOOST_AUTO_TEST_CASE( CallTest )
 {
     std::unique_ptr< A > a( create( TypeToCreate::A, 5 ) );
     BOOST_CHECK( a.get() );
@@ -116,7 +116,7 @@ namespace
     };
 }
 
-BOOST_AUTO_TEST_CASE( defaultCopy )
+BOOST_AUTO_TEST_CASE( defaultCopyTest )
 {
     //auto e = W();
     Z z;

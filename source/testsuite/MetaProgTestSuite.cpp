@@ -34,7 +34,7 @@ namespace
     };
 }
 
-BOOST_AUTO_TEST_CASE( FactorialTestSuite )
+BOOST_AUTO_TEST_CASE( FactorialTest )
 {
     tools::Timer t;
 
@@ -80,7 +80,7 @@ namespace
     }
 }
 
-BOOST_AUTO_TEST_CASE( FibonacciTestSuite )
+BOOST_AUTO_TEST_CASE( FibonacciTest )
 {
     unsigned long long metaProgResult, basicResult;
     double metaProgElapsed, basicElapsed;
@@ -136,7 +136,7 @@ namespace
     };
 }
 
-BOOST_AUTO_TEST_CASE( PrimeTestSuite )
+BOOST_AUTO_TEST_CASE( PrimeTest )
 {
     BOOST_CHECK( ! IsPrime< 27 >::value );
     BOOST_CHECK( IsPrime< 29 >::value );
@@ -175,7 +175,7 @@ namespace
 }
 
 // http://stackoverflow.com/questions/2910979/how-is-base-of-works
-BOOST_AUTO_TEST_CASE( IsBaseOfTestSuite )
+BOOST_AUTO_TEST_CASE( IsBaseOfTest )
 {
     BOOST_CHECK( ( is_base_of< Base, Derived >::value ) );
     BOOST_CHECK( ! ( is_base_of< Derived, Base >::value ) );
@@ -229,7 +229,7 @@ namespace
     }
 }
 
-BOOST_AUTO_TEST_CASE( ForwardTestSuite )
+BOOST_AUTO_TEST_CASE( ForwardTest )
 {
     BOOST_CHECK( forwardTest( 5, 98.21, 78 ) );
 }

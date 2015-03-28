@@ -40,7 +40,7 @@ namespace
     };
 }
 
-BOOST_AUTO_TEST_CASE( VariadicVisitorTestSuite )
+BOOST_AUTO_TEST_CASE( VariadicVisitorTest )
 {
     Option o;
     Future f;
@@ -111,7 +111,7 @@ namespace
     };
 }
 
-BOOST_AUTO_TEST_CASE( BasicVisitorTestSuite )
+BOOST_AUTO_TEST_CASE( BasicVisitorTest )
 {
     std::unique_ptr< AbstractBasicVisitor > v = std::make_unique<  BasicVisitor >();
     VisitableA  a;

@@ -20,7 +20,7 @@ namespace
     }
 }
 
-BOOST_AUTO_TEST_CASE( DecayTestSuite )
+BOOST_AUTO_TEST_CASE( DecayTest )
 {
     BOOST_CHECK( ( std::is_same<int, std::decay<int&>::type>::value ) );
     BOOST_CHECK( ( std::is_same<int, std::decay<int&&>::type>::value ) );
@@ -39,7 +39,7 @@ namespace
     class B { virtual ~B() {} };
 }
 
-BOOST_AUTO_TEST_CASE( HasVirtualDestructorTestSuite )
+BOOST_AUTO_TEST_CASE( HasVirtualDestructorTest )
 {
     BOOST_CHECK( ! std::has_virtual_destructor< A >::value );
     BOOST_CHECK( std::has_virtual_destructor< B >::value );
@@ -76,7 +76,7 @@ IMPLEMFORWARDCLASS( forwardB, realB );
 
 #undef IMPLEMFORWARDCLASS
 
-BOOST_AUTO_TEST_CASE( TraitsTestSuite )
+BOOST_AUTO_TEST_CASE( TraitsTest )
 {
     ForwardClass forwardClass;
     RealClass realClass;
@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE( TraitsTestSuite )
     BOOST_CHECK( forwardClass.forwardB() == realClass.realB() );
 }
 
-BOOST_AUTO_TEST_CASE( VariableTypeTestSuite )
+BOOST_AUTO_TEST_CASE( VariableTypeTest )
 {
     ForwardClass forwardClass;
     (void)forwardClass; // unreferenced local variable
@@ -102,7 +102,7 @@ namespace
     void callWithPointer( T(&)[sz], bool& isPointer ) { isPointer = false; }
 }
 
-BOOST_AUTO_TEST_CASE( ArrayParameterTestSuite )
+BOOST_AUTO_TEST_CASE( ArrayParameterTest )
 {
     bool isPointer = false;
     int i[5];

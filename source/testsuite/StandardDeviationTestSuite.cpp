@@ -10,7 +10,7 @@ using namespace pricing;
 
 BOOST_AUTO_TEST_SUITE( StandardDeviationTestSuite )
 
-BOOST_AUTO_TEST_CASE( ComputeBasicStandardDeviationTestSuite )
+BOOST_AUTO_TEST_CASE( ComputeBasicStandardDeviationTest )
 {
     double points[] =
     {
@@ -21,7 +21,7 @@ BOOST_AUTO_TEST_CASE( ComputeBasicStandardDeviationTestSuite )
     BOOST_REQUIRE( std::fabs( result - 0.0141421 ) < 10e-6 );
 }
 
-BOOST_AUTO_TEST_CASE( ComputeStandardDeviationTestSuite )
+BOOST_AUTO_TEST_CASE( ComputeStandardDeviationTest )
 {
     double points[] =
     {

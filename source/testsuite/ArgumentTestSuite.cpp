@@ -71,7 +71,7 @@ namespace
     double PodExample::sd = 0;
 }
 
-BOOST_AUTO_TEST_CASE( PodTestSuite )
+BOOST_AUTO_TEST_CASE( PodTest )
 {
     // a.c = 72
     // a::sd skipped because static

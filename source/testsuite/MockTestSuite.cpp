@@ -70,4 +70,4 @@ BOOST_AUTO_TEST_CASE( SimpleCallWithConstraint )
     BOOST_CHECK( backendClient.connect( login, password ) );
 }
 
-BOOST_AUTO_TEST_SUITE_END() // MockTestSuite
+BOOST_AUTO_TEST_SUITE_END() // MockTestSutie

@@ -26,9 +26,6 @@
     <Filter Include="Source Files\Containers">
       <UniqueIdentifier>{1651a1e8-3301-46ad-af81-6b088e242243}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Network">
-      <UniqueIdentifier>{5df49e21-ccc8-480a-a2ed-60516699cb67}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Mocking">
       <UniqueIdentifier>{217cb8ca-0929-4cad-8505-633ceb6f2777}</UniqueIdentifier>
     </Filter>
@@ -37,6 +34,9 @@
     </Filter>
     <Filter Include="Source Files\SyntaxSpecific">
       <UniqueIdentifier>{f3ad7e35-65da-4332-9f5c-1df8395a7801}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Exercice">
+      <UniqueIdentifier>{645b78f4-ebde-4402-b268-8943523ae891}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -94,9 +94,6 @@
     <ClCompile Include="..\source\testsuite\CustomContainerTestSuite.cpp">
       <Filter>Source Files\Containers</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\testsuite\TwitchTestSuite.cpp">
-      <Filter>Source Files\Network</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\testsuite\MockTestSuite.cpp">
       <Filter>Source Files\Mocking</Filter>
     </ClCompile>
@@ -111,9 +108,6 @@
     </ClCompile>
     <ClCompile Include="..\source\testsuite\FunctionCallTestSuite.cpp">
       <Filter>Source Files\ImpracticalTest</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\testsuite\AlgoTestSuite.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\source\testsuite\OptimizationTricks.cpp">
       <Filter>Source Files\ImpracticalTest</Filter>
@@ -132,6 +126,9 @@
     </ClCompile>
     <ClCompile Include="..\source\testsuite\FutureTestSuite.cpp">
       <Filter>Source Files\Threading</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\testsuite\AlgoTestSuite.cpp">
+      <Filter>Source Files\Exercice</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -7,7 +7,7 @@
 #include <atomic>
 #include <iostream>
 
-BOOST_AUTO_TEST_SUITE( LockFree )
+BOOST_AUTO_TEST_SUITE( LockFreeTestSuite )
 
 namespace
 {
@@ -101,4 +101,4 @@ BOOST_AUTO_TEST_CASE( CompareExchange )
     BOOST_CHECK( size == 10 );
 }
 
-BOOST_AUTO_TEST_SUITE_END() // LockFree
+BOOST_AUTO_TEST_SUITE_END() // LockFreeTestSuite

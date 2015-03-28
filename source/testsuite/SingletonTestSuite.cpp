@@ -44,7 +44,7 @@ namespace
     };
 }
 
-BOOST_AUTO_TEST_CASE( ThreadSafeSingletonTestSuite )
+BOOST_AUTO_TEST_CASE( ThreadSafeSingletonTest )
 {
     BOOST_CHECK( ThreadSafeDoubleCheckSingleton< int >::instance() != nullptr );
     BOOST_CHECK( designpattern::ThreadSafeSingleton< int >::instance() != nullptr );
