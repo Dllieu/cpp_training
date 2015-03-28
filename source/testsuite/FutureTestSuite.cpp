@@ -82,8 +82,8 @@ BOOST_AUTO_TEST_CASE( PackagedTaskTest )
 
 BOOST_AUTO_TEST_CASE( SpawnTaskTest )
 {
-    auto f = threading::spawnTask( []( int i ) { std::this_thread::sleep_for( std::chrono::milliseconds( 500 ) ); return i; }, EXPECTED_VALUE );
-    BOOST_CHECK( f.get() == EXPECTED_VALUE );
+    auto f = threading::spawnTask( []( int lhs, int rhs ) { std::this_thread::sleep_for( std::chrono::milliseconds( 500 ) ); return lhs + rhs; }, EXPECTED_VALUE, EXPECTED_VALUE );
+    BOOST_CHECK( f.get() == EXPECTED_VALUE * 2 );
 }
 
 BOOST_AUTO_TEST_CASE( PromiseTest )

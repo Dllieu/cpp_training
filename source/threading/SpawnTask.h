@@ -19,7 +19,7 @@ namespace threading
 
         std::future< resultFutureType > future( task.get_future() );
 
-        std::thread t( std::move( task ), std::forward< ARGS... >( args )... );
+        std::thread t( std::move( task ), std::forward< ARGS >( args )... );
         t.detach();
 
         return future;
