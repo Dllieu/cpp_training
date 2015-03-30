@@ -95,32 +95,4 @@ BOOST_AUTO_TEST_CASE( CallTest )
     BOOST_CHECK( c.get() );
 }
 
-namespace
-{
-    class W
-    {
-    public:
-        W() {}
-        W( const W& w ) { std::cout << " copy constructor W " << std::endl; }
-        W& operator=( const W& w ) { std::cout << " copy operator W " << std::endl; }
-    };
-
-    class Z
-    {
-    public:
-        Z() = default;
-        
-        Z( const Z& ) = default;
-        W w;
-        std::string s;
-    };
-}
-
-BOOST_AUTO_TEST_CASE( defaultCopyTest )
-{
-    //auto e = W();
-    Z z;
-    Z zz = z;
-}
-
 BOOST_AUTO_TEST_SUITE_END() // FactoryTestSuite
