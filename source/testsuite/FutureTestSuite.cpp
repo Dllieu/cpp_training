@@ -101,7 +101,7 @@ BOOST_AUTO_TEST_CASE( PromiseTest )
 
     std::this_thread::sleep_for( std::chrono::milliseconds( 200 ) );
 
-    // only way to check the status of a future right now
+    // Useless test
     if ( EXPECTED_VALUE == 0 )
         // Another way to store an exception in a future is to destroy the std::promise or std::packaged_task associated with the future without calling either of the set functions on the promise or invoking the packaged task
         p.set_exception( std::make_exception_ptr( std::logic_error( "this can't happen" ) ) );
