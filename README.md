@@ -7,6 +7,8 @@ Visual studio 2013 (vc120) project
 extra dependencies (such as boost) in dependencies (see dependencies/README.MD)
 
 ## TODO
+http://www.cl.cam.ac.uk/~pes20/weakmemory/
+
 comment std::call_once (if called and throw exception, call_once will be called again)
 
 move all the project to subfolder vc120
