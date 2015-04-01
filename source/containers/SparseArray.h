@@ -18,10 +18,7 @@ namespace containers
         typedef T               value_type;
         static const size_t     MAX_SIZE = N;
 
-        SparseArray()
-        {
-            // NOTHING
-        }
+        SparseArray() = default;
 
         std::size_t     size() const
         {
