@@ -1,6 +1,6 @@
 # Specific folders
 dependencies/lib/*
-bin
+delivery
 
 #################
 ## Eclipse
