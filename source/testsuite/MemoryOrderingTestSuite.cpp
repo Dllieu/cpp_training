@@ -88,6 +88,7 @@ BOOST_AUTO_TEST_CASE( AcquireRelease )
     // Acquire Release semantic to establish Synchronizes-with relationship (ready -> data)
     std::thread t( [&]
     {
+        // http://preshing.com/20120710/memory-barriers-are-like-source-control-operations/ : must read to understand memory_order_relaxed with a easy analogy
         data.store( 1, std::memory_order_relaxed ); // can be reordered
         ready.store( true, std::memory_order_release ); // make sure that this statement is executed after the code above (i.e. might potentially make a memory barrier before this instruction)
     } );
