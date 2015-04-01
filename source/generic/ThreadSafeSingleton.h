@@ -23,6 +23,7 @@ public:
         static std::once_flag           onceFlag;
 
         // No capture as singleton is not on the stack, can be accessed directly through static storage
+        // If call_once throw an exception, next call to instance() will retry the call_once
         std::call_once( onceFlag, []() { singleton.reset( new T ); } );
         return singleton;
     }

@@ -130,5 +130,8 @@
     <ClCompile Include="..\..\source\testsuite\SingletonTestSuite.cpp">
       <Filter>Source Files\Exercice</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\source\testsuite\MemoryOrderingTestSuite.cpp">
+      <Filter>Source Files\Threading</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

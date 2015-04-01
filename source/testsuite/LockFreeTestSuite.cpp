@@ -10,6 +10,7 @@
 
 #include "tools/Timer.h"
 
+// http://preshing.com/20120612/an-introduction-to-lock-free-programming/
 BOOST_AUTO_TEST_SUITE( LockFreeTestSuite )
 
 namespace
@@ -49,6 +50,10 @@ namespace
 
 BOOST_AUTO_TEST_CASE( AtomicFlagTest )
 {
+    // Locks actually suspend thread execution, freeing up cpu resources for other tasks, but incurring in obvious context-switching overhead when stopping/restarting the thread.
+    // On the contrary, threads attempting atomic operations don't wait and keep trying until success (so-called busy-waiting), so they don't incur in context-switching overhead, but neither free up cpu resources.
+    // Summing up, in general atomic operations are faster if contention between threads is sufficiently low.
+    // You should definitely do benchmarking as there's no other reliable method of knowing what's the lowest overhead between context-switching and busy-waiting.
     BOOST_CHECK( mutexLoop() > atomicFlagLoop() );
 }
 
@@ -162,7 +167,5 @@ BOOST_AUTO_TEST_CASE( CompareExchange )
 
     BOOST_CHECK( size == 10 );
 }
-
-// todo memory order acquire / release
 
 BOOST_AUTO_TEST_SUITE_END() // LockFreeTestSuite

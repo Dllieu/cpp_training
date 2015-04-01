@@ -91,6 +91,7 @@
     <ClCompile Include="..\..\source\testsuite\FutureTestSuite.cpp" />
     <ClCompile Include="..\..\source\testsuite\HashingTestSuite.cpp" />
     <ClCompile Include="..\..\source\testsuite\LockFreeTestSuite.cpp" />
+    <ClCompile Include="..\..\source\testsuite\MemoryOrderingTestSuite.cpp" />
     <ClCompile Include="..\..\source\testsuite\MockTestSuite.cpp" />
     <ClCompile Include="..\..\source\testsuite\OptimizationTricks.cpp" />
     <ClCompile Include="..\..\source\testsuite\SingletonTestSuite.cpp" />
