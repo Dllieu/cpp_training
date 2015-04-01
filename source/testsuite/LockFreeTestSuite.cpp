@@ -61,16 +61,34 @@ namespace
 
     void    append( int value )
     {
+        while ( ! ready )
+            std::this_thread::yield(); // thread waits for other threads to advance without blocking
+        
         Node* oldHead = listHead;
-        Node* newHead = new Node;
-        newHead->value = value;
-        newHead->next = oldHead;
+        Node* newHead = new Node { value, oldHead };
 
-        // Compares the contents of the atomic object's contained value with expected:
-        //     - if true, it replaces the contained value with val (like store).
-        //     - if false, it replaces expected with the contained value .
-        while ( ! listHead.compare_exchange_weak( oldHead /* expected */, newHead /* new value */ ) )
-            newHead->next = oldHead;
+        // CAS idiom (compare and swap)
+        // Atomically compares the object representation of *this with the object representation of expected, as if by std::memcmp,
+        // and if those are bitwise-equal, replaces the former with desired (performs read-modify-write operation).
+        // Otherwise, loads the actual value stored in *this into expected (performs load operation). Copying is performed as if by std::memcpy.
+        // As CAS perform a load and store operation, we usually pass std::memory_order_seq_cst (acquire for the load, release for the store)
+        while ( ! listHead.compare_exchange_weak( oldHead /* expected */, newHead /* desired */, std::memory_order_seq_cst /* default memory order */ ) )
+            newHead->next = oldHead; // might need to update oldHead as another thread might update the current head
+            
+        // - Why doing exchange in a loop?
+        // Usually, you want your work to be done before you move on, thus, you put compare_exchange_weak into a loop so that it tries to exchange until it succeeds (i.e., returns true).
+        // Note that also compare_exchange_strong is often used in a loop. It does not fail due to spurious failure, but it does fail due to concurrent writes.
+        // 
+        // - Why to use weak instead of strong?
+        // Quite easy: Spurious failure does not happen often, so it is no big performance hit. In constrast, tolerating such a failure allows
+        // for a much more efficient implementation of the weak version (in comparison to strong) on some platforms: strong must always check for spurious failure and mask it. This is expensive.
+        // Thus, weak is used because it is a lot faster than strong on some platforms
+        // 
+        // - When should you use weak and when strong?
+        // The reference states hints when to use weak and when to use strong:
+        //  When a compare-and-exchange is in a loop, the weak version will yield better performance on some platforms.
+        //  When a weak compare-and-exchange would require a loop and a strong one would not, the strong one is preferable.
+        // So the answer seems to be quite simple to remember: If you would have to introduce a loop only because of spurious failure, don't do it; use strong. If you have a loop anyway, then use weak.
     }
 }
 
@@ -82,11 +100,12 @@ BOOST_AUTO_TEST_CASE( CompareExchange )
     for ( unsigned i = 0; i < 10; ++i )
         threads.push_back( std::thread( append, i ) );
 
+    ready = true;
     for ( auto& thread : threads )
         thread.join();
 
     unsigned size = 0;
-    Node* it = listHead;
+    Node* it = listHead.load();
     while ( it )
     {
         std::cout << it->value;
@@ -100,5 +119,7 @@ BOOST_AUTO_TEST_CASE( CompareExchange )
 
     BOOST_CHECK( size == 10 );
 }
+
+// todo memory order acquire / release
 
 BOOST_AUTO_TEST_SUITE_END() // LockFreeTestSuite
