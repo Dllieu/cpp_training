@@ -1,1 +1,1 @@
-start %~dp0/project/Tools.sln
+start %~dp0/solution/vc120/Tools.sln

@@ -17,7 +17,7 @@ namespace threading
         using resultFutureType = std::result_of_t< FUNCTOR( ARGS&&... ) >;
         std::packaged_task< resultFutureType ( ARGS&&... ) > task( std::forward< FUNCTOR >( functor ) );
 
-        std::future< resultFutureType > future( task.get_future() );
+        auto future( task.get_future() );
 
         std::thread t( std::move( task ), std::forward< ARGS >( args )... );
         t.detach();

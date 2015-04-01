@@ -11,17 +11,15 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\source\tools\MemoryPool.cpp" />
-    <ClCompile Include="..\source\tools\Timer.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\source\tools\MemoryPool.h" />
-    <ClInclude Include="..\source\tools\Timer.h" />
+    <ClInclude Include="..\..\source\generic\HashCombine.h" />
+    <ClInclude Include="..\..\source\generic\Observer.h" />
+    <ClInclude Include="..\..\source\generic\ThreadSafeSingleton.h" />
+    <ClInclude Include="..\..\source\generic\Visitor.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{20278279-B699-4587-B872-7A746661D354}</ProjectGuid>
-    <RootNamespace>Tools</RootNamespace>
-    <ProjectName>Tools</ProjectName>
+    <ProjectGuid>{CD33CD06-C9D7-43C9-ADE5-3C2B83BBD20A}</ProjectGuid>
+    <RootNamespace>DesignPattern</RootNamespace>
+    <ProjectName>Generics</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -54,11 +52,16 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir)\..\dependencies\lib\boost\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\..\source\librairies\;C:/Projects/external_lib/boost_1_53_0/boost_1_53_0</AdditionalIncludeDirectories>
+      <PreprocessToFile>true</PreprocessToFile>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Lib>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>

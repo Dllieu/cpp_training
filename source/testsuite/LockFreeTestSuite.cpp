@@ -5,9 +5,52 @@
 #include <boost/test/unit_test.hpp>
 #include <thread>
 #include <atomic>
+#include <mutex>
 #include <iostream>
 
+#include "tools/Timer.h"
+
 BOOST_AUTO_TEST_SUITE( LockFreeTestSuite )
+
+namespace
+{
+    double      mutexLoop()
+    {
+        tools::Timer t( "mutex" );
+
+        std::mutex m;
+        auto j = 0;
+        for ( auto i = 0; i < 1000000; ++i )
+        {
+            std::lock_guard< std::mutex > l( m );
+            ++j;
+        }
+        return t.elapsed();
+    }
+
+    double      atomicFlagLoop()
+    {
+        tools::Timer t( "atomic_flag" );
+
+        // only type to be guaranteed to be lock free
+        std::atomic_flag lock = ATOMIC_FLAG_INIT; // can be either set or clear (here we init with a clear state)
+        auto j = 0;
+        for ( auto i = 0; i < 1000000; ++i )
+        {
+            while ( lock.test_and_set( std::memory_order_acquire ) ) // acquire lock
+                ; // spin
+
+            ++j;
+            lock.clear(); // release lock
+        }
+        return t.elapsed();
+    }
+}
+
+BOOST_AUTO_TEST_CASE( AtomicFlagTest )
+{
+    BOOST_CHECK( mutexLoop() > atomicFlagLoop() );
+}
 
 namespace
 {
@@ -25,7 +68,7 @@ namespace
         while ( ! ready )
             std::this_thread::yield(); // thread waits for other threads to advance without blocking
 
-        for ( volatile unsigned i = 0; i < 1000000; ++i )
+        for ( volatile unsigned i = 0; i < 1000000; ++i ) // useless loop so we precise volatile to for compiler to use it
             ;
 
         // Replaces the contained value by val and returns the value it had immediately before
