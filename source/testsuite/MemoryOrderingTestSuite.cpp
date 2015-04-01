@@ -76,7 +76,7 @@ BOOST_AUTO_TEST_CASE( SequentialConsistency )
 
     // http://herbsutter.com/2012/08/02/strong-and-weak-hardware-memory-models/
     // In this example the fact that we use std::memory_order_seq_cst everywhere might incure an overhead as we might force the use of a memory barrier which could be not needed for certain processor (e.g. x86 which have a strong memory model)
-    // Acquire Release semantic is more adapted in this case, although, in this test, processor is clever enough to only add one memory barrier between data and ready as there's only two instructions
+    // For this test, Acquire Release semantic is more adapted even if processor should be clever enough to only add one memory barrier between data and ready as there's only two instructions
     // But we can think as when using memory_order_seq_cst, at worst case, we could have two memory barrier which surround the call of the atomic object
 }
 
