@@ -56,7 +56,7 @@ BOOST_AUTO_TEST_CASE( SequentialConsistency )
 {
     // If you omit the optional std::memory_order argument on all atomic library functions, the default value is std::memory_order_seq_cst, which turns all atomic variables into sequentially consistent atomics
     // With memory_order_seq_cst atomics, the whole algorithm is guaranteed to appear sequentially consistent (executed same order as in the code)(impossible to experience memory reordering) as long as there are no data races.
-    
+
     std::atomic< bool > ready( false );
     std::atomic< int > data( 0 );
 
@@ -88,12 +88,18 @@ BOOST_AUTO_TEST_CASE( AcquireRelease )
     // Acquire Release semantic to establish Synchronizes-with relationship (ready -> data)
     std::thread t( [&]
     {
-        // http://preshing.com/20120710/memory-barriers-are-like-source-control-operations/ : must read to understand memory_order_relaxed with a easy analogy
+        // About std::memory_order_relaxed
+        // http://preshing.com/20120710/memory-barriers-are-like-source-control-operations/
+        // once a given thread has seen a particular value of an atomic variable, a subsequent read by that thread can’t retrieve an earlier value of the variable.
+        // Without any additional synchronization, the modification order of each variable is the only thing shared between threads that are using memory_order_relaxed
         data.store( 1, std::memory_order_relaxed ); // can be reordered
+
+        // ensures that all the store performed before the barrier is visible to other processors
         ready.store( true, std::memory_order_release ); // make sure that this statement is executed after the code above (i.e. might potentially make a memory barrier before this instruction)
     } );
 
-    if ( ready.load( std::memory_order_acquire ) ) // make sure that this statement is executed before the code below (i.e. might potentially make a memory barrier after this instruction)
+    // ensures that the load performed after the barrier receive the latest value that is visible at the time of the barrier.
+    if ( ready.load( std::memory_order_acquire ) ) // ensure that this statement is executed before the code below (i.e. might potentially make a memory barrier after this instruction)
         BOOST_CHECK( data.load( std::memory_order_relaxed ) == 1 ); // can be reordered
 
     t.join();
