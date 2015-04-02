@@ -64,15 +64,6 @@ namespace containers
         };
 
     private:
-        std::unique_ptr< Node >     head_;
-        mutable std::mutex          headMutex_;
-
-        Node*                       tail_; // owned by head_ ror one of it's sub-node
-        mutable std::mutex          tailMutex_;
-
-        std::condition_variable     conditionVariable_;
-
-    private:
         Node*   getTailAddress() const
         {
             std::lock_guard< std::mutex >   lock( tailMutex_ );
@@ -110,6 +101,15 @@ namespace containers
 
             return previousHead;
         }
+
+    private:
+        std::unique_ptr< Node >     head_;
+        mutable std::mutex          headMutex_;
+
+        Node*                       tail_; // owned by head_ ror one of it's sub-node
+        mutable std::mutex          tailMutex_;
+
+        std::condition_variable     conditionVariable_;
     };
 }
 
