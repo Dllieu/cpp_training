@@ -3,8 +3,10 @@
 // See https://github.com/Dllieu for updates, documentation, and revision history.
 //--------------------------------------------------------------------------------
 #include <boost/test/unit_test.hpp>
+#include <thread>
 
 #include "containers/SparseArray.h"
+#include "containers/LockBasedQueue.h"
 
 using namespace containers;
 
@@ -20,7 +22,7 @@ namespace
         THETA,
         GAMMA,
         VOMMA,
-        VONNA,
+        VANNA,
         PRICINGRESULT_SIZE
     };
 
@@ -47,6 +49,21 @@ BOOST_AUTO_TEST_CASE( SparseArrayTest )
             BOOST_CHECK_THROW( constBracketOperator( sparseArray, i ), std::out_of_range );
 
     BOOST_CHECK( sparseArray.size() == 1 );
+}
+
+BOOST_AUTO_TEST_CASE( LockBasedQueueTest )
+{
+    containers::LockBasedQueue< int >  q;
+
+    q.push( 5 );
+    BOOST_CHECK( *q.tryPop() == 5 );
+
+    std::thread t( [ &q ]{ std::this_thread::sleep_for( std::chrono::milliseconds( 300 ) ); q.push( 7 ); } );
+    BOOST_CHECK( *q.waitAndPop() == 7 );
+
+    t.join();
+
+    BOOST_CHECK( q.empty() );
 }
 
 BOOST_AUTO_TEST_SUITE_END() // CustomContainer

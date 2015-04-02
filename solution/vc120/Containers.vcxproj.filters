@@ -5,6 +5,9 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
+    <Filter Include="Source Files\ThreadSafe">
+      <UniqueIdentifier>{9a2320d3-58dd-4294-93f0-d8ecdce52cdb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\source\containers\SparseArray.h">
@@ -12,6 +15,9 @@
     </ClInclude>
     <ClInclude Include="..\..\source\containers\VectorGrowthPolicy.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\containers\LockBasedQueue.h">
+      <Filter>Source Files\ThreadSafe</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

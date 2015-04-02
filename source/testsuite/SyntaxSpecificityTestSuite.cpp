@@ -327,7 +327,7 @@ namespace
 
     void callHiddenVirtualFunction()
     {
-        std::unique_ptr< VirtualFunctionHidden > implem = std::make_unique< VirtualFunctionHidden >();
+        auto implem = std::make_unique< VirtualFunctionHidden >();
         implem->f( 6 );
 
         implem.get()->BaseVirtualFunctionHidden::f();
