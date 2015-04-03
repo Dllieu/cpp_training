@@ -22,24 +22,24 @@ namespace
     struct add_const_ref_< true >
     {
         template< typename T >
-        struct deduce_type { typedef T type; };
+        struct deduce_type { using type = T; };
     };
 
     template<>
     struct add_const_ref_< false >
     {
         template< typename T >
-        struct deduce_type { typedef const T& type; };
+        struct deduce_type { using type = const T&; };
     };
 
     template< typename T >
     struct add_const_ref
     {
-        typedef typename add_const_ref_< boost::is_reference< T >::type::value >::template deduce_type< T >::type type;
-        typedef typename boost::mpl::if_< typename boost::is_reference< T >,
-                                          typename T,
-                                          typename boost::add_reference< typename boost::add_const< T >::type >::type
-                                        >::type type2;
+        using type = typename add_const_ref_< boost::is_reference< T >::type::value >::template deduce_type< T >::type;
+        using type2 = typename boost::mpl::if_< typename boost::is_reference< T >,
+                                                typename T,
+                                                typename boost::add_reference< typename boost::add_const< T >::type >::type
+                                              >::type;
     };
 }
 
@@ -59,38 +59,38 @@ namespace
     //     - function with more than 1 argument
 
     template< typename T, typename X /* to replace */, typename Y /* replace with */ >
-    struct replace_type { typedef typename T type; };
+    struct replace_type { using type = T; };
 
     template< typename X, typename Y >
-    struct replace_type< X, X, Y > { typedef typename Y type; };
+    struct replace_type< X, X, Y > { using type = Y; };
 
     template< typename X, typename Y >
-    struct replace_type< X&, X, Y > { typedef typename Y& type; };
+    struct replace_type< X&, X, Y > { using type = Y&; };
 
     template< typename X, typename Y >
-    struct replace_type< X*, X, Y > { typedef typename Y* type; };
+    struct replace_type< X*, X, Y > { using type = Y*; };
 
     template< typename T, typename X, typename Y, int N >
     struct replace_type< T[N], X, Y >
     {
-        typedef typename replace_type< T, X, Y >::type atomicType;
-        typedef typename atomicType type[N];
+        using atomicType = typename replace_type< T, X, Y >::type;
+        using type = atomicType[N];
     };
 
     template < typename T, typename X, typename Y >
     struct replace_type< T (*) (), X, Y >
     {
-        typedef typename replace_type< T, X, Y >::type returnType;
-        typedef typename returnType (* type) ();
+        using returnType = typename replace_type< T, X, Y >::type;
+        using type = returnType (*) ();
     };
  
     template< typename TR, typename T1, typename X, typename Y >
     struct replace_type< TR (*) (T1), X, Y >
     {
-        typedef typename replace_type< TR, X, Y >::type returnType;
-        typedef typename replace_type< T1, X, Y >::type argumentType;
+        using returnType = typename replace_type< TR, X, Y >::type;
+        using argumentType = typename replace_type< T1, X, Y >::type;
  
-        typedef typename returnType (* type) (argumentType);
+        using type = returnType (*) (argumentType);
     };
 }
 
@@ -119,7 +119,7 @@ namespace
     template < typename Target, typename Source >
     inline Target  polymorphic_downcast( Source& s )
     {
-        typedef typename boost::remove_reference< Target >::type targetNoRef;
+        using targetNoRef = typename boost::remove_reference< Target >::type;
         assert( dynamic_cast< targetNoRef* >( &s ) == &s );
         return static_cast< Target >( s );
     }

@@ -107,13 +107,13 @@ namespace
     template < size_t N, size_t c > 
     struct IsPrimeImpl
     { 
-        typedef typename boost::mpl::if_< boost::mpl::bool_< ( c * c > N ) >,
-                                          boost::mpl::true_,
-                                          typename boost::mpl::if_< boost::mpl::bool_< ( N % c == 0 ) >,
-                                                                    boost::mpl::false_,
-                                                                    IsPrimeImpl< N, c + 1 >
-                                                                  >::type
-                                        >::type type;
+        using type = typename boost::mpl::if_< boost::mpl::bool_< ( c * c > N ) >,
+                                               boost::mpl::true_,
+                                               typename boost::mpl::if_< boost::mpl::bool_< ( N % c == 0 ) >,
+                                                                         boost::mpl::false_,
+                                                                         IsPrimeImpl< N, c + 1 >
+                                                                       >::type
+                                             >::type;
         enum { value = type::value };
     };
  
@@ -147,8 +147,8 @@ BOOST_AUTO_TEST_CASE( PrimeTest )
 namespace
 {
     // Functions shall not have a return type of type array or function, although they may have a return type of type pointer or reference to such things
-    typedef char (&yes)[1];
-    typedef char (&no)[2];
+    using yes = char (&)[1];
+    using no = char (&)[2];
 
     template < typename B, typename D >
     struct Host

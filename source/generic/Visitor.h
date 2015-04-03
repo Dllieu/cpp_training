@@ -60,8 +60,7 @@ struct function_traits : public function_traits<decltype( &T::operator() )>
 template <typename ClassType, typename ReturnType, typename Arg>
 struct function_traits< ReturnType( ClassType::* )( Arg ) const >
 {
-    typedef ReturnType resultType;
-    typedef typename std::decay< Arg >::type argumentType;
+    using argumentType = typename std::decay< Arg >::type;
 };
 
 template <typename...> struct VariadicVisitor;

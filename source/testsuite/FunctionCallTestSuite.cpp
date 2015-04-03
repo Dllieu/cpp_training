@@ -13,7 +13,7 @@ BOOST_AUTO_TEST_SUITE( FunctionCallTestSuite )
 
 namespace
 {
-    typedef /*std::vector< std::string >*/int TypeArgument;
+    using TypeArgument = /*std::vector< std::string >*/int;
     inline void realImplementation( TypeArgument copiedData )
     {
         FUNCTOR_IMPLEMENTATION( copiedData );

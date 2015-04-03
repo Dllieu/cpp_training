@@ -15,7 +15,7 @@ namespace containers
     class SparseArray
     {
     public:
-        typedef T               value_type;
+        using value_type = T;
         static const size_t     MAX_SIZE = N;
 
         SparseArray() = default;

@@ -39,7 +39,7 @@ namespace generics
             return seed;
 
         // Not recursion, will create N templates
-        size_t remainder = hashCombineGeneric< Hash >(ts...);
+        auto remainder = hashCombineGeneric< Hash >(ts...);
         // ...
         return static_cast<size_t>( Hash128to64(seed, remainder) );
     }
