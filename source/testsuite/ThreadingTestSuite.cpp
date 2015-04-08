@@ -157,7 +157,7 @@ BOOST_AUTO_TEST_CASE( ParallelAccumulateTest )
     while ( n > 0 )
         v.push_back( n-- );
 
-    BOOST_CHECK( ParallelAccumulate( std::begin( v ), std::end( v ), 0 ) == ( 1 + v.size() ) * ( v.size() / 2 ) );
+    BOOST_CHECK( ParallelAccumulate( std::begin( v ), std::end( v ), 0 ) == ( ( 1 + v.size() ) * v.size() ) / 2 );
 }
 
 namespace
