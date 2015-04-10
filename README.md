@@ -7,6 +7,8 @@ Visual studio 2013 (vc120) project
 extra dependencies (such as boost) in dependencies (see dependencies/README.MD)
 
 ## TODO
+dissocier subtitles downloader de ce projet
+
 http://www.cl.cam.ac.uk/~pes20/weakmemory/
 
 Comment for ATOMIC : (http://stackoverflow.com/questions/15056237/which-is-more-efficient-basic-mutex-lock-or-atomic-integer)
