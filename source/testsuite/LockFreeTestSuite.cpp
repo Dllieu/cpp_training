@@ -117,9 +117,9 @@ namespace
         Node* newHead = new Node { value, oldHead };
 
         // CAS idiom (compare and swap)
-        // Atomically compares the object representation of *this with the object representation of expected, as if by std::memcmp,
+        // Atomically compares the object representation of listHead with the object representation of expected, as if by std::memcmp,
         // and if those are bitwise-equal, replaces the former with desired (performs read-modify-write operation).
-        // Otherwise, loads the actual value stored in *this into expected (performs load operation). Copying is performed as if by std::memcpy.
+        // Otherwise, loads the actual value stored in listHead into expected (performs load operation). Copying is performed as if by std::memcpy.
         // As CAS perform a load and store operation, we usually pass std::memory_order_seq_cst (acquire for the load, release for the store)
         while ( ! listHead.compare_exchange_weak( oldHead /* expected */, newHead /* desired */, std::memory_order_seq_cst /* default memory order */ ) )
             newHead->next = oldHead; // might need to update oldHead as another thread might update the current head
