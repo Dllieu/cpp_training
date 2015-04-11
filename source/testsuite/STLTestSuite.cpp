@@ -8,8 +8,6 @@
 #include <tuple>
 #include <set>
 
-#include <boost/assign/list_of.hpp> 
-
 BOOST_AUTO_TEST_SUITE( STL )
 
 namespace
@@ -32,13 +30,13 @@ namespace
 
 BOOST_AUTO_TEST_CASE( IteratorTest )
 {
-    std::vector< int > v = boost::assign::list_of( 9 )( 5 )( 3 )( 2 )( 1 );
+    std::vector< int > v = { 9, 5, 3, 2, 1 };
     bool isD1 = isDecreasing( v );
     bool isD2 = isDecreasing( v.begin(), v.end() );
 
     BOOST_CHECK( isD1 == isD2 && isD1 == true );
 
-    v = boost::assign::list_of( 3 )( 5 )( 9 )( 2 )( 1 );
+    v = { 3, 5, 9, 2, 1 };
     isD1 = isDecreasing( v );
     isD2 = isDecreasing( v.begin(), v.end() );
 
@@ -47,7 +45,7 @@ BOOST_AUTO_TEST_CASE( IteratorTest )
 
 BOOST_AUTO_TEST_CASE( SortTest )
 {
-    std::vector< int > v = boost::assign::list_of( 6 )( 8 )( 3 );
+    std::vector< int > v = { 6, 8, 3 };
 
     // 3-part hybrid sorting algorithm: introsort is performed first (introsort itself being a hybrid of quicksort and heap sort)
     // to a maximum depth given by 2 log2 n, where n is the number of elements, followed by an insertion sort on the result
@@ -87,5 +85,7 @@ BOOST_AUTO_TEST_CASE( SwapTest )
     std::swap( a, b );
     BOOST_CHECK( a + 1 == b );
 }
+
+
 
 BOOST_AUTO_TEST_SUITE_END() // STL

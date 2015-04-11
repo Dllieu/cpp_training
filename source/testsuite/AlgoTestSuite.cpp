@@ -3,7 +3,6 @@
 // See https://github.com/Dllieu for updates, documentation, and revision history.
 //--------------------------------------------------------------------------------
 #include <boost/test/unit_test.hpp>
-#include <boost/assign/list_of.hpp>
 #include <numeric>
 #include <functional>
 #include <iostream>
@@ -158,7 +157,7 @@ BOOST_AUTO_TEST_CASE( ProductOfArrayTest )
 {
     // Given an array A[N] containing N numbers. Crate an array Output[N] where Output[i] is equal to the product of all the elements of A[N] except A[i]
     // Do this in O(n)
-    std::vector< int > refArray = boost::assign::list_of( 6 )( 8 )( 3 );
+    std::vector< int > refArray = { 6, 8, 3 };
     std::vector< int > expectedResult;
 
     int productResult = std::accumulate( refArray.begin(), refArray.end(), 1, std::multiplies< int >() );

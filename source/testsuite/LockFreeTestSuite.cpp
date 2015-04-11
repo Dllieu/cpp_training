@@ -112,7 +112,7 @@ namespace
     {
         while ( ! ready )
             std::this_thread::yield(); // thread waits for other threads to advance without blocking
-        
+
         Node* oldHead = listHead;
         Node* newHead = new Node { value, oldHead };
 

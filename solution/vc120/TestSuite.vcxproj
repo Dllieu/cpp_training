@@ -114,6 +114,7 @@
     <ClCompile Include="..\..\source\testsuite\ThreadingTestSuite.cpp" />
     <ClCompile Include="..\..\source\testsuite\TypeTraitsTestSuite.cpp" />
     <ClCompile Include="..\..\source\testsuite\VisitorTestSuite.cpp" />
+    <ClCompile Include="Experimental.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Pricing.vcxproj">

@@ -133,5 +133,8 @@
     <ClCompile Include="..\..\source\testsuite\MemoryOrderingTestSuite.cpp">
       <Filter>Source Files\Threading</Filter>
     </ClCompile>
+    <ClCompile Include="Experimental.cpp">
+      <Filter>Source Files\STL</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

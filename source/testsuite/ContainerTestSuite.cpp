@@ -3,7 +3,6 @@
 // See https://github.com/Dllieu for updates, documentation, and revision history.
 //--------------------------------------------------------------------------------
 #include <boost/test/unit_test.hpp>
-#include <boost/assign/list_of.hpp> 
 #include <set>
 #include <stack>
 #include <queue>
@@ -20,7 +19,7 @@ BOOST_AUTO_TEST_CASE( EraseRemoveTest )
     auto isOdd = []( int a ) { return ( a & 1 ) == 1; /* & < == */ };
 
     {
-        std::vector< int > v = boost::assign::list_of( 6 )( 8 )( 3 );
+        std::vector< int > v = { 6, 8, 3 };
         std::vector< int > vOld = v;
 
         // remove shift element to be deleted at the end of the container (elements are ignored)
@@ -37,12 +36,12 @@ BOOST_AUTO_TEST_CASE( EraseRemoveTest )
     }
 
     {
-        std::list< int > l = boost::assign::list_of( 6 )( 8 )( 3 );
+        std::list< int > l = { 6, 8, 3 };
         l.remove_if( isOdd );
     }
 
     {
-        std::set< int > s = boost::assign::list_of( 6 )( 8 )( 3 );
+        std::set< int > s = { 6, 8, 3 };
         s.erase( 8 );
     }
 }
