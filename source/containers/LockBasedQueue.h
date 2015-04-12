@@ -15,8 +15,10 @@ namespace containers
     struct LockBasedQueue
     {
     public:
+        // init head with a dummy pointer : head_ == tail_ -> empty queue
+        // Use this dummy so that tail_ and head_ are less linked in the case of an empty queue (instead of doing empty queue -> head_ == tail_ == nullptr)
         LockBasedQueue()
-            : head_( new Node ) // init head with a dummy pointer to not need to have a link with head in the case we need to push an element in a empty queue
+            : head_( new Node )
             , tail_( head_.get() )
         {
             // NOTHING

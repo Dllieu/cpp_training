@@ -19,5 +19,8 @@
     <ClInclude Include="..\..\source\containers\LockBasedQueue.h">
       <Filter>Source Files\ThreadSafe</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\source\containers\LockFreeStack.h">
+      <Filter>Source Files\ThreadSafe</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

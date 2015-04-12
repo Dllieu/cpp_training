@@ -7,6 +7,7 @@
 
 #include "containers/SparseArray.h"
 #include "containers/LockBasedQueue.h"
+#include "containers/LockFreeStack.h"
 
 using namespace containers;
 
@@ -64,6 +65,17 @@ BOOST_AUTO_TEST_CASE( LockBasedQueueTest )
     t.join();
 
     BOOST_CHECK( q.empty() );
+}
+
+BOOST_AUTO_TEST_CASE( LockFreeStackTest )
+{
+    containers::LockFreeStack< int > s;
+
+    s.push( 1 );
+    auto v = s.pop();
+    BOOST_CHECK( v != nullptr && *v == 1 );
+
+    s.push( 3 );
 }
 
 BOOST_AUTO_TEST_SUITE_END() // CustomContainer
