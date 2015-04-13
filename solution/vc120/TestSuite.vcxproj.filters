@@ -127,14 +127,14 @@
     <ClCompile Include="..\..\source\testsuite\AlgoTestSuite.cpp">
       <Filter>Source Files\Exercice</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\testsuite\SingletonTestSuite.cpp">
-      <Filter>Source Files\Exercice</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\source\testsuite\MemoryOrderingTestSuite.cpp">
       <Filter>Source Files\Threading</Filter>
     </ClCompile>
     <ClCompile Include="Experimental.cpp">
       <Filter>Source Files\STL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\testsuite\SingletonTestSuite.cpp">
+      <Filter>Source Files\DesignPattern</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
