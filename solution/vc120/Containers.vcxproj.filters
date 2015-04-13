@@ -22,5 +22,8 @@
     <ClInclude Include="..\..\source\containers\LockFreeStack.h">
       <Filter>Source Files\ThreadSafe</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\source\containers\LockFreeQueueSPSC.h">
+      <Filter>Source Files\ThreadSafe</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

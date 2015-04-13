@@ -8,6 +8,7 @@
 #include "containers/SparseArray.h"
 #include "containers/LockBasedQueue.h"
 #include "containers/LockFreeStack.h"
+#include "containers/LockFreeQueueSPSC.h"
 
 using namespace containers;
 
@@ -54,7 +55,7 @@ BOOST_AUTO_TEST_CASE( SparseArrayTest )
 
 BOOST_AUTO_TEST_CASE( LockBasedQueueTest )
 {
-    containers::LockBasedQueue< int >  q;
+    LockBasedQueue< int >  q;
 
     q.push( 5 );
     BOOST_CHECK( *q.tryPop() == 5 );
@@ -69,13 +70,36 @@ BOOST_AUTO_TEST_CASE( LockBasedQueueTest )
 
 BOOST_AUTO_TEST_CASE( LockFreeStackTest )
 {
-    containers::LockFreeStack< int > s;
+    LockFreeStack< int > s;
 
-    s.push( 1 );
-    auto v = s.pop();
-    BOOST_CHECK( v != nullptr && *v == 1 );
+    std::atomic< bool > ready( false );
+    std::vector< std::thread > threads;
 
-    s.push( 3 );
+    for ( unsigned i = 0; i < 5; ++i )
+        threads.push_back( std::thread( [ &ready, &s ] ( unsigned n ) { while ( !ready ) std::this_thread::sleep_for( std::chrono::milliseconds( 10 ) ); s.push( n ); }, i ) );
+
+    for ( unsigned i = 0; i < 4; ++i )
+        threads.push_back( std::thread( [ &ready, &s ] { while ( !ready ) std::this_thread::sleep_for( std::chrono::milliseconds( 10 ) ); s.pop(); } ) );
+
+    ready = true;
+    for ( auto& thread : threads )
+        thread.join();
+
+    // size of stack might equal from 1 to 5
+    BOOST_CHECK( s.pop() != nullptr );
+}
+
+BOOST_AUTO_TEST_CASE( LockFreeQueueSPSCTest )
+{
+    LockFreeQueueSPSC< int > q;
+
+    std::thread t1( [ &q ]{ std::this_thread::sleep_for( std::chrono::milliseconds( 300 ) ); q.push( 7 ); q.push( 8 ); q.push( 2 ); } );
+    std::thread t2( [ &q ]{ std::this_thread::sleep_for( std::chrono::milliseconds( 300 ) ); q.pop(); q.pop(); } );
+
+    t1.join();
+    t2.join();
+
+    BOOST_CHECK( q.pop() != nullptr );
 }
 
 BOOST_AUTO_TEST_SUITE_END() // CustomContainer

@@ -67,6 +67,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\source\containers\LockBasedQueue.h" />
+    <ClInclude Include="..\..\source\containers\LockFreeQueueSPSC.h" />
     <ClInclude Include="..\..\source\containers\LockFreeStack.h" />
     <ClInclude Include="..\..\source\containers\VectorGrowthPolicy.h" />
     <ClInclude Include="..\..\source\containers\SparseArray.h" />
