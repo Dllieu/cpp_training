@@ -53,7 +53,7 @@ namespace containers
             do
             {
                 newCounter = previousCounter;
-                ++newCounter.externalCount;
+                ++newCounter.externalCount; // also avoid the ABA problem
             } while ( ! head_.compare_exchange_strong( previousCounter, newCounter, std::memory_order_acquire /* success */, std::memory_order_relaxed /* failure */ ) );
 
             previousCounter.externalCount = newCounter.externalCount;
