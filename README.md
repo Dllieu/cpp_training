@@ -9,6 +9,8 @@ extra dependencies (such as boost) in dependencies (see dependencies/README.MD)
 ## TODO
 Boost preprocessor
 
+Boost flat containers (map / set with contigous memory to avoid cache miss)
+
 thread pool
 
 clang compatible
