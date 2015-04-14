@@ -124,6 +124,8 @@ namespace
         while ( ! listHead.compare_exchange_weak( oldHead /* expected */, newHead /* desired */, std::memory_order_seq_cst /* default memory order */ ) )
             newHead->next = oldHead; // might need to update oldHead as another thread might update the current head
             
+        // Main difference between weak and strong is that weak have spurious failure, that is return false for no "apparent reason" without performing the CAS
+            
         // - Why doing exchange in a loop?
         // Usually, you want your work to be done before you move on, thus, you put compare_exchange_weak into a loop so that it tries to exchange until it succeeds (i.e., returns true).
         // Note that also compare_exchange_strong is often used in a loop. It does not fail due to spurious failure, but it does fail due to concurrent writes.
