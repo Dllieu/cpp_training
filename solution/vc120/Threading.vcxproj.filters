@@ -10,5 +10,8 @@
     <ClInclude Include="..\..\source\threading\SpawnTask.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\source\threading\Algorithm.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -16,6 +16,8 @@
 #include <queue>
 #include <unordered_map>
 
+#include "threading/Algorithm.h"
+
 BOOST_AUTO_TEST_SUITE( ThreadingTestSuite )
 
 BOOST_AUTO_TEST_CASE( ThreadGroupTest )
@@ -278,6 +280,26 @@ BOOST_AUTO_TEST_CASE( MultipleLockTest )
     t2.join();
 
     BOOST_CHECK( w1.n == 30 && w2.n == 18 );
+}
+
+BOOST_AUTO_TEST_CASE( ParallelForEachTest )
+{
+    std::vector< int > v{ 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    
+    std::atomic< int > count( 0 );
+    threading::parallel_for_each( std::begin( v ), std::end( v ), [ &count ]( int i ) { std::cout << i << std::endl; ++count; }, 2 );
+
+    BOOST_CHECK( count == v.size() );
+}
+
+BOOST_AUTO_TEST_CASE( ParallelFindTest )
+{
+    std::vector< int > v{ 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    
+    auto expectedResult = std::next( std::begin( v ), 3 );
+    BOOST_REQUIRE( expectedResult != std::end( v ) );
+
+    BOOST_CHECK( expectedResult == threading::parallel_find( std::begin( v ), std::end( v ), *expectedResult, 1 ) );
 }
 
 BOOST_AUTO_TEST_SUITE_END() // ThreadingTestSuite

@@ -364,6 +364,7 @@ namespace
     //      declared. Generation of the copy operations in classes with an explicitly
     //      declared destructor is deprecated.
     // Member function templates never suppress generation of special member functions
+    // Copy constructor will generate member wise copying (not bitwise copy)
     class MoveableByDefault
     {
     public:

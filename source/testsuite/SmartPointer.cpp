@@ -47,7 +47,7 @@ BOOST_AUTO_TEST_CASE( UniquePtr )
     takeOwnership( std::move( legacy ) );
 }
 
-BOOST_AUTO_TEST_CASE( Array )
+BOOST_AUTO_TEST_CASE( ArrayTest )
 {
     {
         // can handle either delete / or delete []
@@ -59,9 +59,11 @@ BOOST_AUTO_TEST_CASE( Array )
     }
 }
 
-BOOST_AUTO_TEST_CASE( WeakPtr )
+BOOST_AUTO_TEST_CASE( WeakPtrTest )
 {
     {
+        // shared_ptr are thread safe
+        // Ptr to A + Ptr to control block (containing reference count / weak count / other data such as allocator, custom deleter, ...)
         std::shared_ptr< A > shared = std::make_shared< A >();
         {
             std::weak_ptr< A > weak = shared;
@@ -80,6 +82,30 @@ BOOST_AUTO_TEST_CASE( WeakPtr )
         }
         BOOST_CHECK( ! weak.lock() );
     }
+}
+
+namespace
+{
+    class Widget : public std::enable_shared_from_this< Widget >
+    {
+    public:
+        std::shared_ptr< Widget >   getShared()
+        {
+            return shared_from_this();
+        }
+    };
+}
+
+BOOST_AUTO_TEST_CASE( SharedFromThisTest )
+{
+    std::weak_ptr< Widget > weak;
+    {
+        std::shared_ptr< Widget > w = std::make_shared< Widget >();
+
+        weak = w->getShared();
+        BOOST_CHECK( weak.lock() );
+    }
+    BOOST_CHECK( ! weak.lock() );
 }
 
 BOOST_AUTO_TEST_SUITE_END() // SmartPointer
