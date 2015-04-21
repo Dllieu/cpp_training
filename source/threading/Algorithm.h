@@ -51,7 +51,7 @@ namespace threading
         auto future = std::async( [ =, &isDone ] { return parallel_find_impl( halfIt, end, toMatch, splitLength, isDone ); } );
         auto currentResult = parallel_find_impl( begin, halfIt, toMatch, splitLength, isDone );
 
-        // weird memory leak on vc120 if not explicitly getting the future, altough the destructor of async_result should wait
+        // weird memory leak on vc120 if not explicitly getting the future, altough the destructor of async_result should join
         auto futureResult = future.get();
         return currentResult == halfIt ? futureResult /*future.get() : leak sometimes*/ : currentResult;
     }

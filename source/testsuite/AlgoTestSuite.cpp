@@ -101,10 +101,10 @@ BOOST_AUTO_TEST_CASE( MinimumSumTest )
 
 namespace
 {
-    void    displayAllPermutations( std::string& str, int begin, int end, std::set< std::string >& result )
+    void    displayAllPermutations( std::string& str, std::size_t begin, std::size_t end, std::set< std::string >& result )
     {
 
-        int range = end - begin;
+        auto range = end - begin;
 
         if ( ! range )
             return;
@@ -116,7 +116,7 @@ namespace
             return;
         }
 
-        for ( int i = 0; i < range; ++i )
+        for ( auto i = 0; i < range; ++i )
         {
             std::swap( str[ begin ], str[ begin + i ] );
             displayAllPermutations( str, begin + 1, end, result );
@@ -161,27 +161,31 @@ BOOST_AUTO_TEST_CASE( ProductOfArrayTest )
     std::vector< int > expectedResult;
 
     int productResult = std::accumulate( refArray.begin(), refArray.end(), 1, std::multiplies< int >() );
-    for ( std::size_t i = 0; i < refArray.size(); ++i )
-        expectedResult.push_back( productResult / refArray[ i ] );
+    for ( auto v : refArray )
+    {
+        BOOST_REQUIRE( v != 0 );
+        expectedResult.push_back( productResult / v );
+    }
 
     // Do this in O(n) without using the operator /
     std::vector< int >  leftResult;
     {
         int tmp = 1;
-        for ( std::size_t i = 0; i < refArray.size(); ++i )
+        for ( auto v : refArray )
         {
             leftResult.push_back( tmp );
-            tmp *= refArray[ i ];
+            tmp *= v;
         }
     }
 
     std::vector< int >  rightResult;
     {
         int tmp = 1;
-        for ( int i = refArray.size() - 1; i >= 0; --i )
+
+        for ( auto it = std::rbegin( refArray ); it != std::rend( refArray ); ++it )
         {
             rightResult.insert( rightResult.begin(), tmp );
-            tmp *= refArray[ i ];
+            tmp *= *it;
         }
     }
 

@@ -124,9 +124,8 @@ namespace
 
         auto taskMinPerThread = 25;
 
-        using ul_t = unsigned long;
-        ul_t maxThread = ( size - 1 ) / taskMinPerThread + 1;
-        ul_t hardwareThreadAvailable = std::thread::hardware_concurrency();
+        std::size_t maxThread = ( size - 1 ) / taskMinPerThread + 1;
+        std::size_t hardwareThreadAvailable = std::thread::hardware_concurrency();
 
         auto threadSize = std::min( hardwareThreadAvailable != 0 ? hardwareThreadAvailable : 2, maxThread );
         auto blockSize = size / threadSize;
@@ -135,7 +134,7 @@ namespace
         std::vector< std::thread > threads( threadSize - 1 ); // minus current thread
 
         auto blockStart = first;
-        for ( ul_t i = 0; i < threads.size(); ++i )
+        for ( auto i = 0; i < threads.size(); ++i )
         {
             auto blockEnd = blockStart;
             std::advance( blockEnd, blockSize );
