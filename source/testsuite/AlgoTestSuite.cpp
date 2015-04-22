@@ -11,6 +11,7 @@
 #include <set>
 #include <queue>
 #include <climits>
+#include <array>
 
 BOOST_AUTO_TEST_SUITE( Algo )
 
@@ -262,6 +263,60 @@ BOOST_AUTO_TEST_CASE( HierarchyTestCase )
     BOOST_CHECK( f1( child ) == "Parent" );
     BOOST_CHECK( f2( child ) == "Child" );
     BOOST_CHECK( f3( &child ) == "Child" );
+}
+
+namespace
+{
+    // Overkill name
+    // O(n), require that the list start from 1
+    std::size_t     missingElementVectorStartingFromOne( const std::vector< int >& v )
+    {
+        return ( v.size() + 1 ) * ( v.size() + 2 ) / 2 - std::accumulate( std::begin( v ), std::end( v ), 0 );
+    }
+
+    template < int N /*Expected number of elements*/ >
+    std::vector< int >    missingElements( const std::vector< int >& v )
+    {
+        // NRVO (Named Return Value Optimization)
+        // Compiler optimization technique that involves eliminating the temporary object created to hold a function's return value
+        // (result will be created on the caller stack frame)
+        std::vector< int > result;
+        if ( v.size() >= N )
+            return result;
+
+        // Need to construct array with a initializer_list to default the contained values
+        std::array< int, N > a{};
+
+        auto minElement = *std::min_element( std::begin( v ), std::end( v ) );
+        for ( auto i : v )
+            a[ i - minElement ] = 1;
+
+        // could do in log(n) if N == 2
+        for ( auto i = 0; i < N; ++i )
+            if ( ! a[ i ] )
+                result.emplace_back( i + minElement );
+
+        return result;
+    }
+}
+
+// From a contigous array which hold consecutive values, find the missing value
+BOOST_AUTO_TEST_CASE( MissingElementTest )
+{
+    // Single element
+    {
+        std::vector< int >  missing4{ 1, 2, 3, 5 };
+
+        BOOST_REQUIRE( *std::min_element( std::begin( missing4 ), std::end( missing4 ) ) == 1 );
+        BOOST_CHECK( missingElementVectorStartingFromOne( missing4 ) == 4 );
+    }
+
+    // N elements
+    {
+        std::vector< int >  missingThreeFour{ 2, 5, 6 };
+        auto result = missingElements< 5 >( missingThreeFour );
+        BOOST_CHECK( ( result == std::vector< int >{ 3, 4 } ) );
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END() // Algo

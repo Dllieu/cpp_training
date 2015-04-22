@@ -378,3 +378,27 @@ namespace
         (void)(lhs * rhs);
     }
 }
+
+namespace
+{
+    struct BBB
+    {
+        void foo( const char ) {}
+        virtual void foo( const char* ) {}
+    };
+
+    struct DDD : public BBB
+    {
+        // if not using this statement, compiler won't be able to compile with DDD d; d.foo('d');
+        // it will try to match foo with DDD, find it as DDD have a foo method (compiler won't go on to search in class base method)
+        // then will try to call foo( const char* ), char can't be interpreted as char*, so the conversion can't be implicited, thus raising compile error
+        using BBB::foo;
+        void foo( const char* ) override {}
+    };
+
+    void stuffBBBDDD()
+    {
+        DDD b;
+        b.foo('c');
+    }
+}
