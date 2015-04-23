@@ -2,7 +2,13 @@
 // (C) Copyright 2014-2015 Stephane Molina, All rights reserved.
 // See https://github.com/Dllieu for updates, documentation, and revision history.
 //--------------------------------------------------------------------------------
+
+#pragma warning( push )
+#pragma warning( disable : 4996 ) // warning raise when using unit_test with multi_array instanciation
 #include <boost/test/unit_test.hpp>
+#pragma warning( pop )
+
+#include <boost/multi_array.hpp>
 #include <numeric>
 #include <functional>
 #include <iostream>
@@ -17,53 +23,53 @@ BOOST_AUTO_TEST_SUITE( Algo )
 
 namespace
 {
-    inline std::queue<unsigned, std::deque<unsigned>>  sortedVectorToQueue( std::vector< unsigned >& v )
+    inline std::queue< unsigned >  sortedVectorToQueue( const std::vector< unsigned >& v )
     {
         BOOST_REQUIRE(!v.empty());
         BOOST_REQUIRE(std::is_sorted(std::begin(v), std::end(v)));
-        return std::queue<unsigned, std::deque<unsigned>>(std::deque<unsigned>(std::begin(v), std::end(v)));
+        return std::queue<unsigned>(std::deque<unsigned>(std::begin(v), std::end(v)));
     }
 
-    std::pair< unsigned, unsigned >    getMinMaxValues(const std::vector<std::queue<unsigned, std::deque<unsigned>>>& queues, unsigned& posMinElement)
+    std::pair< unsigned, unsigned >    getMinMaxValues( const std::vector< std::queue<unsigned > >& queues, unsigned& posMinElement )
     {
         std::pair< unsigned, unsigned > minMaxValues(UINT_MAX, 0);
-        auto f = [&](unsigned pos, unsigned value)
+        auto f = [ &minMaxValues, &posMinElement ]( unsigned pos, unsigned value )
         {
-            if ((minMaxValues.first = std::min(minMaxValues.first, value)) == value)
+            if ( ( minMaxValues.first = std::min( minMaxValues.first, value ) ) == value)
                 posMinElement = pos;
-            minMaxValues.second = std::max(minMaxValues.second, value);
+            minMaxValues.second = std::max( minMaxValues.second, value );
         };
         for ( unsigned i = 0; i < queues.size(); ++i )
-            f(i, queues[i].front());
+            f( i, queues[i].front() );
 
         return minMaxValues;
     }
 
     // dequeue smallest element
-    inline bool    iterate(std::vector<std::queue<unsigned, std::deque<unsigned>>>& queues, unsigned currentMinPos)
+    inline bool    iterate( std::vector< std::queue< unsigned > >& queues, unsigned currentMinPos )
     {
         queues[currentMinPos].pop();
         return !queues[currentMinPos].empty();
     }
 
     template <typename... Ts>
-    std::pair< unsigned, unsigned >    getSmallestRange( Ts&... vectors )
+    std::pair< unsigned, unsigned >    getSmallestRange( const Ts&... vectors )
     {
-        BOOST_REQUIRE( sizeof...(Ts) > 0 );
-        std::vector< std::queue<unsigned, std::deque<unsigned>> > sortedQueues{ sortedVectorToQueue(vectors)... };
+        static_assert( sizeof...(Ts) > 0, "missing argument" );
+        std::vector< std::queue< unsigned > > sortedQueues{ sortedVectorToQueue(vectors)... };
 
         std::pair< unsigned, unsigned > smallestRange;
         auto minDiff = UINT_MAX;
         unsigned currentMinPos;
         do
         {
-            auto currentRange = getMinMaxValues(sortedQueues, currentMinPos);
+            auto currentRange = getMinMaxValues( sortedQueues, currentMinPos );
             if (currentRange.second - currentRange.first < minDiff)
             {
                 minDiff = currentRange.second - currentRange.first;
                 smallestRange = currentRange;
             }
-        } while (iterate(sortedQueues, currentMinPos));
+        } while ( iterate( sortedQueues, currentMinPos ) );
 
         return smallestRange;
     }
@@ -78,7 +84,7 @@ BOOST_AUTO_TEST_CASE( SmallestRangeTest )
 
     const auto& result = getSmallestRange(v1, v2, v3);
     // The smallest range here would be [20, 24] as it contains 24 from list 1, 20 from list 2, and 22 from list 3
-    BOOST_CHECK(result.first == 20 && result.second == 24);
+    BOOST_CHECK( result.first == 20 && result.second == 24 );
 }
 
 BOOST_AUTO_TEST_CASE( MinimumSumTest )
@@ -277,6 +283,8 @@ namespace
     template < int N /*Expected number of elements*/ >
     std::vector< int >    missingElements( const std::vector< int >& v )
     {
+        BOOST_REQUIRE( *std::min_element( std::begin( v ), std::end( v ) ) == 1 );
+
         // NRVO (Named Return Value Optimization)
         // Compiler optimization technique that involves eliminating the temporary object created to hold a function's return value
         // (result will be created on the caller stack frame)
@@ -306,8 +314,6 @@ BOOST_AUTO_TEST_CASE( MissingElementTest )
     // Single element
     {
         std::vector< int >  missing4{ 1, 2, 3, 5 };
-
-        BOOST_REQUIRE( *std::min_element( std::begin( missing4 ), std::end( missing4 ) ) == 1 );
         BOOST_CHECK( missingElementVectorStartingFromOne( missing4 ) == 4 );
     }
 
@@ -317,6 +323,57 @@ BOOST_AUTO_TEST_CASE( MissingElementTest )
         auto result = missingElements< 5 >( missingThreeFour );
         BOOST_CHECK( ( result == std::vector< int >{ 3, 4 } ) );
     }
+}
+
+namespace
+{
+    bool    findMatrixElement( const boost::multi_array< int, 2 >& matrix, int toFind )
+    {
+        if ( matrix.empty() )
+            return false;
+
+        auto increment = matrix.num_elements() / 2;
+        auto colSize = matrix.num_elements() / matrix.size();
+        auto i = increment;
+        do
+        {
+            auto row = i / colSize;
+            auto col = i - row * colSize;
+            auto v = matrix[ row ][ col ];
+            if ( v == toFind )
+                return true;
+
+            increment = ( increment + ( increment != 1 ? 1 : 0 ) ) >> 1;
+            if ( v < toFind )
+                i += increment;
+            else
+                i -= increment;
+        } while ( increment && i < matrix.num_elements() );
+        return false;
+    }
+}
+
+BOOST_AUTO_TEST_CASE( FindElementInSortedMatrix )
+{
+    const int rowSize = 6, colSize = 5;
+    // The Boost Multidimensional Array Library provides a class template for multidimensional arrays, as well as semantically equivalent adaptors for arrays of contiguous data (i.e. cache friendly multi array)
+    boost::multi_array< int, 2 > matrix( boost::extents[ rowSize ][ colSize ] );
+
+    // Sorted matrix with rowSize * colSize elements
+    for ( auto i = 0, v = 0; i < rowSize; ++i )
+        for ( auto j = 0; j < colSize; ++j )
+            matrix[ i ][ j ] = ++v;
+
+    BOOST_CHECK( findMatrixElement( matrix, 5 ) );
+    for ( auto row : matrix )
+        for ( auto v : row )
+        {
+            // Seems the inner for range loop need the bracket when we use this macro
+            BOOST_CHECK( findMatrixElement( matrix, v ) );
+        }
+
+    BOOST_CHECK( ! findMatrixElement( matrix, -1 ) );
+    BOOST_CHECK( ! findMatrixElement( matrix, rowSize * colSize + 1 ) );
 }
 
 BOOST_AUTO_TEST_SUITE_END() // Algo
