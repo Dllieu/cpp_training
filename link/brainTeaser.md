@@ -3,3 +3,4 @@
 
 4 Men cross the bridge: http://mathforum.org/library/drmath/view/56756.html
 
+Survival of the People: http://www.braingle.com/brainteasers/teaser.php?op=2&id=9653&comm=0
