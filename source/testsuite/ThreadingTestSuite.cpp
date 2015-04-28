@@ -264,8 +264,8 @@ BOOST_AUTO_TEST_CASE( SemaphoreSingleProcessTest )
                 std::cout << "r" << i;
             } ) );
 
-    std::cout << "Release 3" << std::endl;
-    semaphore.release( 3 );
+    std::cout << std::endl << "Release 3" << std::endl;
+    semaphore.signal( 3 );
     for ( auto& t : threads )
         t.join();
 
