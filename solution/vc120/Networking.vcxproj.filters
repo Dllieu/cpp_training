@@ -7,13 +7,8 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\source\cli\subtitlesDownloader\Scanner.h">
+    <ClInclude Include="..\..\source\networking\BasicClient.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\source\cli\subtitlesDownloader\Scanner.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
 </Project>

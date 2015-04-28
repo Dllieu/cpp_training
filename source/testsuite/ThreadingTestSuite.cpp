@@ -17,6 +17,7 @@
 #include <unordered_map>
 
 #include "threading/Algorithm.h"
+#include "threading/SemaphoreSingleProcess.h"
 
 BOOST_AUTO_TEST_SUITE( ThreadingTestSuite )
 
@@ -243,6 +244,33 @@ BOOST_AUTO_TEST_CASE( ConditionVariableTest )
 
     workerThread.join();
     producerThread.join();
+}
+
+BOOST_AUTO_TEST_CASE( SemaphoreSingleProcessTest )
+{
+    threading::SemaphoreSingleProcess semaphore( 0 );
+
+    std::vector< std::thread >  threads;
+    for ( auto i = 0; i < 10; ++i )
+        threads.emplace_back( std::thread( [ &semaphore, i ]
+            {
+                // Silly iostream, just for the big picture although not correct
+                std::cout << "w" << i;
+                std::lock_guard< threading::SemaphoreSingleProcess > lock( semaphore ); // RAII
+
+                std::cout << "g" << i;
+                std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
+
+                std::cout << "r" << i;
+            } ) );
+
+    std::cout << "Release 3" << std::endl;
+    semaphore.release( 3 );
+    for ( auto& t : threads )
+        t.join();
+
+    std::cout << std::endl;
+    BOOST_CHECK( true );
 }
 
 namespace

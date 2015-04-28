@@ -5,11 +5,12 @@
   <PropertyGroup>
     <OutDir>$(SolutionDir)\..\..\delivery\bin\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)\..\..\delivery\obj\$(Configuration)\$(ProjectName)\</IntDir>
-    <LogDir></LogDir>
+    <LogDir>
+    </LogDir>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)\..\..\source\librairies\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\..\source\</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
   </ItemDefinitionGroup>

@@ -38,6 +38,9 @@
     <Filter Include="Source Files\Exercice">
       <UniqueIdentifier>{645b78f4-ebde-4402-b268-8943523ae891}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Networking">
+      <UniqueIdentifier>{f0672893-3e55-49b8-85d7-735281f484f7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\source\testsuite\Initializer.cpp">
