@@ -21,7 +21,10 @@
   <ItemGroup>
     <ClInclude Include="..\..\source\generic\HashCombine.h" />
     <ClInclude Include="..\..\source\generic\Observer.h" />
+    <ClInclude Include="..\..\source\generic\ProxyFunctor.h" />
     <ClInclude Include="..\..\source\generic\ThreadSafeSingleton.h" />
+    <ClInclude Include="..\..\source\generic\TuplePrinter.h" />
+    <ClInclude Include="..\..\source\generic\Typetraits.h" />
     <ClInclude Include="..\..\source\generic\Visitor.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

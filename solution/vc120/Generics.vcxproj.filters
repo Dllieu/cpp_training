@@ -22,5 +22,12 @@
     <ClInclude Include="..\..\source\generic\ThreadSafeSingleton.h">
       <Filter>Source Files\DesignPatterns</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\source\generic\ProxyFunctor.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\generic\TuplePrinter.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\generic\Typetraits.h" />
   </ItemGroup>
 </Project>

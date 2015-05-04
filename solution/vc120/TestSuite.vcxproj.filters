@@ -8,9 +8,6 @@
     <Filter Include="Source Files\Intern">
       <UniqueIdentifier>{daf409f9-ded1-48a6-be77-7a4d3a4e7cec}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\DesignPattern">
-      <UniqueIdentifier>{aaedfbce-5910-4f83-bae6-12a094be0b68}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\MetaProgramming">
       <UniqueIdentifier>{7b9f038a-93ec-4302-93d7-742c2119735f}</UniqueIdentifier>
     </Filter>
@@ -40,6 +37,9 @@
     </Filter>
     <Filter Include="Source Files\Networking">
       <UniqueIdentifier>{f0672893-3e55-49b8-85d7-735281f484f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DesignPattern">
+      <UniqueIdentifier>{aaedfbce-5910-4f83-bae6-12a094be0b68}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -100,9 +100,6 @@
     <ClCompile Include="..\..\source\testsuite\SmartPointer.cpp">
       <Filter>Source Files\STL</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\testsuite\HashingTestSuite.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\source\testsuite\BranchPredictionTestSuite.cpp">
       <Filter>Source Files\ImpracticalTest</Filter>
     </ClCompile>
@@ -138,6 +135,15 @@
     </ClCompile>
     <ClCompile Include="..\..\source\testsuite\ExperimentalTestSuite.cpp">
       <Filter>Source Files\STL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\testsuite\BasicNetworkingTestSuite.cpp">
+      <Filter>Source Files\Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\testsuite\HashingTestSuite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\testsuite\ProxyFunctorTestSuite.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

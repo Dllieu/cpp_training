@@ -246,6 +246,8 @@ namespace
     struct Parent
     {
         Parent() { std::cout << "Create " << name() << std::endl; }
+        Parent( const Parent& P ) { std::cout << "Create copy constructor " << name() << std::endl; }
+        Parent& operator=( const Parent& P ) { std::cout << "Create copy constructor " << name() << std::endl; }
         virtual ~Parent() { std::cout << "Destroy " << name() << std::endl; }
         virtual std::string name() const { return "Parent"; }
     };
@@ -257,7 +259,7 @@ namespace
         std::string name() const override { return "Child"; }
     };
 
-    std::string    f1( Parent p ) { return p.name(); } // Destroy parent at the end but doesn't create one with the magic of rvalue ref
+    std::string    f1( Parent p ) { return p.name(); } // copy constructor + destructor of parent
     std::string    f2( Parent& p ) { return p.name(); }
     std::string    f3( Parent* p ) { return p->name(); }
 }
@@ -269,6 +271,8 @@ BOOST_AUTO_TEST_CASE( HierarchyTestCase )
     BOOST_CHECK( f1( child ) == "Parent" );
     BOOST_CHECK( f2( child ) == "Child" );
     BOOST_CHECK( f3( &child ) == "Child" );
+
+    Parent p = Parent(); // Won't call the operator= nor the copy constructor, just the default constructor
 }
 
 namespace
