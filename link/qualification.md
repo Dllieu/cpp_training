@@ -29,5 +29,22 @@ Desired Skills:
 - Knowledge of finance - various asset classes and their characteristics, particularly with respect to market data, settlement and clearing.
 - Ability to function across geographically diverse team (NY, Toronto, Montreal,Europe,Asia).
 
+#IKas
+- Prior experience in Equities Markets 
+- Understanding of the FIX protocol 
+- Experience of high-volume, mission critical trading systems 
+- Experience of TCP/IP sockets & UDP 
+- Exceptional C++ programming skills 
+- Sound software design skills, knowledge of Object Orientated methodologies and use of design patterns 
+- Strong understanding of the SDLC in highly complex environments 
+- Experienced developing real-time, low latency software 
+- Passion for software excellence with a focus on performance and re-useability 
+- Experience with FPGA not required; but very desirable 
+- Be a curious technical enthusiast, someone who enjoys solving problems and puzzles, learning new technologies - willing to go the extra mile to design the best possible solution. Someone who likes to tinker outside of work as well as in the office 
+- Strong problem solving, analysis, and investigation skills 
+- The ability to raise issues and communicate with confidence in order to best collaborate with your team members 
+
+KEYWORDS: C++, UNIX, FIX, EXCHANGE CONNECTIVITY, TRADING, REAL-TIME, FINANCIAL MARKETS, EQUITIES, OPTIONS, FRONT-OFFICE, SYDNEY, AUSTRALIA, LATENCY, LINUX 
+
 #Scott Meyers (Fastware C++ training)
 http://www.aristeia.com/FastwareForC++.html
