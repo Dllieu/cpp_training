@@ -4,7 +4,7 @@
 
 ##Turtle (Mock test)
 - **Link:** http://sourceforge.net/projects/turtle/ (1.2.6)
-- **Dir Name:** lib/turtle
+- **Dir Name:** turtle
 
 #Example
 ![Example of the hierarchy](hierarchyExample.png)
