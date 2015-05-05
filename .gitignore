@@ -1,5 +1,5 @@
 # Specific folders
-dependencies/lib/*
+dependencies/*/
 delivery
 
 #################
