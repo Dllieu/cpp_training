@@ -29,6 +29,22 @@ Desired Skills:
 - Knowledge of finance - various asset classes and their characteristics, particularly with respect to market data, settlement and clearing.
 - Ability to function across geographically diverse team (NY, Toronto, Montreal,Europe,Asia).
 
+#BA
+- Strong development skills in C++ on Linux/UNIX.
+- OO design skills with an emphasis on distributed low latency, high availability systems.
+- Experience of working in a front office e-trading platform development team for an investment bank in the FX or Equities domain.
+- Strong analytical skills and enjoys solving complicated technical problems.
+- Advanced multi-threading skills
+- You will need to have strong understanding of threading (including the pitfalls related to threading) and have working experience in a high performance environment
+- Demonstrate practical solution to real problems. Textbook knowledge will not be sufficient
+- Candidates must have actively used design patterns in past implementations and demonstrate a strong understanding on design patterns of why and where a pattern should be used.
+- Strong understanding of Messaging Middleware concepts, usage and application.
+- Experience with distributed architecture (caching, topologies, etc) and able to demonstrate good understanding of latency, concurrency, reconciliation etc.
+- Experience in TCP/IP networking and sockets programming.
+- Database skills including schema design, reading, writing and tuning SQL.
+- Candidate must be a strong team player with excellent communication skills
+- Comfortable in communicating with business users
+
 #IKas
 - Prior experience in Equities Markets 
 - Understanding of the FIX protocol 
