@@ -9,39 +9,36 @@
 
 namespace generics
 {
-    namespace
+    using singleParameterPack = std::true_type;
+    using notSingleParameterPack =  std::false_type;
+
+    template < typename C, typename T, size_t N, typename... Ts >
+    void aux_put( std::basic_ostream< C, T >& os, const std::tuple< Ts... >& t, char delimiter, singleParameterPack )
     {
-        using singleParameterPack = std::true_type;
-        using notSingleParameterPack =  std::false_type;
+        os << std::get< N >( t );
+    }
 
-        template < typename C, typename T, size_t N, typename... Ts >
-        void aux_put( std::basic_ostream< C, T >& os, const std::tuple< Ts... >& t, char delimiter, singleParameterPack )
-        {
-            os << std::get< N >( t );
-        }
+    template < typename C, typename T, size_t N, typename... Ts >
+    void aux_put( std::basic_ostream< C, T >& os, const std::tuple< Ts... >& t, char delimiter, notSingleParameterPack )
+    {
+        os << std::get< N >( t ) << delimiter;
 
-        template < typename C, typename T, size_t N, typename... Ts >
-        void aux_put( std::basic_ostream< C, T >& os, const std::tuple< Ts... >& t, char delimiter, notSingleParameterPack )
-        {
-            os << std::get< N >( t ) << delimiter;
+        aux_put< C, T, N + 1 >( os, t, delimiter, isLastParameterPack< N, Ts... >() );
+    }
 
-            aux_put< C, T, N + 1 >( os, t, delimiter, isLastParameterPack< N, Ts... >() );
-        }
+    using lastParameterPack = std::true_type;
+    using notLastParameterPack = std::false_type;
 
-        using lastParameterPack = std::true_type;
-        using notLastParameterPack = std::false_type;
+    template < typename C, typename T, typename... Ts >
+    void put( std::basic_ostream< C, T >& os, const std::tuple< Ts... >& t, char delimiter, lastParameterPack )
+    {
+        os << std::get< 0 >( t );
+    }
 
-        template < typename C, typename T, typename... Ts >
-        void put( std::basic_ostream< C, T >& os, const std::tuple< Ts... >& t, char delimiter, lastParameterPack )
-        {
-            os << std::get< 0 >( t );
-        }
-
-        template < typename C, typename T, typename... Ts >
-        void put( std::basic_ostream< C, T >& os, const std::tuple< Ts... >& t, char delimiter, notLastParameterPack )
-        {
-            aux_put< C, T, 0 >( os, t, delimiter, std::false_type() );
-        }
+    template < typename C, typename T, typename... Ts >
+    void put( std::basic_ostream< C, T >& os, const std::tuple< Ts... >& t, char delimiter, notLastParameterPack )
+    {
+        aux_put< C, T, 0 >( os, t, delimiter, std::false_type() );
     }
 
     template < typename C, typename T, typename... Ts >

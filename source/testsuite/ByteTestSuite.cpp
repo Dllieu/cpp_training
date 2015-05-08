@@ -4,7 +4,9 @@
 //--------------------------------------------------------------------------------
 #include <boost/test/unit_test.hpp>
 
-BOOST_AUTO_TEST_SUITE( Byte )
+#include <array>
+
+BOOST_AUTO_TEST_SUITE( ByteTestSuite )
 
 namespace
 {
@@ -98,4 +100,19 @@ BOOST_AUTO_TEST_CASE( PowTest )
     BOOST_CHECK( isPowerOf2( 4 ) && ! isPowerOf2( 5 ) );
 }
 
-BOOST_AUTO_TEST_SUITE_END() // Byte
+BOOST_AUTO_TEST_CASE( LongLongToCharArray )
+{
+    unsigned long long ll = 545178863445;
+    std::array< unsigned char, sizeof( ll ) > buffer;
+
+    for ( auto i = 0; i < sizeof( ll ); ++i )
+        buffer[ i ] = ( ll >> i * 8 ) & 255;
+
+    decltype( ll ) ll2 = 0;
+    for ( auto i = ( int )sizeof( ll ) - 1; i >= 0; --i )
+        ll2 = ( ll2 << 8 ) | buffer[ i ];
+
+    BOOST_CHECK( ll == ll2 );
+}
+
+BOOST_AUTO_TEST_SUITE_END() // ByteTestSuite
