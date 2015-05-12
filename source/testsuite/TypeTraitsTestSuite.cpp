@@ -6,6 +6,8 @@
 #include <boost/type_index.hpp>
 #include <type_traits>
 
+#include "generic/TypeTraits.h"
+
 BOOST_AUTO_TEST_SUITE( TypeTraits )
 
 namespace
@@ -112,6 +114,28 @@ BOOST_AUTO_TEST_CASE( ArrayParameterTest )
 
     callWithPointer( i, isPointer );
     BOOST_CHECK( !isPointer );
+}
+
+namespace
+{
+    template <typename T>
+    auto has_to_string_helper( ... ) //... to disambiguate call
+        -> std::false_type;
+
+    //true case, to_string valid for T
+    template <typename T>
+    auto has_to_string_helper( int ) //int to disambiguate call
+        -> decltype( std::to_string( std::declval<T>() ), std::true_type{} );
+
+    //alias to make it nice to use
+    template <typename T>
+    using has_to_string = decltype( has_to_string_helper<T>( 0 ) );
+}
+
+BOOST_AUTO_TEST_CASE( HasToStringTest )
+{
+    BOOST_CHECK( has_to_string< int >::value );
+    BOOST_CHECK( ! has_to_string< std::vector< int > >::value );
 }
 
 BOOST_AUTO_TEST_SUITE_END() // TypeTraits

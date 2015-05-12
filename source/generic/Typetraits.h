@@ -33,6 +33,10 @@ namespace generics
     struct isLastParameterPack :
         public std::integral_constant< bool, __is_last_parameter_helper< N, Ts... >::type::value >
     {};
+
+    // http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2014/n3911
+    template < typename... >
+    using void_t = void;
 }
 
 #endif // ! __GENERICS_TYPETRAITS_H__
