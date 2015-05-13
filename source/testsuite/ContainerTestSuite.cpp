@@ -237,6 +237,9 @@ BOOST_AUTO_TEST_CASE( SortingTest )
 {
     std::list< unsigned > l = { 5, 2, 6, 9 };
     /*std::sort( std::begin( l ), std::end( l ) );*/ // Can't compile, sort need random it access, list is always ordered
+    // Linked lists can be sorted in O( n log n ) using Mergesort
+    // Interestingly, since linked lists already have the appropriate structure, sorting a linked list with Mergesort only requires O(1) extra space.
+    l.sort();
 
     std::vector< unsigned > v = { 5, 2, 6, 9 };
     std::sort( std::begin( v ), std::end( v ) );
