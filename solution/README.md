@@ -1,1 +1,1 @@
-Visual studio 2013 projects
+Visual studio 2013 projects (at least pack 3)
