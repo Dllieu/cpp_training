@@ -6,6 +6,7 @@
 #include <boost/type_index.hpp>
 #include <type_traits>
 
+#include <iostream>
 #include "generic/TypeTraits.h"
 
 BOOST_AUTO_TEST_SUITE( TypeTraits )
@@ -136,6 +137,43 @@ BOOST_AUTO_TEST_CASE( HasToStringTest )
 {
     BOOST_CHECK( has_to_string< int >::value );
     BOOST_CHECK( ! has_to_string< std::vector< int > >::value );
+}
+
+namespace
+{
+    // don't work with vc120
+    /*template <typename...>
+    using void_t = void;
+
+    template <typename T, typename = void>
+    struct stream_insertion_exists : std::false_type {};
+
+    template <typename T>
+    struct stream_insertion_exists<T, void_t<
+        decltype( std::declval<std::ostream&>() << std::declval<T>() )
+    > > : std::true_type{};*/
+
+    template <typename T>
+    auto has_stream_insertion_helper( ... ) // ... to disambiguate call
+        -> std::false_type;
+
+    template <typename T>
+    auto has_stream_insertion_helper( int ) // int to disambiguate call
+        -> decltype( std::declval<std::ostream&>() << std::declval<T>(), std::true_type{} );
+
+    template <typename T>
+    using has_stream_insertion = decltype( has_stream_insertion_helper<T>( 0 ) );
+
+    class ClassNoStream {};
+    class ClassHasStream {};
+    std::ostream&   operator<<( std::ostream&, const ClassHasStream& );
+}
+
+BOOST_AUTO_TEST_CASE( HasStreamInsertionTest )
+{
+    BOOST_CHECK( has_stream_insertion< int >::value );
+    BOOST_CHECK( ! has_stream_insertion< ClassNoStream >::value );
+    BOOST_CHECK( has_stream_insertion< ClassHasStream >::value );
 }
 
 BOOST_AUTO_TEST_SUITE_END() // TypeTraits
