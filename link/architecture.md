@@ -3,6 +3,8 @@ http://en.wikipedia.org/wiki/Arithmetic_logic_unit
 
 http://en.wikipedia.org/wiki/Processor_register
 
+http://cs.stackexchange.com/questions/22589/why-does-a-processor-have-32-registers
+
 http://en.wikipedia.org/wiki/Central_processing_unit
 
 http://en.wikipedia.org/wiki/Inter-process_communication
