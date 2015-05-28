@@ -1,4 +1,6 @@
 ## links
+http://en.wikipedia.org/wiki/Arithmetic_logic_unit
+
 http://en.wikipedia.org/wiki/Central_processing_unit
 
 http://en.wikipedia.org/wiki/Inter-process_communication
