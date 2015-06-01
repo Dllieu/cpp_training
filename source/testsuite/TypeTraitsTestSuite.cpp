@@ -176,4 +176,83 @@ BOOST_AUTO_TEST_CASE( HasStreamInsertionTest )
     BOOST_CHECK( has_stream_insertion< ClassHasStream >::value );
 }
 
+namespace
+{
+    namespace
+    {
+        template <typename T, typename... Ts> struct has_T;
+
+        template <typename T> struct has_T<T> : std::false_type{};
+
+        template <typename T, typename... Ts> struct has_T<T, T, Ts...>
+        : std::true_type{};
+
+        template <typename T, typename Tail, typename... Ts>
+        struct has_T<T, Tail, Ts...> : has_T<T, Ts...>{};
+
+        template <typename T, typename... Ts>
+        const T& get_or_default_impl( std::true_type, const std::tuple<Ts...>& t, const T& )
+        {
+            return std::get<T>( t );
+        }
+
+        template <typename T, typename... Ts>
+        const T& get_or_default_impl( std::false_type, const std::tuple<Ts...>&, const T& default_value )
+        {
+            return default_value;
+        }
+    }
+
+    template <typename T, typename... Ts>
+    const T& get_or_default( const std::tuple<Ts...>& t, const T& default_value = T{} )
+    {
+        return get_or_default_impl<T>( has_T<T, Ts...>{}, t, default_value );
+    }
+
+    class Year {};
+    class Month {};
+    class Day {};
+
+    class Date
+    {
+    public:
+        Date( const Year& year, const Month& month, const Day& day )
+            : year_( year ), month_( month ), day_( day )
+        {}
+
+        // check at compile time if all the required type exist
+        // need c++14 (std::tie constexpr)
+        template < typename T1, typename T2, typename T3 >
+        Date( const T1& t1, const T2& t2, const T3& t3 )
+            : year_( std::get< Year >( std::tie( t1, t2, t3 ) ) )
+            , month_( std::get< Month >( std::tie( t1, t2, t3 ) ) )
+            , day_( std::get< Day >( std::tie( t1, t2, t3 ) ) )
+        {}
+
+        // otherway with default value
+        template < typename... Ts >
+        Date( const Ts&... ts )
+            : get_or_default< Year >( std::tie( ts... ) )
+            , get_or_default< Month >( std::tie( ts... ) )
+            , get_or_default< Day >( std::tie( ts... ) )
+        {}
+
+    private:
+        Year    year_;
+        Month   month_;
+        Day     day_;
+    };
+}
+
+BOOST_AUTO_TEST_CASE( PermutationOverloadTest )
+{
+    Year y;
+    Month m;
+    Day d;
+
+    Date date( y, m, d );
+    // uncomment when vs2015
+    // Date date( m, d, y );
+}
+
 BOOST_AUTO_TEST_SUITE_END() // TypeTraits
