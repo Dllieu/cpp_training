@@ -13,6 +13,13 @@ BOOST_AUTO_TEST_SUITE( TypeTraits )
 
 namespace
 {
+    template < typename A, typename B >
+    void static_assert_is_same()
+    {
+        static_assert( std::is_same< A, B >::value, "type mismatch" );
+        BOOST_CHECK( true );
+    };
+
     // T&& is a universal , it can either mean lvalue (&) or rvalue (&&)
     template <typename T>
     T&& forward( T&& param )
@@ -25,15 +32,15 @@ namespace
 
 BOOST_AUTO_TEST_CASE( DecayTest )
 {
-    BOOST_CHECK( ( std::is_same<int, std::decay_t<int&> >::value ) );
-    BOOST_CHECK( ( std::is_same<int, std::decay_t<int&&> >::value ) );
-    BOOST_CHECK( ( std::is_same<int, std::decay_t<const int&> >::value ) );
-    BOOST_CHECK( ( std::is_same<int*, std::decay_t<int[2]> >::value ) );
-    BOOST_CHECK( ( std::is_same<int(*)(int), std::decay_t<int (int)>>::value ) );
+    static_assert_is_same< int, std::decay_t<int&> >();
+    static_assert_is_same< int, std::decay_t<int&&> >();
+    static_assert_is_same< int, std::decay_t<const int&> >();
+    static_assert_is_same< int*, std::decay_t<int[ 2 ]> >();
+    static_assert_is_same< int( *)( int ), std::decay_t<int( int )>>();
 
     int i = 5;
-    BOOST_CHECK( ( std::is_same< decltype( forward(i) ), int& >::value ) );
-    BOOST_CHECK( ( std::is_same< decltype( forward(5) ), int&& >::value ) );
+    static_assert_is_same< decltype( forward( i ) ), int& >();
+    static_assert_is_same< decltype( forward( 5 ) ), int&& >();
 }
 
 namespace
@@ -253,6 +260,63 @@ BOOST_AUTO_TEST_CASE( PermutationOverloadTest )
     Date date( y, m, d );
     // uncomment when vs2015
     // Date date( m, d, y );
+}
+
+// http://pdimov.com/
+namespace
+{
+    template < typename T >
+    using mp_add_pointer = T*;
+
+    template < typename... T >
+    struct mp_list {};
+
+
+    template < class A, template < class... > class B >
+    struct mp_rename_impl;
+
+    template < template < class... > class A, class... Args, template < class... > class B >
+    struct mp_rename_impl< A< Args... >, B >
+    {
+        using type = B< Args... >;
+    };
+
+    template < typename A, template < typename... > class B >
+    using mp_rename = typename mp_rename_impl< A, B >::type;
+}
+
+BOOST_AUTO_TEST_CASE( MpRenameTest )
+{
+    using pInt = mp_add_pointer< int >;
+    static_assert_is_same< pInt, int* >();
+
+    using list = mp_list< int, bool, std::string >;
+    static_assert_is_same< mp_rename< list, std::tuple >, std::tuple< int, bool, std::string > >();
+}
+
+namespace
+{
+    template < class T >
+    struct mp_size_impl;
+
+    // std::integral_constant is a standard C++11 type that wraps an integral constant( that is, a compile - time constant integer value ) into a type.
+    // Since metaprogramming operates on type lists, which can only hold types, it's convenient to represent compile-time constants as types.
+    // This allows us to treat lists of types and lists of values in a uniform manner. It is therefore idiomatic in metaprogramming to take and return types instead of values, and this is what we have done.
+    // If at some later point we want the actual value, we can use the expression mp_size<L>::value to retrieve it.
+    template < class... Ts > using mp_length = std::integral_constant< std::size_t, sizeof...( Ts ) >;
+
+    template < class T >
+    using mp_size = mp_rename< T, mp_length >;
+
+    template < template < class... > class F, class L >
+    using mp_apply = mp_rename< L, F >;
+}
+
+BOOST_AUTO_TEST_CASE( MpSizeTest )
+{
+    using list = mp_list< int, bool, std::string >;
+    static_assert( mp_size< list >::value == 3, "" );
+    static_assert( mp_apply< mp_length, list >::value == 3, "" );
 }
 
 BOOST_AUTO_TEST_SUITE_END() // TypeTraits
