@@ -34,7 +34,8 @@ namespace
     };
 
     // https://isocpp.org/wiki/faq/virtual-functions
-    // Avoid the cost of virtual function while retaining the hierarchical benefit
+    // Avoid the cost of virtual function (aka dynamic dispatch, 1 word per object, 1 vtable per class which contains 1 word per virtual functions + around 40 bytes for the RTTI per class)
+    // while retaining the hierarchical benefit
     // Two levels of runtime indirection saved (virtual function pointer + virtual function table)
     // static_cast calculations can be performed at compile time - no runtime cost
     // Possibly saves on having any virtual function pointer and vtable - saving space (albeit minimal savings)
