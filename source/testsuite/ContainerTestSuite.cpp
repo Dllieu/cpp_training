@@ -26,7 +26,7 @@ BOOST_AUTO_TEST_CASE( EraseRemoveTest )
         // erase delete them definitely
         v.erase( std::remove_if( v.begin(), v.end(), isOdd ), v.end() );
 
-        for ( std::vector<int>::iterator it = vOld.begin(); it != vOld.end(); )
+        for ( auto it = vOld.begin(); it != vOld.end(); )
             if ( isOdd( *it ) )
                 it = vOld.erase( it );
             else

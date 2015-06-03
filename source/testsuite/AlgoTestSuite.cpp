@@ -168,7 +168,7 @@ BOOST_AUTO_TEST_CASE( ProductOfArrayTest )
     std::vector< int > expectedResult;
 
     int productResult = std::accumulate( refArray.begin(), refArray.end(), 1, std::multiplies< int >() );
-    for ( auto v : refArray )
+    for ( const auto& v : refArray )
     {
         BOOST_REQUIRE( v != 0 );
         expectedResult.push_back( productResult / v );
@@ -178,7 +178,7 @@ BOOST_AUTO_TEST_CASE( ProductOfArrayTest )
     std::vector< int >  leftResult;
     {
         int tmp = 1;
-        for ( auto v : refArray )
+        for ( const auto& v : refArray )
         {
             leftResult.push_back( tmp );
             tmp *= v;
@@ -212,7 +212,7 @@ namespace
         std::stack< char > stack;
         std::size_t mid = acceptedParenthesis.size() / 2;
 
-        for ( char c : expression )
+        for ( const auto& c : expression )
         {
             std::size_t posParenthesis = acceptedParenthesis.find(c);
             if ( posParenthesis == std::string::npos )
@@ -300,7 +300,7 @@ namespace
         std::array< int, N > a{};
 
         auto minElement = *std::min_element( std::begin( v ), std::end( v ) );
-        for ( auto i : v )
+        for ( const auto& i : v )
             a[ i - minElement ] = 1;
 
         // could do in log(n) if N == 2
@@ -369,8 +369,8 @@ BOOST_AUTO_TEST_CASE( FindElementInSortedMatrix )
             matrix[ i ][ j ] = ++v;
 
     BOOST_CHECK( findMatrixElement( matrix, 5 ) );
-    for ( auto row : matrix )
-        for ( auto v : row )
+    for ( const auto& row : matrix )
+        for ( const auto& v : row )
         {
             // Seems the inner for range loop need the bracket when we use this macro
             BOOST_CHECK( findMatrixElement( matrix, v ) );
