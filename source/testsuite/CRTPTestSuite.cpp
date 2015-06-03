@@ -33,6 +33,7 @@ namespace
         void Foo() final {}
     };
 
+    // https://isocpp.org/wiki/faq/virtual-functions
     // Avoid the cost of virtual function while retaining the hierarchical benefit
     // Two levels of runtime indirection saved (virtual function pointer + virtual function table)
     // static_cast calculations can be performed at compile time - no runtime cost

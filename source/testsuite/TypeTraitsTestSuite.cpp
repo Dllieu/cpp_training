@@ -271,11 +271,10 @@ namespace
     template < typename... T >
     struct mp_list {};
 
-
-    template < class A, template < class... > class B >
+    template < typename A, template < typename... > class B >
     struct mp_rename_impl;
 
-    template < template < class... > class A, class... Args, template < class... > class B >
+    template < template < typename... > class A, typename... Args, template < typename... > class B >
     struct mp_rename_impl< A< Args... >, B >
     {
         using type = B< Args... >;
@@ -296,20 +295,32 @@ BOOST_AUTO_TEST_CASE( MpRenameTest )
 
 namespace
 {
-    template < class T >
+    template < typename T >
     struct mp_size_impl;
 
     // std::integral_constant is a standard C++11 type that wraps an integral constant( that is, a compile - time constant integer value ) into a type.
     // Since metaprogramming operates on type lists, which can only hold types, it's convenient to represent compile-time constants as types.
     // This allows us to treat lists of types and lists of values in a uniform manner. It is therefore idiomatic in metaprogramming to take and return types instead of values, and this is what we have done.
     // If at some later point we want the actual value, we can use the expression mp_size<L>::value to retrieve it.
-    template < class... Ts > using mp_length = std::integral_constant< std::size_t, sizeof...( Ts ) >;
+    template < typename... Ts > using mp_length = std::integral_constant< std::size_t, sizeof...( Ts ) >;
 
-    template < class T >
+    template < typename T >
     using mp_size = mp_rename< T, mp_length >;
 
-    template < template < class... > class F, class L >
+    template < template < typename... > class F, typename L >
     using mp_apply = mp_rename< L, F >;
+
+    template < typename T >
+    struct mp_test_impl;
+
+    template < template < typename... > class L, typename... Ts >
+    struct mp_test_impl< L< Ts... > >
+    {
+        using type = L<int>;
+    };
+
+    template < typename T >
+    using mp_test = mp_test_impl< T >;
 }
 
 BOOST_AUTO_TEST_CASE( MpSizeTest )
@@ -317,6 +328,68 @@ BOOST_AUTO_TEST_CASE( MpSizeTest )
     using list = mp_list< int, bool, std::string >;
     static_assert( mp_size< list >::value == 3, "" );
     static_assert( mp_apply< mp_length, list >::value == 3, "" );
+}
+
+namespace
+{
+    // transform L by applying F on all elements of L
+    /*template < typename F, typename L >
+    using mp_transform;*/
+
+    template < typename L, typename... T >
+    struct mp_push_back_impl;
+
+    template < template < typename... > class L, typename... Args, typename... T >
+    struct mp_push_back_impl< L< Args... >, T... >
+    {
+        using type = L< Args..., T... >;
+    };
+
+    template < typename L, typename... T >
+    using mp_push_back = typename mp_push_back_impl< L, T... >::type;
+}
+
+BOOST_AUTO_TEST_CASE( MpPushBackTest )
+{
+    using list = mp_list< int >;
+    static_assert_is_same< mp_list< int, double, void* >, mp_push_back< list, double, void* > >();
+}
+
+namespace
+{
+    template < template< typename... > class F, typename L >
+    struct mp_transform_impl;
+
+    template < template < typename... > class F, typename L >
+    using mp_transform = typename mp_transform_impl< F, L >::type;
+
+    template < template < typename... > class F, template < typename... > class L, typename... T >
+    struct mp_transform_impl< F, L< T... > >
+    {
+        using type = L< F< T >... >;
+    };
+
+    //// Can't be deduced to this type for some reason, typename L always prefered over template < typename... > class L (when L empty)
+    //template < template< typename... > class F, template < typename... > class L >
+    //struct mp_transform_impl< F, L<> >
+    //{
+    //    using type = L<>;
+    //};
+
+    //template < template< typename... > class F, template < typename... > class L, typename Arg0, typename... Args >
+    //struct mp_transform_impl< F, L< Arg0, Args... > >
+    //{
+    //    using first_ = F< Arg0 >;
+    //    using rest_ = mp_transform< F, L< Args... > >;
+
+    //    using type = mp_push_back< first_, rest_ >;
+    //};
+}
+
+BOOST_AUTO_TEST_CASE( MpTransformTest )
+{
+    using list = mp_list< int, double >;
+    static_assert_is_same< mp_transform< mp_add_pointer, list >, mp_list< int*, double* > >();
 }
 
 BOOST_AUTO_TEST_SUITE_END() // TypeTraits
