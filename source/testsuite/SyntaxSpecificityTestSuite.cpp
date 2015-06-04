@@ -358,9 +358,9 @@ namespace
     // Move operations are generated only for classes lacking explicitly declared
     //      move operations, copy operations, and a destructor.
     // The copy constructor is generated only for classes lacking an explicitly
-    //      declared copy constructor, and it’s deleted if a move operation is declared.
+    //      declared copy constructor, and itÂ’s deleted if a move operation is declared.
     //      The copy assignment operator is generated only for classes lacking an explicitly
-    //      declared copy assignment operator, and it’s deleted if a move operation is
+    //      declared copy assignment operator, and itÂ’s deleted if a move operation is
     //      declared. Generation of the copy operations in classes with an explicitly
     //      declared destructor is deprecated.
     // Member function templates never suppress generation of special member functions
@@ -401,4 +401,35 @@ namespace
         DDD b;
         b.foo('c');
     }
+}
+
+namespace
+{
+    // namespace versioning
+    namespace prog_def_v1
+    {
+        enum items
+        {
+            BOOK_TYPE = 0,
+            PAGE_TYPE = 1,
+            WORD_TYPE = 2
+        };
+    }
+
+    namespace prog_def_v2
+    {
+        enum items
+        {
+            VOLUME_TYPE = 0,
+            BOOK_TYPE = 1,
+            PAGE_TYPE = 2,
+            WORD_TYPE = 3
+        };
+    }
+
+    //namespace prog_def = prog_def_v1;
+    //static prog_def::items v = prog_def::VOLUME_TYPE; // Can't compile as VOLUME_TYPE does not exist
+
+    namespace prog_def = prog_def_v2;
+    static_assert( static_cast< int >( prog_def::VOLUME_TYPE ) == 0, "" );
 }
