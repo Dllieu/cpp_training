@@ -234,4 +234,40 @@ BOOST_AUTO_TEST_CASE( ForwardTest )
     BOOST_CHECK( forwardTest( 5, 98.21, 78 ) );
 }
 
+namespace
+{
+    template < size_t Dim, typename T, typename F >
+    struct dot_class;
+
+    template < typename T, typename F >
+    struct dot_class< 1, T, F > {
+        static inline T dot( const T* a, const T* b, F&& f )
+        {
+            return f( *a, *b );
+        }
+    };
+
+    template < size_t Dim, typename T, typename F >
+    struct dot_class {
+        static inline T dot( const T* a, const T* b, F&& f )
+        {
+            return dot_class< Dim - 1, T, F >::dot( a + 1, b + 1, std::forward< F >( f ) ) + f( *a, *b );
+        }
+    };
+
+    template < size_t Dim, typename T, typename F >
+    inline T dot( const T* a, const T* b, F&& f )
+    {
+        return dot_class< Dim, T, F >::dot( a, b, std::forward< F >( f ) );
+    }
+}
+
+BOOST_AUTO_TEST_CASE( GeneratedInlineCodeTest )
+{
+    std::array< int, 3 > a{ 3, 0, 1 }, b{ 2, 0, 1 };
+
+    // will be replaced at translation unit by : a[ 0 ] * b[ 0 ] + a[ 1 ] * b[ 1 ] + a[ 2 ] * b[ 2 ];
+    BOOST_CHECK( dot< 3 >( a.data(), b.data(), [] ( int a, int b ) { return a * b; } ) == 7 );
+}
+
 BOOST_AUTO_TEST_SUITE_END() // MetaProg
