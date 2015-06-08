@@ -273,6 +273,44 @@ BOOST_AUTO_TEST_CASE( SemaphoreSingleProcessTest )
     BOOST_CHECK( true );
 }
 
+BOOST_AUTO_TEST_CASE( PrintInSequenceTest )
+{
+    unsigned        i = 0;
+    const unsigned  to = 10;
+
+    std::mutex  mutex;
+    std::condition_variable cv;
+
+    auto process = [&] ( std::function< bool( int ) >&& functor )
+    {
+        for ( ;; )
+        {
+            std::unique_lock< std::mutex >   lock( mutex );
+            while ( functor( i ) )
+                cv.wait( lock );
+
+            std::cout << i++ << ' ';
+            auto mustBreak = i >= to;
+
+            cv.notify_one();
+
+            if ( mustBreak )
+                break;
+        }
+    };
+
+    std::cout.sync_with_stdio( false );
+
+    std::thread     oddThread( [&]{ process( [] ( int i ){ return ( i & 1 ) == 0; } ); } );
+    std::thread     evenThread( [&]{ process( [] ( int i ){ return ( i & 1 ) != 0; } ); } );
+
+    oddThread.join();
+    evenThread.join();
+
+    std::cout << std::endl;
+    BOOST_CHECK( true );
+}
+
 namespace
 {
     struct WrapperWithMutex
