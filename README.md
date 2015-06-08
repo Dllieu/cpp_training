@@ -1,5 +1,5 @@
 ## CPP-Training
-Playing around with C++11/14 and TMP, mostly in the src/testsuite
+Playing around with C++11/14 and TMP (mostly in *source/testsuite*)
 
 ## Setup the environment
 Visual studio 2013 (vc120) project
