@@ -142,7 +142,16 @@ namespace
             }
 
             // about dynamic_cast
-            // cast which handle "cleanly" polymorphism, You can cast a pointer or reference to any polymorphic type to any other class type
+            // - Given a pointer to an object of a polymorphic class, a cast to a pointer to another base
+            // subobject of the same derived class object can be done using a dynamic_cast. In
+            // principle, this operation involves finding the virtual function table, through that finding
+            // the most-derived class object of which the object is part, and then using type information
+            // associated with that object to determine if the conversion (cast) is allowed, and finally
+            // performing any required adjustments of the this pointer. In principle, this checking
+            // involves the traversal of a data structure describing the base classes of the most derived
+            // class. Thus, the run-time cost of a dynamic_cast may depend on the relative positions
+            // in the class hierarchy of the two classes involved. 
+            // - cast which handle "cleanly" polymorphism, You can cast a pointer or reference to any polymorphic type to any other class type
             // (a polymorphic type has at least one virtual function, declared or inherited)
             // can use it for casting downward and upward or even up another chain
             // can also cast null pointers even between pointers to unrelated classes, and can also cast pointers of any type to void pointers
@@ -154,7 +163,7 @@ namespace
             // can also from a base class to its derived (Derived* d = static_cast< Derived* >( &baseClass )  (dynamic_cast would return 0))
             // can also be used to perform any other non-pointer conversion that could also be performed implicitly or convert numeric data types (enum to int, float to int) : static_cast<T>(e) == T v(e); when std::is_pointer(e)
             // no run-time type check is made, so static_cast return as if nothing went wrong which could lead to undefined behavior at run time but no run-time performance penalty
-            // static_cast can induce a copy constructor to be called : static_cast<std::string>("bla")
+            // static_cast can induce a convertion (through a constructor) to be called at runtime : static_cast<std::string>("bla")
 
             // about const_cast
             // modify the constness
