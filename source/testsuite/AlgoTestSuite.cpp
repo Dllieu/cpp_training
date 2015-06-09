@@ -281,14 +281,14 @@ namespace
     // O(n), require that the list start from 1
     std::size_t     missingElementVectorStartingFromOne( const std::vector< int >& v )
     {
+        BOOST_REQUIRE( *std::min_element( std::begin( v ), std::end( v ) ) == 1 );
+
         return ( v.size() + 1 ) * ( v.size() + 2 ) / 2 - std::accumulate( std::begin( v ), std::end( v ), 0 );
     }
 
     template < int N /*Expected number of elements*/ >
     std::vector< int >    missingElements( const std::vector< int >& v )
     {
-        BOOST_REQUIRE( *std::min_element( std::begin( v ), std::end( v ) ) == 1 );
-
         // NRVO (Named Return Value Optimization)
         // Compiler optimization technique that involves eliminating the temporary object created to hold a function's return value
         // (result will be created on the caller stack frame)

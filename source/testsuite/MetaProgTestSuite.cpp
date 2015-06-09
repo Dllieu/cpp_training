@@ -6,6 +6,7 @@
 #include <boost/mpl/if.hpp>
 #include <boost/mpl/bool.hpp>
 #include <iostream>
+#include <array>
 
 #include "tools/Timer.h"
 
