@@ -410,6 +410,17 @@ namespace
         DDD b;
         b.foo('c');
     }
+
+    // no except identifier are implicit for special member functions noexcept(???/*checked at compile time*/), allocator noexcept(true), deallocator noexcept(true) (/Zc:implicitNoexcept)
+    // so you might want to explicitly set noexcept(false) to the destructor if it can throw
+    // rule of thumb, when to use the noexcept specifier : https://akrzemi1.wordpress.com/2011/06/10/using-noexcept/
+    // for std::move_if_noexcept, keep in mind that the implementation will move (even if noexcept(false)) if there's no copy constructor
+    /*template < typename T >
+    T sine( const T& a, const T& b ) noexcept // there's no point to make this function noexcept, see the link
+    {
+        static_assert( noexcept( T( a / sqrt( a * a + b * b ) ) ), "throwing expression" );
+        return a / sqrt( a * a + b * b );
+    }*/
 }
 
 namespace
