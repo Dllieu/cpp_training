@@ -18,3 +18,9 @@ http://en.wikipedia.org/wiki/Context_switch
 http://en.wikipedia.org/wiki/Processor_design
 
 http://en.wikipedia.org/wiki/Multi-core_processor
+
+
+## Executable format
+windows : https://en.wikipedia.org/wiki/Portable_Executable
+
+linux : https://en.wikipedia.org/wiki/Executable_and_Linkable_Format
