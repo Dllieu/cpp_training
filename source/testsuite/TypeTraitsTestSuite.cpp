@@ -45,6 +45,36 @@ BOOST_AUTO_TEST_CASE( DecayTest )
 
 namespace
 {
+    // VERSION TEST
+    template < int MAJOR, int MINOR, int BUILD >
+    struct CompileTimeVersion
+    {
+        using major = std::integral_constant< int, MAJOR >;
+        using minor = std::integral_constant< int, MINOR >;
+        using build = std::integral_constant< int, BUILD >;
+
+        using type = std::tuple< major, minor, build >;
+    };
+
+    #define VERSION_OFFICIAL 3,1,4
+    static_assert( CompileTimeVersion< VERSION_OFFICIAL >::major::value == 3, "" );
+
+    #define CHECK_VERSION( VERSIONTOCHECK1, VERSIONTOCHECK2 ) \
+        static_assert( std::is_same< CompileTimeVersion< VERSIONTOCHECK1 >::type, \
+                                     CompileTimeVersion< VERSIONTOCHECK2 >::type >::value, "version mismatch" );
+    
+    #define VERSION_SAME 3,1,4
+    CHECK_VERSION( VERSION_OFFICIAL, VERSION_SAME ); // OK
+
+    #define VERSION_MISMATCH1 3,1,5
+    //CHECK_VERSION( VERSION_OFFICIAL, VERSION_MISMATCH1 ); // KO: version mismatch
+
+    #define VERSION_MISMATCH2 7,1,0
+    //CHECK_VERSION( VERSION_OFFICIAL, VERSION_MISMATCH2 ); // KO: version mismatch
+}
+
+namespace
+{
     class A {};
     class B { virtual ~B() {} };
 }
