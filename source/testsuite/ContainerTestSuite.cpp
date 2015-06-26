@@ -245,4 +245,24 @@ BOOST_AUTO_TEST_CASE( SortingTest )
     std::sort( std::begin( v ), std::end( v ) );
 }
 
+BOOST_AUTO_TEST_CASE( MoveIteratorTest )
+{
+    std::vector< std::string > vFrom{ "1", "2", "3" };
+    std::vector< std::string > vTo( vFrom.size() );
+
+    using iter_t = std::vector< std::string >::iterator;
+    // - Iterator adaptor which behaves exactly like the underlying iterator (which must be at least an InputIterator),
+    //   except that dereferencing converts the value returned by the underlying iterator into an rvalue
+    // - won't work with const_iterator : When you move from an iterator it, it tries to cast *it to value_type&&.
+    //   For a const iterator, *it returns value_type const&, and the cast fails.
+    std::copy( std::make_move_iterator< iter_t >( vFrom.begin() ),
+               std::make_move_iterator< iter_t >( vFrom.end() ),
+               vTo.begin() );
+
+    // clear as vFrom contains unspecified values
+    vFrom.clear();
+
+    BOOST_CHECK( vTo.size() == 3 && vTo[0] == "1" );
+}
+
 BOOST_AUTO_TEST_SUITE_END() // Container
