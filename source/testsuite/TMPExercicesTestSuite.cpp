@@ -11,7 +11,7 @@
 
 #include <type_traits>
 
-BOOST_AUTO_TEST_SUITE( TMPExercices )
+BOOST_AUTO_TEST_SUITE( TMPTestSuite )
 
 namespace
 {
@@ -153,4 +153,56 @@ BOOST_AUTO_TEST_CASE( PolymorphicDowncast )
     BOOST_CHECK( testDowncastRef( d ) );
 }
 
-BOOST_AUTO_TEST_SUITE_END() // TMPExercices
+namespace
+{
+    template < typename T >
+    struct Field
+    {
+        typename T::value_type storage;
+        typename T::value_type& operator[]( const T &c )
+        {
+            return storage;
+        }
+    };
+
+    template < typename... Ts >
+    struct list_type_impl {};
+
+    template < typename T, typename T1, typename... Ts >
+    struct list_type_impl< T, T1, Ts... > : T, list_type_impl< T1, Ts... >
+    {
+        static_assert( !is_any< T, T1, Ts... >::value, "list_type: type duplication" );
+
+        using T::operator[];
+        using list_type_impl< T1, Ts... >::operator[];
+    };
+
+    template < typename T >
+    struct list_type_impl< T >: T
+    {
+        using T::operator[];
+    };
+
+    template < typename T, typename... Ts >
+    struct list_type : public list_type_impl< Field< T >, Field < Ts >... >
+    {
+        using list_type_impl< Field< T >, Field < Ts >... >::operator[];
+    };
+}
+
+BOOST_AUTO_TEST_CASE( ListTypeTest )
+{
+    struct int_wrapper { typedef int value_type; };
+    struct string_wrapper { typedef std::string value_type; };
+    struct another_int_wrapper { typedef int value_type; };
+
+    list_type< int_wrapper, string_wrapper, another_int_wrapper > l;
+
+    l[ int_wrapper() ] = 4;
+    l[ another_int_wrapper() ] = 5;
+
+    BOOST_CHECK( l[ int_wrapper() ] == 4 );
+    BOOST_CHECK( l[ another_int_wrapper() ] == 5 );
+}
+
+BOOST_AUTO_TEST_SUITE_END() // TMPTestSuite
