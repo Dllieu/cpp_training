@@ -192,9 +192,9 @@ namespace
 
 BOOST_AUTO_TEST_CASE( ListTypeTest )
 {
-    struct int_wrapper { typedef int value_type; };
-    struct string_wrapper { typedef std::string value_type; };
-    struct another_int_wrapper { typedef int value_type; };
+    struct int_wrapper { using value_type = int; };
+    struct string_wrapper { using value_type = std::string; };
+    struct another_int_wrapper { using value_type = int; };
 
     list_type< int_wrapper, string_wrapper, another_int_wrapper > l;
 
