@@ -43,6 +43,13 @@ BOOST_AUTO_TEST_CASE( DecayTest )
     static_assert_is_same< decltype( forward( 5 ) ), int&& >();
 }
 
+BOOST_AUTO_TEST_CASE( IsAnyTest )
+{
+    static_assert( generics::is_any< int, bool, double, int >::value, "" );
+    static_assert( ! generics::is_any< int, bool, double, std::string >::value, "" );
+    BOOST_CHECK( true );
+}
+
 namespace
 {
     // VERSION TEST
