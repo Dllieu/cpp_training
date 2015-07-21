@@ -34,6 +34,18 @@ namespace generics
         public std::integral_constant< bool, __is_last_parameter_helper< N, Ts... >::type::value >
     {};
 
+    template < typename T, typename... Ts >
+    struct is_any : std::false_type
+    {};
+
+    template < typename T, typename First >
+    struct is_any< T, First > : std::is_same<T, First>
+    {};
+
+    template < typename T, typename First, typename... Rest >
+    struct is_any< T, First, Rest... > : std::integral_constant< bool, std::is_same< T, First >::value || is_any< T, Rest... >::value >
+    {};
+
     // http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2014/n3911
     template < typename... >
     using void_t = void;
