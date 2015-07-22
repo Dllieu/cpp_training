@@ -141,9 +141,9 @@ BOOST_AUTO_TEST_CASE( LambdaDetails )
     // Each lambda has a different type : l0, l1 and l2 have no common type., so either use boost::variant (but need to explicitly tell the type when getting the lambda) or std::function (same signature so it's accepted)
     // variant cannot be "empty", and for such a lambda-variant therefore it is not default-constructible. For std::function you will be able to default-construct it
     std::vector< std::function< void ( int ) >/*boost::variant< decltype( l0 ), decltype( l1 ), decltype( l2 ) >*/ > fs;
-    fs.emplace_back( l0 );
-    fs.emplace_back( l1 );
-    fs.emplace_back( l2 );
+    fs.emplace_back( std::move( l0 ) );
+    fs.emplace_back( std::move( l1 ) );
+    fs.emplace_back( std::move( l2 ) );
 
     // auto f = boost::get< decltype( l2 ) >( fs[ 2 ] );
     for ( auto& f : fs )

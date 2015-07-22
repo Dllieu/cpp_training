@@ -131,7 +131,7 @@ namespace
         }
     }
 
-    void    displayAllPermutations( std::string& str, std::set< std::string >& result )
+    void    displayAllPermutations( std::string str, std::set< std::string >& result )
     {
         displayAllPermutations( str, 0, str.size(), result );
     }
@@ -139,7 +139,10 @@ namespace
 
 BOOST_AUTO_TEST_CASE( PermutationTest )
 {
-    std::string toBePermuted( "abc" );
+    std::string toBePermuted( "dpaskm" );
+
+    // next_permutation require the input to be sorted
+    std::sort( std::begin( toBePermuted ), std::end( toBePermuted ) );
 
     std::set< std::string > resultWithoutSTL;
     {

@@ -11,6 +11,8 @@
 
 #include <type_traits>
 
+#include "generic/Typetraits.h"
+
 BOOST_AUTO_TEST_SUITE( TMPTestSuite )
 
 namespace
@@ -171,7 +173,7 @@ namespace
     template < typename T, typename T1, typename... Ts >
     struct list_type_impl< T, T1, Ts... > : T, list_type_impl< T1, Ts... >
     {
-        static_assert( !is_any< T, T1, Ts... >::value, "list_type: type duplication" );
+        static_assert( !generics::is_any< T, T1, Ts... >::value, "list_type: type duplication" );
 
         using T::operator[];
         using list_type_impl< T1, Ts... >::operator[];
