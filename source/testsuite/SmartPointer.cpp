@@ -4,6 +4,8 @@
 //--------------------------------------------------------------------------------
 #include <boost/test/unit_test.hpp>
 
+#include <algorithm>
+
 BOOST_AUTO_TEST_SUITE( SmartPointer )
 
 namespace
@@ -106,6 +108,40 @@ BOOST_AUTO_TEST_CASE( SharedFromThisTest )
         BOOST_CHECK( weak.lock() );
     }
     BOOST_CHECK( ! weak.lock() );
+}
+
+namespace
+{
+    struct X
+    {
+        X() : i( 0 )
+        {}
+
+        int i;
+    };
+
+    struct Wrapper
+    {
+        double  d;
+        X       x;
+    };
+}
+
+BOOST_AUTO_TEST_CASE( SharedAliasConstructorTest )
+{
+    std::vector< std::shared_ptr< X > >     referenceHolder;
+
+    {
+        auto wrapper = std::make_shared< Wrapper >();
+
+        // Increment / decrement refcount of wrapper, although value pointed might not be related at all
+        referenceHolder.emplace_back( std::shared_ptr< X >( wrapper /*reference the shared_ptr alias*/, &wrapper->x/*value pointed, must be a pointer*/ ) );
+
+        // If we used shared_ptr with no deletor : x would become a dangling pointer as soon as we go out of the scope of wrapper
+        //referenceHolder.emplace_back( std::shared_ptr< X >( &wrapper->x, [] ( X* x ) { /* no deletion */ } ) ); // undefined behavior when out of scope of wrapper
+    }
+
+    std::for_each( std::begin( referenceHolder ), std::end( referenceHolder ), [] ( const std::shared_ptr< X >& x ) { BOOST_CHECK( x->i == 0 ); } );
 }
 
 BOOST_AUTO_TEST_SUITE_END() // SmartPointer
