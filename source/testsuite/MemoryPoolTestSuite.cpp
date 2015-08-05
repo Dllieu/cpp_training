@@ -39,14 +39,11 @@ namespace
     template <class Allocator>
     double    testMemoryPool( unsigned int numberOfAllocs, const std::string& timerMessage )
     {
-        tools::Timer    t( timerMessage );
-
-        for ( unsigned int i = 0; i < numberOfAllocs; ++i )
-        {
-            Allocator* p = new Allocator;
-            delete p;
-        }
-        return t.elapsed();
+        return tools::Timer::named_elapsed( timerMessage, [numberOfAllocs]
+            {
+                for ( unsigned int i = 0; i < numberOfAllocs; ++i )
+                    std::make_unique< Allocator >();
+            } );
     }
 }
 
@@ -95,22 +92,23 @@ BOOST_AUTO_TEST_CASE( MemoryPoolTest )
 namespace
 {
     template <class Allocator>
-    double    testMemoryPool( unsigned int numberOfAllocs, const std::string& timerMessage
-                            , boost::function< void* () > mallocFunction
-                            , boost::function< void ( void* ) > freeFunction )
+    double    testMemoryPool( unsigned int numberOfAllocs,
+                              const std::string& timerMessage,
+                              std::function< void* () > mallocFunction,
+                              std::function< void ( void* ) > freeFunction )
     {
-        tools::Timer    t( timerMessage );
-
-        for ( unsigned int i = 0; i < numberOfAllocs; ++i )
+        return tools::Timer::named_elapsed( timerMessage, [numberOfAllocs, &mallocFunction, &freeFunction]
         {
-            void*   buffer = mallocFunction();
+            for ( unsigned int i = 0; i < numberOfAllocs; ++i )
+            {
+                void*   buffer = mallocFunction();
 
-            Allocator* p = new (buffer) Allocator;
-            p->~Allocator();
+                auto p = new (buffer) Allocator;
+                p->~Allocator();
 
-            freeFunction( p );
-        }
-        return t.elapsed();
+                freeFunction( p );
+            }
+        } );
     }
 }
 

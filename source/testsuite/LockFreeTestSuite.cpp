@@ -17,34 +17,34 @@ namespace
 {
     double      mutexLoop()
     {
-        tools::Timer t( "mutex" );
-
-        std::mutex m;
-        auto j = 0;
-        for ( auto i = 0; i < 1000000; ++i )
+        return tools::Timer::named_elapsed( "mutex", []
         {
-            std::lock_guard< std::mutex > l( m );
-            ++j;
-        }
-        return t.elapsed();
+            std::mutex m;
+            auto j = 0;
+            for ( auto i = 0; i < 1000000; ++i )
+            {
+                std::lock_guard< std::mutex > l( m );
+                ++j;
+            }
+        });
     }
 
     double      atomicFlagLoop()
     {
-        tools::Timer t( "atomic_flag" );
-
-        // only type to be guaranteed to be lock free
-        std::atomic_flag lock = ATOMIC_FLAG_INIT; // can be either set or clear (here we init with a clear state)
-        auto j = 0;
-        for ( auto i = 0; i < 1000000; ++i )
+        return tools::Timer::named_elapsed( "atomic_flag", []
         {
-            while ( lock.test_and_set( std::memory_order_acquire ) ) // acquire lock
-                ; // spin
+            // only type to be guaranteed to be lock free
+            std::atomic_flag lock = ATOMIC_FLAG_INIT; // can be either set or clear (here we init with a clear state)
+            auto j = 0;
+            for ( auto i = 0; i < 1000000; ++i )
+            {
+                while ( lock.test_and_set( std::memory_order_acquire ) ) // acquire lock
+                    ; // spin
 
-            ++j;
-            lock.clear(); // release lock
-        }
-        return t.elapsed();
+                ++j;
+                lock.clear(); // release lock
+            }
+        });
     }
 }
 

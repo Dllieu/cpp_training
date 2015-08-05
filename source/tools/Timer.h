@@ -26,20 +26,20 @@ public:
     void    reset();
     double  elapsed() const;
     void    log() const;
-    
+
     template < typename Func, typename... Args >
-    static auto call( const std::string& customMessage, Func&& func, Args&&... args ) -> decltype( func( args... ) )
+    static double elapsed( Func&& func, Args&&... args )
     {
-        Timer t( customMessage );
-        return func( std::forward< Args >( args... ) );
-    }
-    
-    template < typename Func, typename... Args >
-    static double elapsed( const std::string& customMessage, Func&& func, Args&&... args )
-    {
-        Timer t( customMessage );
-        func( std::forward< Args >( args... ) );
+        Timer t;
+        func( std::forward< Args >( args )... );
         return t.elapsed();
+    }
+
+    template < typename Func, typename... Args >
+    static double named_elapsed( const std::string& customMessage, Func&& func, Args&&... args )
+    {
+        Timer t( customMessage );
+        return elapsed( std::forward< Func >( func ), std::forward< Args >( args )... );
     }
 
 private:

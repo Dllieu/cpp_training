@@ -27,7 +27,7 @@ namespace
     // Regrouping call of non related function
     double  elapsedCase1( unsigned maxIteration )
     {
-        return tools::Timer::elapsed( [=maxIteration]
+        return tools::Timer::elapsed( [maxIteration]
         {
             for ( unsigned i = 0; i < maxIteration; ++i )
             {
@@ -41,7 +41,7 @@ namespace
     // Dispatching call of non related function (easier to find it in the instruction cache)
     double  elapsedCase2( unsigned maxIteration )
     {
-        return tools::Timer::elapsed( [=maxIteration]
+        return tools::Timer::elapsed( [maxIteration]
         {
             for ( unsigned i = 0; i < maxIteration; ++i )
                 fooA();
