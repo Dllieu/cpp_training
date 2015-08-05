@@ -27,31 +27,31 @@ namespace
     // Regrouping call of non related function
     double  elapsedCase1( unsigned maxIteration )
     {
-        tools::Timer t( __FUNCTION__ );
-
-        for ( unsigned i = 0; i < maxIteration; ++i )
+        return tools::Timer::elapsed( [=maxIteration]
         {
-            fooA();
-            fooB();
-            fooC();
-        }
-        return t.elapsed();
+            for ( unsigned i = 0; i < maxIteration; ++i )
+            {
+                fooA();
+                fooB();
+                fooC();
+            }
+        });
     }
 
     // Dispatching call of non related function (easier to find it in the instruction cache)
     double  elapsedCase2( unsigned maxIteration )
     {
-        tools::Timer t( __FUNCTION__ );
-
-        for ( unsigned i = 0; i < maxIteration; ++i )
-            fooA();
-
-        for ( unsigned i = 0; i < maxIteration; ++i )
-            fooB();
-
-        for ( unsigned i = 0; i < maxIteration; ++i )
-            fooC();
-        return t.elapsed();
+        return tools::Timer::elapsed( [=maxIteration]
+        {
+            for ( unsigned i = 0; i < maxIteration; ++i )
+                fooA();
+    
+            for ( unsigned i = 0; i < maxIteration; ++i )
+                fooB();
+    
+            for ( unsigned i = 0; i < maxIteration; ++i )
+                fooC();
+        });
     }
 }
 
@@ -87,9 +87,10 @@ namespace
     template <typename C, typename F>
     double  applyFunctorTimer( const C& container, F&& f )
     {
-        tools::Timer t;
-        std::for_each( std::begin( container ), std::end( container ), f );
-        return t.elapsed();
+        return tools::Timer::elapsed( [&container, &f] // move capture  only in C++14
+        {
+            std::for_each( std::begin( container ), std::end( container ), f );
+        });
     }
 }
 
