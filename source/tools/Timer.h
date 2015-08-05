@@ -28,10 +28,18 @@ public:
     void    log() const;
     
     template < typename Func, typename... Args >
-    static auto time( const std::string& customMessage, Func&& func, Args&&... args ) -> decltype( func( args... ) )
+    static auto call( const std::string& customMessage, Func&& func, Args&&... args ) -> decltype( func( args... ) )
     {
         Timer t( customMessage );
         return func( std::forward< Args >( args... ) );
+    }
+    
+    template < typename Func, typename... Args >
+    static double elapsed( const std::string& customMessage, Func&& func, Args&&... args )
+    {
+        Timer t( customMessage );
+        func( std::forward< Args >( args... ) );
+        return t.elapsed();
     }
 
 private:
