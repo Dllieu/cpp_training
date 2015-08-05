@@ -26,6 +26,13 @@ public:
     void    reset();
     double  elapsed() const;
     void    log() const;
+    
+    template < typename Func, typename... Args >
+    static auto time( const std::string& customMessage, Func&& func, Args&&... args ) -> decltype( func( args... ) )
+    {
+        Timer t( customMessage );
+        return func( std::forward< Args >( args... ) );
+    }
 
 private:
     std::chrono::time_point< std::chrono::high_resolution_clock >   clock_;
