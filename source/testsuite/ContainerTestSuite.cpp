@@ -63,7 +63,11 @@ BOOST_AUTO_TEST_CASE( ContainerTest )
     // - deque if a lot of insertion / deletion at the begin / end
     // - list otherwise
 
-    // emplace_back will construct the object in place as opposed to copying or moving
+    // about container.emplace_back( Args&&... )
+    // In principle, emplacement functions should sometimes be more efficient than their insertion counterparts, and they should never be less efficient.
+    // In practice, they’re most likely to be faster when( 1 ) the value being added is constructed into the container, not assigned; ( 2 ) the argument type( s ) passed
+    //     differ from the type held by the container; and( 3 ) the container won’t reject the value being added due to it being a duplicate.
+    // Emplacement functions may perform type conversions that would be rejected by insertion functions.
 
     int i = 5;
     {

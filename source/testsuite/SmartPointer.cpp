@@ -135,7 +135,7 @@ BOOST_AUTO_TEST_CASE( SharedAliasConstructorTest )
         auto wrapper = std::make_shared< Wrapper >();
 
         // Increment / decrement refcount of wrapper, although value pointed might not be related at all
-        referenceHolder.emplace_back( std::shared_ptr< X >( wrapper /*reference the shared_ptr alias*/, &wrapper->x/*value pointed, must be a pointer*/ ) );
+        referenceHolder.emplace_back( wrapper /*reference the shared_ptr alias*/, &wrapper->x/*value pointed, must be a pointer*/ );
 
         // If we used shared_ptr with no deletor : x would become a dangling pointer as soon as we go out of the scope of wrapper
         //referenceHolder.emplace_back( std::shared_ptr< X >( &wrapper->x, [] ( X* x ) { /* no deletion */ } ) ); // undefined behavior when out of scope of wrapper

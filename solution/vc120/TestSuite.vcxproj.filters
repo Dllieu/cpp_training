@@ -145,5 +145,8 @@
     <ClCompile Include="..\..\source\testsuite\ProxyFunctorTestSuite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ExceptionalCpp.cpp">
+      <Filter>Source Files\Exercice</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
