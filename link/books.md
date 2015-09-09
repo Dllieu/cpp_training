@@ -21,8 +21,13 @@
 
 
 ##Read
-**Scott Meyers**
-- Effective Modern C++
+**Agner Fog**
+- Optimizing software in C++: An optimization guide
+
 
 **Anthony Williams**
 - C++ Concurrency in Action: Practical Multithreading
+
+
+**Scott Meyers**
+- Effective Modern C++
