@@ -3,7 +3,7 @@
 - Write Great Code, Volume 2: Thinking Low-Level, Writing High-Level
 
 
-**Richard Gerber**
+**Richard Gerber, Kevin Smith, Xinmin Tian, ...**
 - The Software Optimization Cookbook: High Performance Recipes for IA-32 Platforms
 
 
