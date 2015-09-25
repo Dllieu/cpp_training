@@ -1,4 +1,14 @@
 ## TODO
+###Post CppCon2015
+andrei : control flow / allocator
+ramalethe : wait free struct
+pablo : work stealing
+nebler : range
+greg law : gdb
+carruth : google benchmark + perf + asm volatile + clang
+rcu
+
+
 ###C++ 14
 ####integer_sequence (c++14)
 http://stackoverflow.com/questions/31794496/can-template-preprocessor-hackery-be-used-to-support-variable-arguments-in-the
