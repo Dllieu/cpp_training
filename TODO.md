@@ -1,11 +1,17 @@
 ## TODO
 ###Post CppCon2015
 andrei : control flow / allocator
+
 ramalethe : wait free struct
+
 pablo : work stealing
-nebler : range
+
+niebler : range
+
 greg law : gdb
+
 carruth : google benchmark + perf + asm volatile + clang
+
 rcu
 
 
