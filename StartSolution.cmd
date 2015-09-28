@@ -1,1 +1,1 @@
-start %~dp0/solution/vc120/CPP-Training.sln
+start %~dp0/solution/vc140/CPP-Training.sln

@@ -4,7 +4,11 @@
 //--------------------------------------------------------------------------------
 #include <boost/test/unit_test.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
+
+#pragma warning( push )
+#pragma warning( disable : 4005 )
 #include <boost/asio.hpp>
+#pragma warning( pop )
 
 #include <thread>
 #include <iostream>

@@ -146,13 +146,13 @@ BOOST_AUTO_TEST_CASE( PermutationTest )
 
     std::set< std::string > resultWithoutSTL;
     {
-        BOOST_MESSAGE("-- Permutation without STL --");
+        BOOST_TEST_MESSAGE("-- Permutation without STL --");
         displayAllPermutations( toBePermuted, resultWithoutSTL );
     }
 
     std::set< std::string > resultWithSTL;
     {
-        BOOST_MESSAGE("-- Permutation with STL --");
+        BOOST_TEST_MESSAGE("-- Permutation with STL --");
         do
         {
             std::cout << toBePermuted << std::endl;

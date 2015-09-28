@@ -45,8 +45,6 @@ namespace containers
             }
         };
 
-        std::atomic< NodeCounter >  head_;
-
         void    increaseHeadNodeExternalCount( NodeCounter& previousCounter )
         {
             NodeCounter newCounter;
@@ -59,7 +57,14 @@ namespace containers
             previousCounter.externalCount = newCounter.externalCount;
         }
 
+    private:
+        std::atomic< NodeCounter >  head_;
+
     public:
+        LockFreeStack()
+            : head_( NodeCounter() )
+        {}
+
         ~LockFreeStack()
         {
             while ( pop() );

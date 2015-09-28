@@ -92,6 +92,9 @@ namespace
     }
 }
 
+#pragma warning( push )
+#pragma warning( disable : 4311 4302 4312 )
+
 namespace
 {
     namespace imbriquedNamespace
@@ -207,6 +210,8 @@ namespace
         delete [] bb; // Undefined!
     }
 }
+
+#pragma warning( pop )
 
 // (translation unit : object file from this cpp + headers included)
 // internal linkage (can be accessed only by this translation unit)
