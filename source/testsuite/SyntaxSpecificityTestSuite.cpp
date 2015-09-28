@@ -458,3 +458,20 @@ namespace
     namespace prog_def = prog_def_v2;
     static_assert( static_cast< int >( prog_def::VOLUME_TYPE ) == 0, "" );
 }
+
+namespace
+{
+    // There is no reason to have a reference member mutable. Because const member functions can change the object which is referenced by a class member
+    // in that sense, visual 2015 omit an error if we have a mutable ref (useless)
+    class NoNeedToSetRefMutable
+    {
+    public:
+        NoNeedToSetRefMutable( int v ) : n_( v ) {};
+        void Set( int val ) const { n_ = val; }  // no error
+        void SetMember( int val ) const { m_ = val; } // error assignment of member `B::m' in read-only structure if not mutable
+
+    private:
+        int&            n_;
+        mutable int     m_;
+    };
+}
