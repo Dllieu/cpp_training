@@ -144,4 +144,13 @@ BOOST_AUTO_TEST_CASE( SharedAliasConstructorTest )
     std::for_each( std::begin( referenceHolder ), std::end( referenceHolder ), [] ( const std::shared_ptr< X >& x ) { BOOST_CHECK( x->i == 0 ); } );
 }
 
+// You can store any data in a shared_ptr< void >, and still have the correct destructor called at the end, because the shared_ptr constructor is a function template,
+// and will use the type of the actual object passed for creating the deleter by default
+BOOST_AUTO_TEST_CASE( SharedPtrTypeErasureTest )
+{
+    std::shared_ptr< void > pX( new X );
+
+    BOOST_CHECK( true );
+}
+
 BOOST_AUTO_TEST_SUITE_END() // SmartPointer

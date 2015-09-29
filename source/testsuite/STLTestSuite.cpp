@@ -86,6 +86,97 @@ BOOST_AUTO_TEST_CASE( SwapTest )
     BOOST_CHECK( a + 1 == b );
 }
 
+BOOST_AUTO_TEST_CASE( AlgoTest )
+{
+    std::vector< int > v{ 0, 1, 2, 3, 4, 5 };
 
+    auto it = std::find( v.begin(), v.end(), 3 );
+    BOOST_CHECK( it != v.end() );
+
+    auto itAdvance = it;
+    // call n times operator+/- if random operator, otherwise operator++/--
+    std::advance( itAdvance, 2 );
+
+    // rotate [new first, last[ with elements from [first, new first[
+    std::rotate( v.begin() /*first*/, it/*new first to be swapped*/, itAdvance /*last*/ );
+    BOOST_CHECK( ( v == std::vector< int >{ 3, 4, 0, 1, 2, 5 } ) );
+
+    std::vector< int > w( 4 ); // size 4, all 0s
+    std::generate( w.begin(), w.end(), [] () { static int n = 0; return n++; } /*Generator*/ );
+    BOOST_CHECK( ( w == std::vector< int >{ 0, 1, 2, 3 } ) );
+
+    std::sort( v.begin(), v.end() );
+    // includes return true if the sorted range [v.begin, end[ contains all the sorted element of [w.begin, end[
+    BOOST_CHECK( std::includes( v.begin(), v.end(), w.begin(), w.end()/*, ComparatorFunctor*/ ) );
+
+    auto maxElement = std::max_element( v.begin(), v.end() );
+    // heap organize the elements with the highest_value on top, other elements depends of the implementation, but are usually in reverse order (at leat with make_heap)
+    std::make_heap( v.begin(), v.end() );
+    BOOST_CHECK( std::is_heap( v.begin(), v.end() ) );
+    // rearrange element in the heap range so that the highest element is moved to the end, and reorganize the heap so that the 2nd highest element is moved on top of the heap
+    std::pop_heap( v.begin(), v.end() );
+    BOOST_CHECK( v.back() == *maxElement );
+    v.pop_back();
+
+    v.push_back( 50 );
+    // this function extends the range considered a heap to [first,last) by placing the value in (last-1) into its corresponding location within it
+    std::push_heap( v.begin(), v.end() );
+    BOOST_CHECK( v.front() == 50 );
+
+    v = { 1, 2, 3, 4 };
+    w = { 1, 2, 1001, 3, 4 };
+    // return the first element for both sequences that does not match (if match return last of both iterator)
+    auto missmatchPairIt = std::mismatch( v.begin(), v.end(), w.begin(), w.end() );
+    BOOST_CHECK( missmatchPairIt.first == v.begin() + 2 && missmatchPairIt.second == w.begin() + 2 );
+
+    BOOST_CHECK( std::none_of( v.begin(), v.end(), [] ( auto i ) { return i < 0; } ) );
+    BOOST_CHECK( std::all_of( v.begin(), v.end(), [] ( auto i ) { return i > 0; } ) );
+
+    w = v;
+    // Rearranges the elements from the range [first,last), in such a way that all the elements for which pred returns true precede all those for which it returns false.
+    // The iterator returned points to the first element of the second group
+    it = std::partition( v.begin(), v.end(), [] ( auto i ) { return ( i & 1 ) == 0; } );
+    BOOST_CHECK( ( *it & 1 ) != 0 );
+    BOOST_CHECK( ( v == std::vector< int >{ 4, 2, 3, 1 } ) );
+
+    std::stable_partition( w.begin(), w.end(), [] ( auto i ) { return ( i & 1 ) == 0; } );
+    BOOST_CHECK( ( w == std::vector< int >{ 2, 4, 1, 3 } ) );
+
+    v = { 2, 3, 4, 2, 3, 1 };
+    w = { 2, 3 };
+    // Searches the range [first1,last1) for the FIRST occurrence of the sequence defined by [first2,last2), and returns an iterator to its first element, or last1 if no occurrences are found.
+    it = std::search( v.begin(), v.end(), w.begin(), w.end() );
+    std::advance( it, 2 );
+    BOOST_CHECK( *it == 4 );
+
+    // Searches the range [first1,last1) for the LAST occurrence of the sequence defined by [first2,last2), and returns an iterator to its first element, or last1 if no occurrences are found.
+    it = std::find_end( v.begin(), v.end(), w.begin(), w.end() );
+    std::advance( it, 2 );
+    BOOST_CHECK( *it == 1 );
+
+    std::sort( v.begin(), v.end() );
+
+    decltype( v ) z( v.size() );
+    // Constructs a sorted range beginning in the location pointed by result with the set difference of the sorted range [first1,last1) with respect to the sorted range [first2,last2)
+    // return An iterator to the end of the constructed range.
+    it = std::set_difference( v.begin(), v.end(), w.begin(), w.end(), z.begin() );
+    // 1, 2, 3, 4, 0, 0
+    z.resize( it - z.begin() );
+    BOOST_CHECK( ( z == std::vector< int >{ 1, 2, 3, 4 } ) );
+
+    z.resize( v.size() );
+    it = std::set_intersection( v.begin(), v.end(), w.begin(), w.end(), z.begin() );
+    // 2, 3, 0, 0, 0, 0
+    z.resize( it - z.begin() );
+    BOOST_CHECK( ( z == std::vector< int >{ 2, 3 } ) );
+
+    v = { 1, 2, 2, 3 };
+    auto lowerBound = std::lower_bound( v.begin(), v.end(), 2 ); // first occurence that is >= val
+    BOOST_CHECK( *lowerBound == 2 /*the first one*/ );
+    auto upperBound = std::upper_bound( v.begin(), v.end(), 2 ); // first occurence that is > val
+    BOOST_CHECK( *upperBound == 3 );
+
+    BOOST_CHECK( upperBound - lowerBound == 2 );
+}
 
 BOOST_AUTO_TEST_SUITE_END() // STL

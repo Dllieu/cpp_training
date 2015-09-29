@@ -19,7 +19,7 @@
 #include <climits>
 #include <array>
 
-BOOST_AUTO_TEST_SUITE( Algo )
+BOOST_AUTO_TEST_SUITE( AlgoTestSuite )
 
 namespace
 {
@@ -383,4 +383,4 @@ BOOST_AUTO_TEST_CASE( FindElementInSortedMatrix )
     BOOST_CHECK( ! findMatrixElement( matrix, rowSize * colSize + 1 ) );
 }
 
-BOOST_AUTO_TEST_SUITE_END() // Algo
+BOOST_AUTO_TEST_SUITE_END() // AlgoTestSuite
