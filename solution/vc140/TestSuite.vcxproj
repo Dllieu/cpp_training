@@ -86,6 +86,7 @@
     <ClCompile Include="..\..\source\testsuite\ArgumentTestSuite.cpp" />
     <ClCompile Include="..\..\source\testsuite\BasicNetworkingTestSuite.cpp" />
     <ClCompile Include="..\..\source\testsuite\BranchPredictionTestSuite.cpp" />
+    <ClCompile Include="..\..\source\testsuite\ScopeGuardTestSuite.cpp" />
     <ClCompile Include="..\..\source\testsuite\CustomContainerTestSuite.cpp" />
     <ClCompile Include="..\..\source\testsuite\ExperimentalTestSuite.cpp" />
     <ClCompile Include="..\..\source\testsuite\FactoryTestSuite.cpp" />
