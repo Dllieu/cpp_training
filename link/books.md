@@ -3,11 +3,14 @@
 - Write Great Code, Volume 2: Thinking Low-Level, Writing High-Level
 
 
+**Paul E. McKenney**
+- Is Parallel Programming Hard, And, If So, What Can You Do About It?
+
+##Reading
 **Richard Gerber, Kevin Smith, Aart J.C. Bik, Xinmin Tian**
 - The Software Optimization Cookbook: High Performance Recipes for IA-32 Platforms
 
 
-##Reading
 **Scott Meyers**
 - Fastware
 
