@@ -15,7 +15,9 @@
     <ClCompile Include="..\..\source\tools\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\source\tools\AnonymousVariable.h" />
     <ClInclude Include="..\..\source\tools\MemoryPool.h" />
+    <ClInclude Include="..\..\source\tools\ScopeGuard.h" />
     <ClInclude Include="..\..\source\tools\Timer.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
