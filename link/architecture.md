@@ -19,6 +19,8 @@ http://en.wikipedia.org/wiki/Processor_design
 
 http://en.wikipedia.org/wiki/Multi-core_processor
 
+https://en.wikipedia.org/wiki/Cache_coherence
+
 
 ## Executable format
 windows : https://en.wikipedia.org/wiki/Portable_Executable
