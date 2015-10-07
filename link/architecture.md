@@ -21,6 +21,7 @@ http://en.wikipedia.org/wiki/Multi-core_processor
 
 https://en.wikipedia.org/wiki/Cache_coherence
 
+https://fgiesen.wordpress.com/2013/01/29/write-combining-is-not-your-friend/
 
 ## Executable format
 windows : https://en.wikipedia.org/wiki/Portable_Executable
