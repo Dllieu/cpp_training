@@ -475,3 +475,15 @@ namespace
         mutable int     m_;
     };
 }
+
+namespace
+{
+    void placementNewNoThrow()
+    {
+        // The nothrow object is used in placement new expressions to request that the new operator return a null pointer instead of throwing bad_alloc if the memory allocation request cannot be fulfilled.
+        std::unique_ptr< A > p( new (std::nothrow) A );
+
+        // nothrow is also accepted by overloaded operator delete for symmetry with new. The nothrow version of operator delete behaves just like the ordinary operator delete.
+        // Like any placement delete function, it is called only if the placement new expression throws an exception
+    };
+}

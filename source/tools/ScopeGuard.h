@@ -21,7 +21,7 @@ namespace tools
             : f_( std::move( f ) )
         {}
 
-        ~ScopeGuard()
+        ~ScopeGuard() noexcept( true )
         {
             f_();
         }

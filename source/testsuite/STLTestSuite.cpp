@@ -49,7 +49,7 @@ BOOST_AUTO_TEST_CASE( SortTest )
 
     // 3-part hybrid sorting algorithm: introsort is performed first (introsort itself being a hybrid of quicksort and heap sort)
     // to a maximum depth given by 2 log2 n, where n is the number of elements, followed by an insertion sort on the result
-    std::sort( v.begin(), v.end(), [](int a, int b) { return a < b; } );
+    std::sort( v.begin(), v.end() );
     BOOST_CHECK( std::is_sorted( &v[0], &v[0] + v.size() ) );
 }
 
@@ -84,6 +84,50 @@ BOOST_AUTO_TEST_CASE( SwapTest )
     swap( a, b );
     std::swap( a, b );
     BOOST_CHECK( a + 1 == b );
+}
+
+BOOST_AUTO_TEST_CASE( DivModuloTest )
+{
+    auto r = std::div( 15, 5 );
+    BOOST_CHECK( r.quot == 3 );
+    BOOST_CHECK( r.rem == 0 );
+
+    // rather than doing a / b then much later a % b
+    // we can ensure with std::div than both operation are called after each other, helping the compiler to optimize it to use the by product division:
+    // On x86 the remainder is a by-product of the division itself so any half-decent compiler should be able to just use it (and not perform a div again). This is probably done on other architectures too.
+    // Instruction: DIV src
+    // - Note: Unsigned division.Divides accumulator( AX ) by "src".If divisor is a byte value, result is put to AL and remainder to AH.If divisor is a word value,
+    //         then DX : AX is divided by "src" and result is stored in AX and remainder is stored in DX.
+    //int c = a / b;
+    //int d = a % b; /* Likely uses the result of the division. */
+}
+
+namespace
+{
+    struct custom_lesser
+    {
+        template<typename T, typename U>
+        auto operator()( T&& t, U&& u ) -> decltype( std::forward<T>( t ) < std::forward<U>( u ) )
+        {
+            return std::forward<T>( t ) > std::forward<U>( u );
+        }
+    };
+}
+
+BOOST_AUTO_TEST_CASE( TransparentOperatorFunctorTest )
+{
+    // since vs2015 (http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2012/n3421.htm)
+    std::vector< int > v{ 5, 2, 9, 4, 3, 2 };
+
+    //std::sort( v.begin(), v.end(), std::greater< int >() ); // old : might potentially have implicit conversion
+    std::sort( v.begin(), v.end(), std::greater<>() ); // type deduced
+    //std::sort( v.begin(), v.end(), []( auto a, auto b ) { return b > a; } ); // too verbose
+
+    BOOST_CHECK( std::is_sorted( v.begin(), v.end(), std::greater<>() ) );
+
+    // other way
+    std::sort( v.begin(), v.end(), custom_lesser() ); // type deduced
+    BOOST_CHECK( std::is_sorted( v.begin(), v.end(), custom_lesser() ) );
 }
 
 BOOST_AUTO_TEST_CASE( AlgoTest )

@@ -9,7 +9,7 @@
 // http://www.codeproject.com/Articles/18389/Fast-C-Delegate-Boost-Function-drop-in-replacement
 BOOST_AUTO_TEST_SUITE( FunctionCallTestSuite )
 
-#define FUNCTOR_IMPLEMENTATION( uselessParam ) auto useless = uselessParam;
+#define FUNCTOR_IMPLEMENTATION( uselessParam ) ++uselessParam;
 
 namespace
 {
@@ -30,12 +30,11 @@ namespace
     template <typename Functor>
     boost::timer::nanosecond_type    timeCalls( Functor f, const std::string& name )
     {
-        TypeArgument data = 0;
-
         boost::timer::auto_cpu_timer t( name + ": %u\n" );
         // kind of useless as it make branch prediction easier + good caching
+        // it will likely expand the call if its inlined, as the function doesnt do anything, it might just remove the call and the loop as it's compltely useless
         for ( auto i = 0; i < 100000; ++i )
-            f( data );
+            f( i );
 
         return t.elapsed().user;
     }
@@ -74,6 +73,18 @@ BOOST_AUTO_TEST_CASE( FunctorCall )
     // However, the performance of your application may benefit from or be disadvantaged by boost::function depending on how your C++ optimiser optimises.
     // Similar to a standard function pointer, differences of order of 10% have been noted to the benefit or disadvantage of using boost::function to call a function
     // that contains a tight loop depending on your compilation circumstances.
+
+    // about std::function (short version)
+    // - store different types of callable objects. Hence, it must perform some type-erasure magic for the storage. Generally, this implies a dynamic memory allocation (by default through a call to new).
+    //   the standard encourages implementations to avoid the dynamic memory allocation for small objects
+    // - std::function is not an alternative to templates, but rather a tool for design situations where templates cannot be used
+    // - One such use case arises when you need to resolve a call at run-time by invoking a callable object that adheres to a specific signature, but whose concrete type is unknown at compile-time.
+    //   This is typically the case when you have a collection of callbacks of potentially different types, but which you need to invoke uniformly;
+    //   the type and number of the registered callbacks is determined at run-time based on the state of your program and the application logic. Some of those callbacks could be functors,
+    //   some could be plain functions, some could be the result of binding other functions to certain arguments
+
+    // tl;dr : never use bind, always use lambda, or use transparent operator functor
+    //       - std::function does have an overhead, always use template for the signature except if no choice
     dispatchDecreasingCall( "bind",               std::bind( &realImplementation, std::placeholders::_1 ),
                             "object functor",     ObjectFunctor(),
                             "lambda",             []( TypeArgument copiedData ) { FUNCTOR_IMPLEMENTATION( copiedData ); },

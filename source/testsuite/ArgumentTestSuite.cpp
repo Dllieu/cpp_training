@@ -85,6 +85,9 @@ namespace
 {
     // Diff pointer / reference / copy / rvalue reference
     // todo : http://www.cplusplus.com/articles/z6vU7k9E/
+    // stack faster than heap for allocation as it only need to use a single to move the stack pointer (at least on x86) (stack is a (big) buffer with static size)
+    // also stack data are more cache friendly as they are aligned
+    // heap datas might be cold, meaning they could not be used for a long time, making them more apt to cache miss compared to stack datas (can still happen for both)
 }
 
 BOOST_AUTO_TEST_SUITE_END() // Argument
