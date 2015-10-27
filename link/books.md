@@ -39,3 +39,7 @@
 
 **Scott Meyers**
 - Effective Modern C++
+
+
+**Stroustrup**
+- Improving performance and maintainability through refactoring in C++11
