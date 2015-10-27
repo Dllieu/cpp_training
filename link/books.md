@@ -42,4 +42,4 @@
 
 
 **Stroustrup**
-- Improving performance and maintainability through refactoring in C++11
+- Improving performance and maintainability through refactoring in C++11 (http://www.stroustrup.com/improving_garcia_stroustrup_2015.pdf)
