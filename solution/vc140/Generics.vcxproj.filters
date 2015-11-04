@@ -8,6 +8,9 @@
     <Filter Include="Source Files\DesignPatterns">
       <UniqueIdentifier>{a2dda478-d441-49cf-a908-bb5527d3b6df}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Tuple">
+      <UniqueIdentifier>{94971e01-ac08-4741-890b-5f1a49bce6e5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\source\generic\Visitor.h">
@@ -25,9 +28,12 @@
     <ClInclude Include="..\..\source\generic\ProxyFunctor.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\source\generic\TuplePrinter.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\source\generic\Typetraits.h" />
+    <ClInclude Include="..\..\source\generic\TuplePrinter.h">
+      <Filter>Source Files\Tuple</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\generic\TupleForEach.h">
+      <Filter>Source Files\Tuple</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

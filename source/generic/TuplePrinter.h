@@ -50,10 +50,29 @@ namespace generics
 
 namespace std
 {
+    /*
+    * @brief Old way of doing so with tag dispatching
+    */
+    /*template < typename C, typename T, typename... Ts >
+    std::basic_ostream< C, T >&    operator<<( std::basic_ostream< C, T >& os, const tuple< Ts... >& t )
+    {
+        generics::printTuple( os, t );
+        return os;
+    }*/
+
+    template <typename C, typename T, typename Tuple, std::size_t... Is>
+    void    print_tuple_impl( basic_ostream< C, T >& os, const Tuple& t, std::index_sequence< Is... > )
+    {
+        using swallow = int[];
+        // first 0 in case empty sequence
+        // (expr1, expr2) -> expr2
+        (void)swallow{0, ( void( os << ( Is == 0 ? "" : ", " ) << std::get<Is>( t ) ), 0 )...};
+    }
+
     template < typename C, typename T, typename... Ts >
     basic_ostream< C, T >&    operator<<( basic_ostream< C, T >& os, const tuple< Ts... >& t )
     {
-        generics::printTuple( os, t );
+        print_tuple_impl( os, t, std::index_sequence_for< Ts... >() );
         return os;
     }
 }

@@ -7,6 +7,10 @@
 #include <iterator>
 #include <tuple>
 #include <set>
+#include <iostream>
+
+#include "generic/TupleForEach.h"
+#include "generic/TuplePrinter.h"
 
 BOOST_AUTO_TEST_SUITE( STL )
 
@@ -63,6 +67,10 @@ BOOST_AUTO_TEST_CASE( TupleTest )
     std::tie( i, s, d ) = f();
 
     BOOST_CHECK( ( std::tuple<int, std::string, double>( i, s, d ) == f() ) );
+
+    // see TuplePrinter
+    std::cout << f() << std::endl;
+    generics::for_each_tuple( f(), []( const auto& dd ){ BOOST_CHECK( true ); } );
 }
 
 namespace

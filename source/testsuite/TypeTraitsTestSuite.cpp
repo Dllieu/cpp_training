@@ -429,4 +429,36 @@ BOOST_AUTO_TEST_CASE( MpTransformTest )
     static_assert_is_same< mp_transform< mp_add_pointer, list >, mp_list< int*, double* > >();
 }
 
+namespace
+{
+    template <typename... Ts>
+    void    sequence_with_tuple( const std::tuple<Ts...>& t)
+    {
+        static_assert_is_same< std::make_index_sequence< sizeof...(Ts) >(), std::index_sequence_for< Ts... >() >();
+    }
+
+    /*
+    * @brief Old way to generate sequence
+    */
+    template <std::size_t... Is>
+    struct sequence
+    {
+        using type = sequence<Is...>; //!< For test
+    };
+
+    template <std::size_t N, std::size_t... Is>
+    struct generate_sequence : generate_sequence< N - 1, N - 1, Is... > {};
+
+    // generate<0 ... N - 1>
+    template <std::size_t... Is>
+    struct generate_sequence<0, Is...> : sequence< Is... > {};
+}
+
+BOOST_AUTO_TEST_CASE( IndexSequenceTest )
+{
+    sequence_with_tuple(std::tuple< int, double, double >{});
+
+    static_assert_is_same< typename sequence<0, 1, 2, 3>, generate_sequence<4>::type >();
+}
+
 BOOST_AUTO_TEST_SUITE_END() // TypeTraits

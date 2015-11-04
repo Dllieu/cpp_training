@@ -27,4 +27,19 @@ BOOST_AUTO_TEST_CASE( DeclTypeTest )
     }
 }
 
+namespace
+{
+    struct alignas( 16 ) A
+    {
+        int     a;
+    };
+    static_assert( sizeof( A ) == 16 && alignof( A ) == 16, "not aligned" );
+
+    struct alignas( 16 ) B
+    {
+        char    b[17];
+    };
+    static_assert( sizeof( B ) == 32 && alignof( B ) == 16, "not aligned" );
+}
+
 BOOST_AUTO_TEST_SUITE_END() // Feature

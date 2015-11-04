@@ -15,6 +15,7 @@
     <ClInclude Include="..\..\source\generic\Observer.h" />
     <ClInclude Include="..\..\source\generic\ProxyFunctor.h" />
     <ClInclude Include="..\..\source\generic\ThreadSafeSingleton.h" />
+    <ClInclude Include="..\..\source\generic\TupleForEach.h" />
     <ClInclude Include="..\..\source\generic\TuplePrinter.h" />
     <ClInclude Include="..\..\source\generic\Typetraits.h" />
     <ClInclude Include="..\..\source\generic\Visitor.h" />

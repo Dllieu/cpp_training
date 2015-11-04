@@ -157,8 +157,15 @@ BOOST_AUTO_TEST_CASE( ContainerTest )
         //                         const key_equal& eql = key_equal(), // when we compare a new given key, we first check the hash which will determinate in which "bucket" we are then we compare the remaining keys (at least one) using equal functor with the given key
         //                         const allocator_type& alloc = allocator_type() );
         std::unordered_set< unsigned > u; // behind
-        u.insert( 5 );
+        
+        // guarantees that there won't be any rehashing if we don't insert more than the reserved number of elements
+        u.reserve( 5 );
 
+        // set number of buckets to 5
+        // If the new number of buckets makes load factor more than maximum load factor (count < size() / max_load_factor()), then the new number of buckets is at least size() / max_load_factor()
+        u.rehash( 10 );
+
+        u.insert( 5 );
         BOOST_CHECK( u.find( 5 ) != u.end() );
     }
 }
@@ -215,8 +222,10 @@ BOOST_AUTO_TEST_CASE( UnorderedMapTest )
                         std::function< std::size_t ( const CustomKey& ) >,
                         std::function< bool ( const CustomKey&, const CustomKey& ) > > unordered_map( 5 /* numberOfBucket */, CustomHash(), CustomEqual() );
 
-    unordered_map.insert( std::make_pair( CustomKey( "0", 0 ), "element 0" ) );
-    unordered_map.insert( std::make_pair( CustomKey( "1", 1 ), "element 1" ) );
+    unordered_map.emplace( CustomKey( "0", 0 ), "element 0" );
+    unordered_map.emplace(std::piecewise_construct, // will call the constructor of underlying key/value type by forwarding Ts... instead of std::tuple< Ts... >
+                          std::forward_as_tuple("1", 1), // will call CustomKey(string, int) instead of CustomKey(std::tuple<string, int>)
+                          std::forward_as_tuple("element 1")); // forward_as_tuple just forward, no tuple/copy of underlying elements are made
 
     auto it = unordered_map.find( CustomKey( "0", 0 ) );
     BOOST_REQUIRE( it != unordered_map.end() );
