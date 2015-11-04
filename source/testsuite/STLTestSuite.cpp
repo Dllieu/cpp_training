@@ -110,32 +110,16 @@ BOOST_AUTO_TEST_CASE( DivModuloTest )
     //int d = a % b; /* Likely uses the result of the division. */
 }
 
-namespace
-{
-    struct custom_lesser
-    {
-        template<typename T, typename U>
-        auto operator()( T&& t, U&& u ) -> decltype( std::forward<T>( t ) < std::forward<U>( u ) )
-        {
-            return std::forward<T>( t ) > std::forward<U>( u );
-        }
-    };
-}
-
 BOOST_AUTO_TEST_CASE( TransparentOperatorFunctorTest )
 {
     // since vs2015 (http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2012/n3421.htm)
     std::vector< int > v{ 5, 2, 9, 4, 3, 2 };
 
     //std::sort( v.begin(), v.end(), std::greater< int >() ); // old : might potentially have implicit conversion
-    std::sort( v.begin(), v.end(), std::greater<>() ); // type deduced
     //std::sort( v.begin(), v.end(), []( auto a, auto b ) { return b > a; } ); // too verbose
+    std::sort( v.begin(), v.end(), std::greater<>() ); // type deduced
 
     BOOST_CHECK( std::is_sorted( v.begin(), v.end(), std::greater<>() ) );
-
-    // other way
-    std::sort( v.begin(), v.end(), custom_lesser() ); // type deduced
-    BOOST_CHECK( std::is_sorted( v.begin(), v.end(), custom_lesser() ) );
 }
 
 BOOST_AUTO_TEST_CASE( AlgoTest )
