@@ -23,7 +23,7 @@ BOOST_AUTO_TEST_SUITE( MemoryOrderingTestSuite )
 // Behind the hood, the compiler, the processor and the cache might reorder memory operations (reads and writes) for many reasons.
 // This is normally not a problem on programs running on single-core machines.
 // On the other hand, multi-threaded programs running on multi-cores machines can suffer from that: the sequence in which reads and writes operations are performed by
-// the processor can be different from what the order of execution of those operations are from the programmer�s point of view.
+// the processor can be different from what the order of execution of those operations are from the programmer’s point of view.
 
 // Memory barriers are a set of processor instructions used to force pending memory operations to complete before continuing.
 // There are three types of barrier semantics: acquire, release and fence barriers.
@@ -90,7 +90,7 @@ BOOST_AUTO_TEST_CASE( AcquireRelease )
     {
         // About std::memory_order_relaxed
         // http://preshing.com/20120710/memory-barriers-are-like-source-control-operations/
-        // once a given thread has seen a particular value of an atomic variable, a subsequent read by that thread can�t retrieve an earlier value of the variable.
+        // once a given thread has seen a particular value of an atomic variable, a subsequent read by that thread can’t retrieve an earlier value of the variable.
         // Without any additional synchronization, the modification order of each variable is the only thing shared between threads that are using memory_order_relaxed
         data.store( 1, std::memory_order_relaxed ); // can be reordered
 
@@ -107,5 +107,11 @@ BOOST_AUTO_TEST_CASE( AcquireRelease )
     BOOST_CHECK( ready.load( std::memory_order_acquire ) ); // make sure that this statement is executed before the code below
     BOOST_CHECK( data.load( std::memory_order_relaxed ) == 1 ); // can be reordered
 }
+
+// Other: volatile keyword in C#
+// The volatile keyword in C# instructs the compiler to generate an acquire-fence on every read from that field, and a release-fence on every write to that field.
+// An acquire-fence prevents other reads/writes from being moved before the fence;
+// a release-fence prevents other reads/writes from being moved after the fence.
+// These “half-fences” are faster than full fences because they give the runtime and hardware more scope for optimization.
 
 BOOST_AUTO_TEST_SUITE_END() // MemoryOrderingTestSuite
