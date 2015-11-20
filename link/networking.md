@@ -11,6 +11,8 @@ http://blog.quasardb.net/the-nagle-algorithm/
 
 https://http2.cloudflare.com/the-story-of-one-latency-spike/
 
+https://en.wikipedia.org/wiki/Transmission_time
+
 http://www.tldp.org/HOWTO/Multicast-HOWTO-2.html
 
 https://blog.cloudflare.com/how-to-achieve-low-latency/
