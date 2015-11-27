@@ -4,7 +4,7 @@
 //--------------------------------------------------------------------------------
 #include <boost/test/unit_test.hpp>
 
-//#define IGNORE_TEST
+#define IGNORE_TEST
 #if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
     #include <boost/interprocess/windows_shared_memory.hpp>
 #endif
