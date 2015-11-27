@@ -151,5 +151,8 @@
     <ClCompile Include="..\..\source\testsuite\ScopeGuardTestSuite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\source\testsuite\IPCTestSuite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

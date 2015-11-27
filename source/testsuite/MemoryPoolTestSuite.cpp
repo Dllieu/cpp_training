@@ -62,7 +62,8 @@ BOOST_AUTO_TEST_CASE( MemoryPoolTest )
         {
             void*   buffer = memoryPool.malloc(); // always malloc a chunk of 4096
 
-            BasicAllocator* p = new (buffer) BasicAllocator;
+            // use ::new + static_cast<void*> to avoid having the placement new hijacked (users could have overload taking NonVoid*)
+            BasicAllocator* p = ::new ( static_cast<void*>( buffer ) ) BasicAllocator;
             p->~BasicAllocator();
 
             memoryPool.free( p );
@@ -77,7 +78,7 @@ BOOST_AUTO_TEST_CASE( MemoryPoolTest )
         {
             void*   buffer = memoryPool.malloc( sizeToAllocate );
 
-            BasicAllocator* p = new (buffer) BasicAllocator;
+            BasicAllocator* p = ::new ( static_cast<void*>( buffer ) ) BasicAllocator;
             p->~BasicAllocator();
 
             memoryPool.free( p );
@@ -103,7 +104,7 @@ namespace
             {
                 void*   buffer = mallocFunction();
 
-                auto p = new (buffer) Allocator;
+                auto p = ::new ( static_cast<void*>( buffer ) ) Allocator;
                 p->~Allocator();
 
                 freeFunction( p );

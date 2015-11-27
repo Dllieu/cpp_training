@@ -459,6 +459,7 @@ BOOST_AUTO_TEST_CASE( IndexSequenceTest )
     sequence_with_tuple(std::tuple< int, double, double >{});
 
     static_assert_is_same< typename sequence<0, 1, 2, 3>, generate_sequence<4>::type >();
+    BOOST_CHECK( true );
 }
 
 BOOST_AUTO_TEST_SUITE_END() // TypeTraits
