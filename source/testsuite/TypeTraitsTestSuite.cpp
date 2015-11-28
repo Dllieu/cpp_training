@@ -26,6 +26,8 @@ namespace
     {
         if ( std::is_lvalue_reference< T >::value )
             return param; // if lvalue, return lvalue ( T& or const T& )
+
+        // making it explicit but no need to std::move (static_cast< T&& >( param ) which is already the case in that branch)
         return std::move( param );
     }
 }
@@ -41,6 +43,50 @@ BOOST_AUTO_TEST_CASE( DecayTest )
     int i = 5;
     static_assert_is_same< decltype( forward( i ) ), int& >();
     static_assert_is_same< decltype( forward( 5 ) ), int&& >();
+}
+
+namespace
+{
+    // User defined literal can only accept these types
+    //
+    // const char*
+    // unsigned long long int
+    // long double
+    // char
+    // wchar_t
+    // char16_t
+    // char32_t
+    // const char*, std::size_t
+    // const wchar_t*, std::size_t
+    // const char16_t*, std::size_t
+    // const char32_t*, std::size_t
+    constexpr bool operator""   _w( long double i ) { return false; }
+    constexpr bool operator""   _w( const char* ) { return true; }
+    constexpr size_t operator"" _w( const char*, size_t t ) { return t; }
+
+    constexpr unsigned long long int operator"" _powSquare( unsigned long long int i ) { return i * i; }
+
+    constexpr size_t operator"" _KB( unsigned long long size ) { return static_cast<size_t>( size * 1024 ); }
+}
+
+BOOST_AUTO_TEST_CASE( UserDefinedLiteralTest )
+{
+    static_assert_is_same< decltype( 1 ), int >();
+    static_assert_is_same< decltype( 1UL ), unsigned long >();
+    static_assert_is_same< decltype( 1LL ), long long >();
+
+    static_assert_is_same< decltype( 'c' ), char >();
+    static_assert_is_same< std::decay_t< decltype( u'c' ) >, char16_t >();
+    static_assert_is_same< std::decay_t< decltype( U'c' ) >, char32_t >();
+    static_assert_is_same< decltype( L'c' ), wchar_t >();
+
+    static_assert( !45.24_w,            "Bad call" );
+    static_assert( 321_w,               "Bad call" ); // call operator"" _w("321");
+    static_assert( "wqeqw"_w == 5,      "Bad call" );
+
+    static_assert( 2_powSquare == 4,    "Bad call" );
+
+    static_assert( 4_KB == 4096,        "Bad call" );
 }
 
 BOOST_AUTO_TEST_CASE( IsAnyTest )

@@ -125,6 +125,8 @@ BOOST_AUTO_TEST_CASE( TransparentOperatorFunctorTest )
 BOOST_AUTO_TEST_CASE( AlgoTest )
 {
     std::vector< int > v{ 0, 1, 2, 3, 4, 5 };
+    std::copy( v.begin(), v.end(), std::ostream_iterator< int >( std::cout /*buffer*/, " " /*delimiter*/) );
+    std::cout << std::endl;
 
     auto it = std::find( v.begin(), v.end(), 3 );
     BOOST_CHECK( it != v.end() );
