@@ -16,5 +16,11 @@
     <ClInclude Include="..\..\source\threading\SemaphoreSingleProcess.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\source\threading\ThreadPool.hxx">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\threading\ThreadPool.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

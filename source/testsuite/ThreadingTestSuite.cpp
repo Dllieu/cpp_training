@@ -2,11 +2,12 @@
 // (C) Copyright 2014-2015 Stephane Molina, All rights reserved.
 // See https://github.com/Dllieu for updates, documentation, and revision history.
 //--------------------------------------------------------------------------------
-// http://www.codeproject.com/Articles/153898/Yet-another-implementation-of-a-lock-free-circular
 #include <boost/test/unit_test.hpp>
 #include <boost/thread.hpp>
 #include <boost/optional.hpp>
 #include <boost/thread/shared_mutex.hpp>
+#include <boost/range/irange.hpp>
+
 #include <string>
 #include <iostream>
 #include <condition_variable>
@@ -18,6 +19,7 @@
 
 #include "threading/Algorithm.h"
 #include "threading/SemaphoreSingleProcess.h"
+#include "threading/ThreadPool.h"
 
 BOOST_AUTO_TEST_SUITE( ThreadingTestSuite )
 
@@ -30,6 +32,17 @@ BOOST_AUTO_TEST_CASE( ThreadGroupTest )
         threadGroup.add_thread( new boost::thread( [] ( unsigned threadId ) { std::cout << threadId << std::endl; },
                                                    i ) );
     threadGroup.join_all();
+    BOOST_CHECK( true );
+}
+
+BOOST_AUTO_TEST_CASE( CustomThreadPoolTest )
+{
+    threading::ThreadPool threadPool( 5 );
+
+    auto f = [] ( int n ) { std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) ); std::cout << n << std::endl; };
+    for ( auto i : boost::irange( 1, 10 ) )
+        threadPool.enqueue( f, i );
+
     BOOST_CHECK( true );
 }
 

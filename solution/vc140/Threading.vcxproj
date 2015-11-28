@@ -69,6 +69,8 @@
     <ClInclude Include="..\..\source\threading\Algorithm.h" />
     <ClInclude Include="..\..\source\threading\SemaphoreSingleProcess.h" />
     <ClInclude Include="..\..\source\threading\SpawnTask.h" />
+    <ClInclude Include="..\..\source\threading\ThreadPool.h" />
+    <ClInclude Include="..\..\source\threading\ThreadPool.hxx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
