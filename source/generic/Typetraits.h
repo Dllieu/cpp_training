@@ -45,10 +45,6 @@ namespace generics
     template < typename T, typename First, typename... Rest >
     struct is_any< T, First, Rest... > : std::integral_constant< bool, std::is_same< T, First >::value || is_any< T, Rest... >::value >
     {};
-
-    // http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2014/n3911
-    template < typename... >
-    using void_t = void;
 }
 
 #endif // ! __GENERICS_TYPETRAITS_H__

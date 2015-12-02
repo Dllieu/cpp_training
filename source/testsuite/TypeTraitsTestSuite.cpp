@@ -231,39 +231,39 @@ BOOST_AUTO_TEST_CASE( HasToStringTest )
 
 namespace
 {
-    // don't work with vc120
-    /*template <typename...>
-    using void_t = void;
-
-    template <typename T, typename = void>
-    struct stream_insertion_exists : std::false_type {};
-
-    template <typename T>
-    struct stream_insertion_exists<T, void_t<
-        decltype( std::declval<std::ostream&>() << std::declval<T>() )
-    > > : std::true_type{};*/
-
+    // Old way of doing it
     template <typename T>
     auto has_stream_insertion_helper( ... ) // ... to disambiguate call
         -> std::false_type;
-
+    
     template <typename T>
     auto has_stream_insertion_helper( int ) // int to disambiguate call
         -> decltype( std::declval<std::ostream&>() << std::declval<T>(), std::true_type{} );
-
+    
     template <typename T>
     using has_stream_insertion = decltype( has_stream_insertion_helper<T>( 0 ) );
 
+    // Not working well with VS2015 Update 1
+    //template <typename T, typename = void>
+    //struct stream_insertion_exists : std::false_type {};
+    //
+    //template <typename T>
+    //struct stream_insertion_exists<T, std::void_t< decltype( std::declval<std::ostream&>() << std::declval<T&>() ) > > : std::true_type
+    //{};
+
     class ClassNoStream {};
     class ClassHasStream {};
-    std::ostream&   operator<<( std::ostream&, const ClassHasStream& );
+
+    std::ostream&   operator<<( std::ostream& os, const ClassHasStream& );
 }
 
 BOOST_AUTO_TEST_CASE( HasStreamInsertionTest )
 {
-    BOOST_CHECK( has_stream_insertion< int >::value );
-    BOOST_CHECK( ! has_stream_insertion< ClassNoStream >::value );
-    BOOST_CHECK( has_stream_insertion< ClassHasStream >::value );
+    static_assert( has_stream_insertion< int >::value, "" );
+    static_assert( !has_stream_insertion< ClassNoStream >::value, "" );
+    static_assert( has_stream_insertion< ClassHasStream >::value, "" );
+
+    BOOST_CHECK( true );
 }
 
 namespace
@@ -302,6 +302,7 @@ namespace
     class Year {};
     class Month {};
     class Day {};
+    class Minute {};
 
     class Date
     {
@@ -314,17 +315,17 @@ namespace
         // need c++14 (std::tie constexpr)
         template < typename T1, typename T2, typename T3 >
         Date( const T1& t1, const T2& t2, const T3& t3 )
-            : year_( std::get< Year >( std::tie( t1, t2, t3 ) ) )
-            , month_( std::get< Month >( std::tie( t1, t2, t3 ) ) )
-            , day_( std::get< Day >( std::tie( t1, t2, t3 ) ) )
+            : year_( std::get< const Year& >( std::tie( t1, t2, t3 ) ) )
+            , month_( std::get< const Month& >( std::tie( t1, t2, t3 ) ) )
+            , day_( std::get< const Day& >( std::tie( t1, t2, t3 ) ) )
         {}
 
         // otherway with default value
         template < typename... Ts >
         Date( const Ts&... ts )
-            : get_or_default< Year >( std::tie( ts... ) )
-            , get_or_default< Month >( std::tie( ts... ) )
-            , get_or_default< Day >( std::tie( ts... ) )
+            : year_( get_or_default< Year >( std::tie( ts... ) ) )
+            , month_( get_or_default< Month >( std::tie( ts... ) ) )
+            , day_( get_or_default< Day >( std::tie( ts... ) ) )
         {}
 
     private:
@@ -336,13 +337,13 @@ namespace
 
 BOOST_AUTO_TEST_CASE( PermutationOverloadTest )
 {
-    Year y;
-    Month m;
-    Day d;
+    static_assert( std::is_constructible< Date, Year, Month, Day >::value, "Trivial Constructor KO" );
+    static_assert( std::is_constructible< Date, Day, Month, Year >::value, "Constructor unordered arguments KO" );
 
-    Date date( y, m, d );
-    // uncomment when vs2015
-    // Date date( m, d, y );
+    static_assert( std::is_constructible< Date, Minute/**/, Month, Year, Day >::value, "Constructor unordered arguments with extra value KO" );
+    static_assert( std::is_constructible< Date, Minute/**/, Day >::value, "Constructor unordered arguments with extra value default value KO" );
+
+    BOOST_CHECK( true );
 }
 
 // http://pdimov.com/
