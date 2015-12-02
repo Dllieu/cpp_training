@@ -207,4 +207,56 @@ BOOST_AUTO_TEST_CASE( ListTypeTest )
     BOOST_CHECK( l[ another_int_wrapper() ] == 5 );
 }
 
+namespace
+{
+    struct tag_list {};
+    struct tag_string {};
+    struct tag_arithmetic {};
+    struct tag_enum {};
+    struct tag_single {};
+
+    template < typename T, size_t LENGTH >
+    struct derivated_tag
+    {
+        using type = std::conditional_t< LENGTH == 1, std::conditional_t< std::is_enum< T >::value, tag_enum,
+                                                                          std::conditional_t< std::is_arithmetic< T >::value, tag_arithmetic,
+                                                                                                                              tag_single > >,
+                                                      std::conditional_t< std::is_same< T, char >::value, tag_string,
+                                                                                                          tag_list >>;
+    };
+
+    template < typename T, size_t LENGTH = 1, typename TAG = derivated_tag< T, LENGTH >::type >
+    struct Prototype;
+    
+    template < typename T, size_t LENGTH >
+    struct Prototype< T, LENGTH, tag_list > { void list() const {} };
+
+    template < typename T, size_t LENGTH >
+    struct Prototype< T, LENGTH, tag_arithmetic > { void arithmetic() const {} };
+
+    template < typename T, size_t LENGTH >
+    struct Prototype< T, LENGTH, tag_string > { void string() const {} };
+
+    template < typename T, size_t LENGTH >
+    struct Prototype< T, LENGTH, tag_single > { void single() const {} };
+
+    template < typename T, size_t LENGTH >
+    struct Prototype< T, LENGTH, tag_enum > { void enumCase() const {} };
+
+    struct Foo {};
+    enum class FooEnum { Case1, Case2 };
+}
+
+BOOST_AUTO_TEST_CASE( TagDispatchTest )
+{
+    Prototype< int, 2 > l;      l.list();
+    Prototype< int > a;         a.arithmetic();
+    Prototype< char > a2;       a2.arithmetic();
+    Prototype< char, 10 > s;    s.string();
+    Prototype< Foo > single;    single.single();
+    Prototype< FooEnum > e;     e.enumCase();
+
+    BOOST_CHECK( true );
+}
+
 BOOST_AUTO_TEST_SUITE_END() // TMPTestSuite

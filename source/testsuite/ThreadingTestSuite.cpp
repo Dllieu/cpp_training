@@ -43,7 +43,8 @@ BOOST_AUTO_TEST_CASE( CustomThreadPoolTest )
     for ( auto i : boost::irange( 1, 10 ) )
         threadPool.enqueue( f, i );
 
-    BOOST_CHECK( true );
+    auto future = threadPool.enqueue( []{ std::chrono::milliseconds( 300 ); return true; } );
+    BOOST_CHECK( future.get() );
 }
 
 namespace

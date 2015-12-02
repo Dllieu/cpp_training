@@ -122,6 +122,25 @@ BOOST_AUTO_TEST_CASE( TransparentOperatorFunctorTest )
     BOOST_CHECK( std::is_sorted( v.begin(), v.end(), std::greater<>() ) );
 }
 
+namespace
+{
+    struct GenerateHelper
+    {
+        GenerateHelper()
+            : n( 0 )
+        {
+            // NOTHING
+        }
+
+        int operator()()
+        {
+            return n++;
+        }
+
+        int n;
+    };
+}
+
 BOOST_AUTO_TEST_CASE( AlgoTest )
 {
     std::vector< int > v{ 0, 1, 2, 3, 4, 5 };
@@ -140,7 +159,7 @@ BOOST_AUTO_TEST_CASE( AlgoTest )
     BOOST_CHECK( ( v == std::vector< int >{ 3, 4, 0, 1, 2, 5 } ) );
 
     std::vector< int > w( 4 ); // size 4, all 0s
-    std::generate( w.begin(), w.end(), [] () { static int n = 0; return n++; } /*Generator*/ );
+    std::generate( w.begin(), w.end(), GenerateHelper() );
     BOOST_CHECK( ( w == std::vector< int >{ 0, 1, 2, 3 } ) );
 
     std::sort( v.begin(), v.end() );

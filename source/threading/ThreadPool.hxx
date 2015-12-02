@@ -38,7 +38,7 @@ namespace threading
     inline ThreadPool::~ThreadPool()
     {
         {
-            std::unique_lock<std::mutex> lock( queueMutex_ );
+            std::unique_lock< std::mutex > lock( queueMutex_ );
             stop_ = true;
         }
         conditionVariable_.notify_all();
