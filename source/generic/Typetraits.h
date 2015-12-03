@@ -45,6 +45,12 @@ namespace generics
     template < typename T, typename First, typename... Rest >
     struct is_any< T, First, Rest... > : std::integral_constant< bool, std::is_same< T, First >::value || is_any< T, Rest... >::value >
     {};
+
+    template < typename ENUM_TYPE >
+    constexpr auto enum_cast( ENUM_TYPE v )
+    {
+        return static_cast<std::underlying_type_t< ENUM_TYPE >>( v );
+    }
 }
 
 #endif // ! __GENERICS_TYPETRAITS_H__

@@ -7,6 +7,7 @@
 #include <type_traits>
 
 #include <iostream>
+#include <array>
 #include "generic/TypeTraits.h"
 
 BOOST_AUTO_TEST_SUITE( TypeTraits )
@@ -87,6 +88,49 @@ BOOST_AUTO_TEST_CASE( UserDefinedLiteralTest )
     static_assert( 2_powSquare == 4,    "Bad call" );
 
     static_assert( 4_KB == 4096,        "Bad call" );
+}
+
+namespace
+{
+    // TODO : do a loop when constraints are relaxed for constexpr
+    constexpr size_t operator"" _ES( const char* s, size_t l )
+    {
+        //static_assert( l == 4, "Incorrect size" ); // Can't use function parameters in constant expression (not a constant input unlike if it was a template parameter)
+
+
+        // sizeof( char ) * 4 hold in size_t
+        return l == 4 ? s[ 0 ] << 24 | s[ 1 ] << 16 | s[ 2 ] << 8 | s[ 3 ] // << more 'precedence' than |
+                      : throw std::logic_error( "l != 4" ); // Calling the function in a context that requires a constant expression will fail to compile
+    }
+
+    constexpr std::array< char, 4 > to_array( size_t v )
+    {
+        return std::array< char, 4 >{ static_cast< char >( ( v >> 24 ) & 0xFF ),
+                                      static_cast< char >( ( v >> 16 ) & 0xFF ),
+                                      static_cast< char >( ( v >> 8 ) & 0xFF ),
+                                      static_cast< char >( v & 0xFF ) };
+    }
+
+    enum class Color : size_t
+    {
+        Black  = "BLCK"_ES,
+        Green  = "GREN"_ES,
+        Blue   = "BLUE"_ES,
+        Pink   = "PINK"_ES,
+    };
+}
+
+BOOST_AUTO_TEST_CASE( EnumUserDefinedTest )
+{
+    constexpr auto p = Color::Pink;
+    constexpr size_t realValue = "PINK"_ES;
+
+    //static_assert( realValue == p, "" ); // error: no operator== between size_t and Color
+    static_assert( realValue == generics::enum_cast( p ), "" );
+
+    auto arrayValue = to_array( generics::enum_cast( p ) );
+    // TODO : use constexpr string_view when available and use static_assert instead
+    BOOST_CHECK( std::string( arrayValue.data(), arrayValue.size() ) == "PINK" );
 }
 
 BOOST_AUTO_TEST_CASE( IsAnyTest )

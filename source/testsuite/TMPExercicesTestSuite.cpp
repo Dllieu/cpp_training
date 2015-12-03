@@ -216,16 +216,13 @@ namespace
     struct tag_single {};
 
     template < typename T, size_t LENGTH >
-    struct derivated_tag
-    {
-        using type = std::conditional_t< LENGTH == 1, std::conditional_t< std::is_enum< T >::value, tag_enum,
-                                                                          std::conditional_t< std::is_arithmetic< T >::value, tag_arithmetic,
-                                                                                                                              tag_single > >,
-                                                      std::conditional_t< std::is_same< T, char >::value, tag_string,
-                                                                                                          tag_list >>;
-    };
+    using derivated_tag = std::conditional_t< LENGTH == 1, std::conditional_t< std::is_enum< T >::value, tag_enum,
+                                                                               std::conditional_t< std::is_arithmetic< T >::value, tag_arithmetic,
+                                                                                                                                   tag_single > >,
+                                                           std::conditional_t< std::is_same< T, char >::value, tag_string,
+                                                                                                               tag_list >>;
 
-    template < typename T, size_t LENGTH = 1, typename TAG = derivated_tag< T, LENGTH >::type >
+    template < typename T, size_t LENGTH = 1, typename TAG = derivated_tag< T, LENGTH > >
     struct Prototype;
     
     template < typename T, size_t LENGTH >
