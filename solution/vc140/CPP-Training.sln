@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Generics", "Generics.vcxproj", "{CD33CD06-C9D7-43C9-ADE5-3C2B83BBD20A}"
 EndProject
@@ -22,8 +22,6 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Containers", "Containers.vcxproj", "{798FF179-2C4D-47C7-A20F-46780AEF71A6}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Threading", "Threading.vcxproj", "{33AEF53A-6FA0-4A9B-B965-93BCAB30B119}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Networking", "Networking.vcxproj", "{89B12D1E-B3A9-4A20-8F45-67641377F9AD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,10 +53,6 @@ Global
 		{33AEF53A-6FA0-4A9B-B965-93BCAB30B119}.Debug|x64.Build.0 = Debug|x64
 		{33AEF53A-6FA0-4A9B-B965-93BCAB30B119}.Release|x64.ActiveCfg = Release|x64
 		{33AEF53A-6FA0-4A9B-B965-93BCAB30B119}.Release|x64.Build.0 = Release|x64
-		{89B12D1E-B3A9-4A20-8F45-67641377F9AD}.Debug|x64.ActiveCfg = Debug|x64
-		{89B12D1E-B3A9-4A20-8F45-67641377F9AD}.Debug|x64.Build.0 = Debug|x64
-		{89B12D1E-B3A9-4A20-8F45-67641377F9AD}.Release|x64.ActiveCfg = Release|x64
-		{89B12D1E-B3A9-4A20-8F45-67641377F9AD}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -70,6 +64,5 @@ Global
 		{0E1673F3-BE77-4EBD-964A-1E0101CF4A08} = {383D0525-B145-423B-8FDB-DF357CC80744}
 		{798FF179-2C4D-47C7-A20F-46780AEF71A6} = {383D0525-B145-423B-8FDB-DF357CC80744}
 		{33AEF53A-6FA0-4A9B-B965-93BCAB30B119} = {383D0525-B145-423B-8FDB-DF357CC80744}
-		{89B12D1E-B3A9-4A20-8F45-67641377F9AD} = {383D0525-B145-423B-8FDB-DF357CC80744}
 	EndGlobalSection
 EndGlobal

@@ -6,6 +6,8 @@
 #include <boost/type_index.hpp>
 #include <type_traits>
 
+#include <boost/utility/string_ref.hpp>
+
 #include <iostream>
 #include <array>
 #include "generic/TypeTraits.h"
@@ -90,13 +92,13 @@ BOOST_AUTO_TEST_CASE( UserDefinedLiteralTest )
     static_assert( 4_KB == 4096,        "Bad call" );
 }
 
+
 namespace
 {
     // TODO : do a loop when constraints are relaxed for constexpr
     constexpr size_t operator"" _ES( const char* s, size_t l )
     {
         //static_assert( l == 4, "Incorrect size" ); // Can't use function parameters in constant expression (not a constant input unlike if it was a template parameter)
-
 
         // sizeof( char ) * 4 hold in size_t
         return l == 4 ? s[ 0 ] << 24 | s[ 1 ] << 16 | s[ 2 ] << 8 | s[ 3 ] // << more 'precedence' than |

@@ -467,11 +467,12 @@ namespace
     {
     public:
         NoNeedToSetRefMutable( int v ) : n_( v ) {};
-        void Set( int val ) const { n_ = val; }  // no error
+        void Set( int val ) const { n_ = val; *p_ = val; }  // no error
         void SetMember( int val ) const { m_ = val; } // error assignment of member `B::m' in read-only structure if not mutable
 
     private:
         int&            n_;
+        int*            p_;
         mutable int     m_;
     };
 }

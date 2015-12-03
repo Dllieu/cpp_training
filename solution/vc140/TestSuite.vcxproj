@@ -120,6 +120,7 @@
     <ClCompile Include="..\..\source\testsuite\TypeTraitsTestSuite.cpp" />
     <ClCompile Include="..\..\source\testsuite\VisitorTestSuite.cpp" />
     <ClCompile Include="ExceptionalCpp.cpp" />
+    <ClCompile Include="SIMDTestSuite.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Pricing.vcxproj">
