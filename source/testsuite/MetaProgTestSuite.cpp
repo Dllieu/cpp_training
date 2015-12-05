@@ -5,10 +5,13 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/mpl/if.hpp>
 #include <boost/mpl/bool.hpp>
+#include <sstream>
 #include <iostream>
 #include <array>
+#include <tuple>
 
 #include "tools/Timer.h"
+
 
 BOOST_AUTO_TEST_SUITE( MetaProg )
 
@@ -265,10 +268,43 @@ namespace
 
 BOOST_AUTO_TEST_CASE( GeneratedInlineCodeTest )
 {
-    std::array< int, 3 > a{ 3, 0, 1 }, b{ 2, 0, 1 };
+    std::array< int, 3 > a{ 3, 0, 1 },
+                         b{ 2, 0, 1 };
 
     // will be replaced at translation unit by : a[ 0 ] * b[ 0 ] + a[ 1 ] * b[ 1 ] + a[ 2 ] * b[ 2 ];
     BOOST_CHECK( dot< 3 >( a.data(), b.data(), [] ( int a, int b ) { return a * b; } ) == 7 );
+}
+
+namespace
+{
+    enum class None {};
+    enum class Fizz {};
+    enum class Buzz {};
+    enum class FizzBuzz {};
+
+    template < size_t N, typename = void >
+    struct  FizzBuzzImpl { using type = None; };
+
+    template <>
+    struct  FizzBuzzImpl< 0, void > { using type = None; };
+
+    template < size_t N >
+    struct  FizzBuzzImpl< N, typename std::enable_if_t< N % 3 == 0 && N % 5 > >      { using type = Fizz; };
+
+    template < size_t N >
+    struct  FizzBuzzImpl< N, typename std::enable_if_t< N % 3      && N % 5 == 0 > > { using type = Buzz; };
+
+    template < size_t N >
+    struct  FizzBuzzImpl< N, typename std::enable_if_t< N % 3 == 0 && N % 5 == 0 > > { using type = FizzBuzz; };
+
+    template < size_t... Ns >
+    struct  FizzBuzzGenerator { using type = std::tuple< typename FizzBuzzImpl< Ns >::type... >; };
+}
+
+BOOST_AUTO_TEST_CASE( FizzBuzzTest )
+{
+    static_assert( std::is_same< FizzBuzzGenerator< 0, 3, 5, 15, 4 >::type, std::tuple< None, Fizz, Buzz, FizzBuzz, None > >::value, "" );
+    BOOST_CHECK( true );
 }
 
 BOOST_AUTO_TEST_SUITE_END() // MetaProg

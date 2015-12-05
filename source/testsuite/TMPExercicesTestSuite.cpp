@@ -48,10 +48,12 @@ namespace
 // returns T if it is a reference type, and otherwise returns T const&
 BOOST_AUTO_TEST_CASE( AddConstRef )
 {
-    BOOST_CHECK( ( ! std::is_same< int, add_const_ref< int >::type >::value ) );
-    BOOST_CHECK( ( std::is_same< const int&, add_const_ref< int >::type >::value ) );
-    BOOST_CHECK( ( std::is_same< const int&, add_const_ref< int >::type2 >::value ) );
-    BOOST_CHECK( ( std::is_same< int&, add_const_ref< int& >::type2 >::value ) );
+    static_assert( ( ! std::is_same< int, add_const_ref< int >::type >::value ), "" );
+    static_assert( ( std::is_same< const int&, add_const_ref< int >::type >::value ), "" );
+    static_assert( ( std::is_same< const int&, add_const_ref< int >::type2 >::value ), "" );
+    static_assert( ( std::is_same< int&, add_const_ref< int& >::type2 >::value ), "" );
+
+    BOOST_CHECK( true );
 }
 
 namespace
@@ -99,14 +101,16 @@ namespace
 // metafunction replace_type< T, X, Y > takes an arbitrary type T as its first parameter, and replaces all occurrences of a type X within T with Y:
 BOOST_AUTO_TEST_CASE( ReplaceType )
 {
-    BOOST_CHECK( ( std::is_same< int, replace_type< void, void, int >::type >::value ) );
-    BOOST_CHECK( ( std::is_same< int, replace_type< int, double, float >::type >::value ) );
-    BOOST_CHECK( ( std::is_same< int*, replace_type< void*, void, int >::type >::value ) );
-    BOOST_CHECK( ( std::is_same< int&, replace_type< double&, double, int >::type >::value ) );
-    BOOST_CHECK( ( std::is_same< int[5], replace_type< double[5], double, int >::type >::value ) );
-    BOOST_CHECK( ( std::is_same< int (*) (), replace_type< double (*) (), double, int >::type >::value ) );
-    BOOST_CHECK( ( std::is_same< int* (*) ( float ), replace_type< double* (*) ( float ), double, int >::type >::value ) );
-    BOOST_CHECK( ( std::is_same< int (*) ( int& ), replace_type< double (*) ( double& ), double, int >::type >::value ) );
+    static_assert( ( std::is_same< int, replace_type< void, void, int >::type >::value ), "" );
+    static_assert( ( std::is_same< int, replace_type< int, double, float >::type >::value ), "" );
+    static_assert( ( std::is_same< int*, replace_type< void*, void, int >::type >::value ), "" );
+    static_assert( ( std::is_same< int&, replace_type< double&, double, int >::type >::value ), "" );
+    static_assert( ( std::is_same< int[5], replace_type< double[5], double, int >::type >::value ), "" );
+    static_assert( ( std::is_same< int (*) (), replace_type< double (*) (), double, int >::type >::value ), "" );
+    static_assert( ( std::is_same< int* (*) ( float ), replace_type< double* (*) ( float ), double, int >::type >::value ), "" );
+    static_assert( ( std::is_same< int (*) ( int& ), replace_type< double (*) ( double& ), double, int >::type >::value ), "" );
+
+    BOOST_CHECK( true );
 }
 
 namespace

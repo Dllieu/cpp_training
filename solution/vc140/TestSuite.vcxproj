@@ -55,6 +55,8 @@
       <AdditionalIncludeDirectories>$(ProjectDir)\..\..\dependencies\lib\boost\;$(ProjectDir)\..\..\dependencies\lib\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessToFile>false</PreprocessToFile>
       <PreprocessorDefinitions>_WIN32_WINNT=0x0501;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalOptions>/await %(AdditionalOptions)</AdditionalOptions>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -73,6 +75,8 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <AdditionalIncludeDirectories>$(ProjectDir)\..\..\dependencies\lib\boost\;$(ProjectDir)\..\..\dependencies\lib\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WIN32_WINNT=0x0501;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalOptions>/await %(AdditionalOptions)</AdditionalOptions>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -86,7 +90,9 @@
     <ClCompile Include="..\..\source\testsuite\ArgumentTestSuite.cpp" />
     <ClCompile Include="..\..\source\testsuite\BasicNetworkingTestSuite.cpp" />
     <ClCompile Include="..\..\source\testsuite\BranchPredictionTestSuite.cpp" />
+    <ClCompile Include="..\..\source\testsuite\CoroutineTestSuite.cpp" />
     <ClCompile Include="..\..\source\testsuite\CustomContainerTestSuite.cpp" />
+    <ClCompile Include="..\..\source\testsuite\ExceptionalCppTestSuite.cpp" />
     <ClCompile Include="..\..\source\testsuite\ExperimentalTestSuite.cpp" />
     <ClCompile Include="..\..\source\testsuite\FactoryTestSuite.cpp" />
     <ClCompile Include="..\..\source\testsuite\FunctionCallTestSuite.cpp" />
@@ -99,6 +105,7 @@
     <ClCompile Include="..\..\source\testsuite\OptimizationTricks.cpp" />
     <ClCompile Include="..\..\source\testsuite\ProxyFunctorTestSuite.cpp" />
     <ClCompile Include="..\..\source\testsuite\ScopeGuardTestSuite.cpp" />
+    <ClCompile Include="..\..\source\testsuite\SIMDTestSuite.cpp" />
     <ClCompile Include="..\..\source\testsuite\SingletonTestSuite.cpp" />
     <ClCompile Include="..\..\source\testsuite\SmartPointer.cpp" />
     <ClCompile Include="..\..\source\testsuite\StandardDeviationTestSuite.cpp" />
@@ -119,8 +126,6 @@
     <ClCompile Include="..\..\source\testsuite\ThreadingTestSuite.cpp" />
     <ClCompile Include="..\..\source\testsuite\TypeTraitsTestSuite.cpp" />
     <ClCompile Include="..\..\source\testsuite\VisitorTestSuite.cpp" />
-    <ClCompile Include="ExceptionalCpp.cpp" />
-    <ClCompile Include="SIMDTestSuite.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Pricing.vcxproj">

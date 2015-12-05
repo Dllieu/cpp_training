@@ -145,17 +145,20 @@
     <ClCompile Include="..\..\source\testsuite\ProxyFunctorTestSuite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ExceptionalCpp.cpp">
-      <Filter>Source Files\Exercice</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\source\testsuite\ScopeGuardTestSuite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\testsuite\IPCTestSuite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SIMDTestSuite.cpp">
+    <ClCompile Include="..\..\source\testsuite\SIMDTestSuite.cpp">
       <Filter>Source Files\ImpracticalTest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\testsuite\CoroutineTestSuite.cpp">
+      <Filter>Source Files\Threading</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\testsuite\ExceptionalCppTestSuite.cpp">
+      <Filter>Source Files\Exercice</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
