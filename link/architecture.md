@@ -27,6 +27,8 @@ http://igoro.com/archive/gallery-of-processor-cache-effects/
 
 https://www.scss.tcd.ie/Jeremy.Jones/CS3021/
 
+https://en.wikipedia.org/wiki/Instruction_cycle
+
 ## Executable format
 windows : https://en.wikipedia.org/wiki/Portable_Executable
 
