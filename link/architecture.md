@@ -23,6 +23,10 @@ https://en.wikipedia.org/wiki/Cache_coherence
 
 https://fgiesen.wordpress.com/2013/01/29/write-combining-is-not-your-friend/
 
+http://igoro.com/archive/gallery-of-processor-cache-effects/
+
+https://www.scss.tcd.ie/Jeremy.Jones/CS3021/
+
 ## Executable format
 windows : https://en.wikipedia.org/wiki/Portable_Executable
 
