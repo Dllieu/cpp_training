@@ -8,6 +8,8 @@
 #include <tuple>
 #include <set>
 #include <iostream>
+#include <numeric>
+#include <random>
 
 #include "generic/TupleForEach.h"
 #include "generic/TuplePrinter.h"
@@ -143,7 +145,10 @@ namespace
 
 BOOST_AUTO_TEST_CASE( AlgoTest )
 {
-    std::vector< int > v{ 0, 1, 2, 3, 4, 5 };
+    std::vector< int > v( 6 );
+
+    // Fills the range [first, last) with sequentially increasing values, starting with value and repetitively evaluating ++value
+    std::iota( v.begin(), v.end(), 0 /*value*/ ); // numeric
     std::copy( v.begin(), v.end(), std::ostream_iterator< int >( std::cout /*buffer*/, " " /*delimiter*/) );
     std::cout << std::endl;
 
@@ -162,6 +167,7 @@ BOOST_AUTO_TEST_CASE( AlgoTest )
     std::generate( w.begin(), w.end(), GenerateHelper() );
     BOOST_CHECK( ( w == std::vector< int >{ 0, 1, 2, 3 } ) );
 
+    std::shuffle( v.begin(), v.end(), std::mt19937{ std::random_device{}() } ); // Reorders the elements in the given range
     std::sort( v.begin(), v.end() );
     // includes return true if the sorted range [v.begin, end[ contains all the sorted element of [w.begin, end[
     BOOST_CHECK( std::includes( v.begin(), v.end(), w.begin(), w.end()/*, ComparatorFunctor*/ ) );
@@ -201,6 +207,9 @@ BOOST_AUTO_TEST_CASE( AlgoTest )
 
     v = { 2, 3, 4, 2, 3, 1 };
     w = { 2, 3 };
+    BOOST_CHECK( std::accumulate( w.begin(), w.end(), 0 ) == 5 );
+    BOOST_CHECK( std::accumulate( w.begin(), w.end(), std::string(), []( const auto& result, auto element ) { return result + std::to_string( element ); } ) == "23" );
+
     // Searches the range [first1,last1) for the FIRST occurrence of the sequence defined by [first2,last2), and returns an iterator to its first element, or last1 if no occurrences are found.
     it = std::search( v.begin(), v.end(), w.begin(), w.end() );
     std::advance( it, 2 );

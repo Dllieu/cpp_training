@@ -160,5 +160,8 @@
     <ClCompile Include="..\..\source\testsuite\ExceptionalCppTestSuite.cpp">
       <Filter>Source Files\Exercice</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\source\testsuite\CacheTestSuite.cpp">
+      <Filter>Source Files\ImpracticalTest</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
