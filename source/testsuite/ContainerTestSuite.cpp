@@ -48,6 +48,16 @@ BOOST_AUTO_TEST_CASE( EraseRemoveTest )
 
 BOOST_AUTO_TEST_CASE( ContainerTest )
 {
+    // About Iterators
+    // - The Iterator concept describes types that can be used to identify and traverse the elements of a container.
+    // - A ForwardIterator is an Iterator that can read data from the pointed - to element. (e.g. std::forward_list)
+    //   operator++
+    // - A BidirectionalIterator is a ForwardIterator that can be moved in both directions (i.e.incremented and decremented) (e.g. std::list)
+    //   operator--
+    // - A RandomAccessIterator is a BidirectionalIterator that can be moved to point to any element in constant time. (e.g. std::vector)
+    //   random access: the process of transferring information to or from memory in which every memory location can be accessed directly rather than being accessed in a fixed sequence
+    //   operator+= -= [] < > (implicitly == <= >=)
+
     // Base container : forward_list / list / vector (priority_queue) / deque (stack - queue) / set (map)
 
     // list keep a link to previous / next element
