@@ -35,7 +35,7 @@ namespace
 
 BOOST_AUTO_TEST_CASE( AsyncTest )
 {
-    unsigned from = 0, to = 10000;
+    unsigned from = 0, to = 10'000;
     
     // First argument is an optional policy:
     // std::launch::async will execute the function in a separate thread

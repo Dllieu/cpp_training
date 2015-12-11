@@ -33,7 +33,7 @@ namespace
         boost::timer::auto_cpu_timer t( name + ": %u\n" );
         // kind of useless as it make branch prediction easier + good caching
         // it will likely expand the call if its inlined, as the function doesnt do anything, it might just remove the call and the loop as it's compltely useless
-        for ( auto i = 0; i < 100000; ++i )
+        for ( auto i = 0; i < 100'000; ++i )
             f( i );
 
         return t.elapsed().user;
@@ -120,13 +120,13 @@ BOOST_AUTO_TEST_CASE( VirtualMethodCall )
     boost::timer::nanosecond_type timer = 0;
     {
         boost::timer::auto_cpu_timer t( "virtual function: %u\n" );
-        for ( auto i = 0; i < 100000; ++i )
+        for ( auto i = 0; i < 100'000; ++i )
             a.virtualF();
         timer = t.elapsed().user;
     }
     {
         boost::timer::auto_cpu_timer t( "direct method: %u\n" );
-        for ( auto i = 0; i < 100000; ++i )
+        for ( auto i = 0; i < 100'000; ++i )
             a.f();
 
         // time is not a good measurement :(

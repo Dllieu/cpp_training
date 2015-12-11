@@ -75,7 +75,7 @@ namespace
 
 BOOST_AUTO_TEST_CASE( PerfTest )
 {
-    auto testRange = 5000000;
+    auto testRange = 5'000'000;
     {
         tools::Timer    t( "Virtual" );
         VirtualDerived  d;

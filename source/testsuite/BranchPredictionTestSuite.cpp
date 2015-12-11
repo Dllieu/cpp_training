@@ -16,7 +16,7 @@ namespace
     void functionName() \
     { \
         int result = 0; \
-        for ( int i = 0; i < 1000000; ++i ) \
+        for ( int i = 0; i < 1'000'000; ++i ) \
             result += i; \
     }
     BURNSOMETIMEFUNCTION( fooA );
@@ -77,7 +77,7 @@ namespace
 // possibliy avoiding pipeline stall if there are dependencies in the instructions of any one block.
 BOOST_AUTO_TEST_CASE( PerfTest )
 {
-    unsigned maxIteration = 1000;
+    unsigned maxIteration = 1'000;
     // time is not a good measurement :(
     BOOST_CHECK( elapsedCase1( maxIteration ) > elapsedCase2( maxIteration ) || true );
 }
@@ -96,7 +96,7 @@ namespace
 
 BOOST_AUTO_TEST_CASE( BranchSortedVsUnsortedContainer )
 {
-    auto size = 10000;
+    auto size = 10'000;
     std::deque< int > unsortedContainer;
     for ( auto i = 0; i < size; ++i )
         unsortedContainer.push_back( std::rand() % 256 );

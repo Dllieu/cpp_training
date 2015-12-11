@@ -21,7 +21,7 @@ namespace
         {
             std::mutex m;
             auto j = 0;
-            for ( auto i = 0; i < 1000000; ++i )
+            for ( auto i = 0; i < 1'000'000; ++i )
             {
                 std::lock_guard< std::mutex > l( m );
                 ++j;
@@ -36,7 +36,7 @@ namespace
             // only type to be guaranteed to be lock free
             std::atomic_flag lock = ATOMIC_FLAG_INIT; // can be either set or clear (here we init with a clear state)
             auto j = 0;
-            for ( auto i = 0; i < 1000000; ++i )
+            for ( auto i = 0; i < 1'000'000; ++i )
             {
                 while ( lock.test_and_set( std::memory_order_acquire ) ) // acquire lock
                     ; // spin
@@ -74,7 +74,7 @@ namespace
         while ( ! ready )
             std::this_thread::yield(); // thread waits for other threads to advance without blocking
 
-        for ( volatile unsigned i = 0; i < 1000000; ++i ) // useless loop so we precise volatile to for compiler to use it
+        for ( volatile unsigned i = 0; i < 1'000'000; ++i ) // useless loop so we precise volatile to force compiler to use it
             ;
 
         // Replaces the contained value by val and returns the value it had immediately before

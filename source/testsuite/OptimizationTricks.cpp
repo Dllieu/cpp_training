@@ -34,8 +34,8 @@ BOOST_AUTO_TEST_CASE( LoopRefactorizationTest )
 {
     // ---- LOOP UNROLLING ----
     auto sum = 0;
-    std::array< int , 1000 > arr;
-    //for ( auto i = 0; i < 1000; ++i )
+    std::array< int , 1'000 > arr;
+    //for ( auto i = 0; i < 1'000; ++i )
     //    sum += arr[i];
 
     // Increased code size, but execute fewer overhead instructions,
@@ -43,7 +43,7 @@ BOOST_AUTO_TEST_CASE( LoopRefactorizationTest )
     int t1, t2, t3, t4;
     // Reduce data dependance on sum
     t1 = t2 = t3 = t4 = 0;
-    for ( auto i = 0; i < 1000; i += 4 )
+    for ( auto i = 0; i < 1'000; i += 4 )
     {
         t1 += arr[ i ];
         t2 += arr[ i + 1 ];
@@ -55,7 +55,7 @@ BOOST_AUTO_TEST_CASE( LoopRefactorizationTest )
     // ---- LOOP INTERCHANGING ----
     auto doOdd = [] ( auto i ) {};
     auto doEven = [] ( auto i ) {};
-    //for ( auto i = 0; i < 1000; ++i )
+    //for ( auto i = 0; i < 1'000; ++i )
     //{
     //    if (i & 1)
     //        doOdd(i);
@@ -64,7 +64,7 @@ BOOST_AUTO_TEST_CASE( LoopRefactorizationTest )
     //}
 
     // Eliminating branching when possible, really important if branch missprediction is high
-    for ( auto i = 0; i < 1000; i += 2 )
+    for ( auto i = 0; i < 1'000; i += 2 )
     {
         doOdd(i);
         doEven(i);

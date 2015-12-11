@@ -49,13 +49,13 @@ namespace
 
 BOOST_AUTO_TEST_CASE( MemoryPoolTest )
 {
-    unsigned int to = 1000000;
+    unsigned int to = 1'000'000;
     double noAllocator, pool, basic;
 
     noAllocator = testMemoryPool< NoAllocator >( to, "No Allocator" );
     {
         tools::Timer        t( "Boost Pool" );
-        boost::pool<>       memoryPool( 4096, 50 );
+        boost::pool<>       memoryPool( 4'096, 50 );
         size_t              sizeToAllocate( sizeof( BasicAllocator ) );
 
         for ( unsigned int i = 0; i < to; ++i )
@@ -71,7 +71,7 @@ BOOST_AUTO_TEST_CASE( MemoryPoolTest )
     }
     {
         tools::Timer        t( "Custom Pool" );
-        tools::MemoryPool   memoryPool( 50, 4096 );
+        tools::MemoryPool   memoryPool( 50, 4'096 );
         size_t              sizeToAllocate( sizeof( BasicAllocator ) );
 
         for ( unsigned int i = 0; i < to; ++i )
@@ -121,14 +121,14 @@ BOOST_AUTO_TEST_CASE( SlowMemoryPoolTest )
     //       Means it first calls a virtual function which then invokes your function. So typically it involves (minimum) two function calls (one of them is virtual)
     // boost::function < virtual function < regular function (fastest)
 
-    unsigned int to = 1000000;
+    unsigned int to = 1'000'000;
     { 
-        boost::pool<> memoryPool( 4096, 50 ); // always malloc by chunk of 4096
+        boost::pool<> memoryPool( 4'096, 50 ); // always malloc by chunk of 4096
         testMemoryPool< BasicAllocator >( to, "Slow Boost Pool", boost::bind( &boost::pool<>::malloc, boost::ref( memoryPool ) )
                                                                , boost::bind( &boost::pool<>::free, boost::ref( memoryPool ), _1 ) );
     }
     {
-        tools::MemoryPool   memoryPool( 50, 4096 );
+        tools::MemoryPool   memoryPool( 50, 4'096 );
         size_t              sizeToAllocate( sizeof( BasicAllocator ) );
         testMemoryPool< BasicAllocator >( to, "Slow Custom Pool", boost::bind( &tools::MemoryPool::malloc, boost::ref( memoryPool ), sizeToAllocate )
                                                                 , boost::bind( &tools::MemoryPool::free, boost::ref( memoryPool ), _1 ) );

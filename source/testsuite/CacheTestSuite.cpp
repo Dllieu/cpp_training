@@ -79,15 +79,18 @@ namespace
 
     void    displaySpaceInformation( size_t n )
     {
-        std::cout << "number of element per container: " << n << "\n";
+        std::cout << "-----\nnumber of elements to run: " << n << "\n";
         std::cout << "(optimal) cache line needed: " << std::ceil( n / 64 ) << "\n";
-        std::cout << "Need at least " << std::ceil( n / 1024 ) << "KB space\n" << std::endl;
+
+        auto kbNeeded = std::ceil( n / 1024 );
+        std::cout << "Need at least " << kbNeeded
+                  << "KB space (enough for " << (kbNeeded < 32 ? "L1" : kbNeeded < 256 ? "L2" : kbNeeded < 8'000 * 1'024 ? "L3" : "DRAM" ) << ")" << std::endl;
     }
 }
 
 BOOST_AUTO_TEST_CASE( LinearTraversalTest )
 {
-    for ( auto n : { 4096, 100'000 } )
+    for ( auto n : { 4096, 100'000, 1'000'000 } )
     {
         displaySpaceInformation( n );
 
