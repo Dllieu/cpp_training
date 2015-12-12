@@ -9,6 +9,7 @@
 #include <unordered_set>
 #include <unordered_map>
 #include <bitset>
+#include <iostream>
 
 #include "generic/HashCombine.h"
 
@@ -162,6 +163,13 @@ BOOST_AUTO_TEST_CASE( ContainerTest )
         // Internally, the elements are not sorted in any particular order, but organized into buckets depending on their hash values
         // to allow for fast access to individual elements directly by their values (with a constant average time complexity on average)
 
+        // The elements of an unordered associative container are organized into buckets. Keys with the same hash code appear in the same bucket
+        // Within each bucket, the elements are in a linked list( a separate list for each bucket, not one big list for the whole container ).When the container is rehashed,
+        // the elements will be assigned to new buckets, but the pointers to each element remain valid.The linked list in each new bucket is assembled from pointers to the existing elements that end up in that bucket.
+        // Iterators are invalidated by a rehash, since an iterator needs to hold pointers to both the element and its bucket( so it can be stepped from the last element of one bucket to the first element of the next ).
+        // The element pointer remains valid, so existing pointers and references to an element are still valid, but the bucket pointer is invalidated by a rehash, so the iterator isn't usable
+        //  unordered containers only support forward iterators
+
         // explicit unordered_set( size_type n = /* see below */,
         //                         const hasher& hf = hasher(), // hash the key
         //                         const key_equal& eql = key_equal(), // when we compare a new given key, we first check the hash which will determinate in which "bucket" we are then we compare the remaining keys (at least one) using equal functor with the given key
@@ -175,7 +183,13 @@ BOOST_AUTO_TEST_CASE( ContainerTest )
         // If the new number of buckets makes load factor more than maximum load factor (count < size() / max_load_factor()), then the new number of buckets is at least size() / max_load_factor()
         u.rehash( 10 );
 
+        // dependings of the STL implementation, insert might always allocate a node when searching if the key is already present, then deleting it if its the case (e.g. STL VS 2015)
+        // prefer using it = map.find(...) -> if (it != end()) do_stuff();
         u.insert( 5 );
+
+        // The load factor is the ratio between the number of elements in the container (its size) and the number of buckets (bucket_count):
+        // load_factor = size / bucket_count
+        std::cout << "unordered_map load_factor : " << u.load_factor() << std::endl;
         BOOST_CHECK( u.find( 5 ) != u.end() );
     }
 }
