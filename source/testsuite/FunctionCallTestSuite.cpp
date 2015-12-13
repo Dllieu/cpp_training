@@ -85,6 +85,11 @@ BOOST_AUTO_TEST_CASE( FunctorCall )
 
     // tl;dr : never use bind, always use lambda, or use transparent operator functor
     //       - std::function does have an overhead, always use template for the signature except if no choice
+
+    // About lambda capture
+    // Each variable expressly named in the capture list is captured.
+    // The default capture will only capture variables that are both not expressly named in the capture list and used in the body of the lambda expression.
+    // If a variable is not expressly named and you don't use the variable in the lambda expression, then the variable is not capture
     dispatchDecreasingCall( "bind",               std::bind( &realImplementation, std::placeholders::_1 ),
                             "object functor",     ObjectFunctor(),
                             "lambda",             []( TypeArgument copiedData ) { FUNCTOR_IMPLEMENTATION( copiedData ); },

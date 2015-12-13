@@ -3,6 +3,8 @@
 // See https://github.com/Dllieu for updates, documentation, and revision history.
 //--------------------------------------------------------------------------------
 #include <boost/test/unit_test.hpp>
+#include <boost/multi_array.hpp>
+
 #include <algorithm>
 #include <chrono>
 #include <iostream>
@@ -11,22 +13,82 @@
 #include <random>
 #include <unordered_map>
 
+#include "generic/Typetraits.h"
+
 namespace sch = std::chrono;
 
-// Intel Core i7-3770K
-// cache line : 64B
-// - L1  (32KB):    1   ns /   4 cycles 
-// - L2 (256KB):    3.1 ns /  12 cycles
-// - L3   (8MB):    7.7 ns /  30 cycles
-// - DRAM  (XX):   60   ns / 237 cycles
 namespace
 {
+    constexpr auto operator""   _KB( size_t s ) { return s * 1024; }
+    constexpr auto operator""   _MB( size_t s ) { return s * 1024 * 1000; }
+
+    // Intel Core i5-4460 (4 cores)
+    // cache line : 64B
+    // L1 instruction cache : 32KB
+    // - L1  (32KB):    1   ns /   4 cycles (2 per processor (hyperthreading can have 2 thread per processor))
+    // - L2 (256KB):    3.1 ns /  12 cycles (per processor)
+    // - L3   (6MB):    7.7 ns /  30 cycles (share among all the processors)
+    // - DRAM  (XX):   60   ns / 237 cycles
+
+    // Max number of segment in L1 = 32KB / 64 = 512
+    enum class CacheSize
+    {
+        L1 = 32_KB,
+        L2 = 256_KB,
+        L3 = 6_MB,
+        DRAM
+    };
+
+    template < typename T >
+    CacheSize   byteToAppropriateCacheSize( size_t numberElements )
+    {
+        auto byteSize = numberElements * sizeof( T );
+        if ( byteSize < generics::enum_cast( CacheSize::L1 ) )
+            return CacheSize::L1;
+
+        if ( byteSize < generics::enum_cast( CacheSize::L2 ) )
+            return CacheSize::L2;
+
+        if ( byteSize < generics::enum_cast( CacheSize::L3 ) )
+            return CacheSize::L3;
+
+        return CacheSize::DRAM;
+    }
+
+    const char* toString( CacheSize cacheSize )
+    {
+        switch ( cacheSize )
+        {
+            case CacheSize::L1:
+                return "L1";
+
+            case CacheSize::L2:
+                return "L2";
+
+            case CacheSize::L3:
+                return "L3";
+
+            default:
+                return "DRAM";
+        }
+    }
+
+    template < typename T >
+    void    displaySpaceInformation( size_t numberElements )
+    {
+        std::cout << "-----\nnumber of elements to run: " << numberElements << "\n";
+
+        auto byteNumber = numberElements * sizeof( T );
+        std::cout << "(optimal) cache line needed: " << std::ceil( byteNumber / 64 ) << "\n";
+        std::cout << "Need at least " << byteNumber / 1024. << "KB space (" << toString( byteToAppropriateCacheSize< T >( numberElements ) ) << ")" << std::endl;
+    }
+
     static constexpr int                NumberTrials = 14;
     static constexpr sch::milliseconds  MinTimePerTrial( 200 );
 
     // return average of microseconds per f() call
-    template < typename F >
-    auto    measure( F&& f )
+    template < typename S, typename F >
+    auto    measure( S&& s, F&& f )
     {
         volatile decltype( f() ) res; // to avoid optimizing f() away
 
@@ -48,27 +110,9 @@ namespace
         static_cast< void >( res );
 
         std::sort( trials.begin(), trials.end() );
-        return std::accumulate( trials.begin() + 2, trials.end() - 2, 0.0 ) / ( trials.size() - 4 ) * 1E6;
-    }
-
-    void    displaySpaceInformation( size_t numberElements )
-    {
-        std::cout << "-----\nnumber of elements to run: " << numberElements << "\n";
-
-        auto byteNumber = numberElements * sizeof( int );
-        std::cout << "(optimal) cache line needed: " << std::ceil( byteNumber / 64 ) << "\n";
-
-        auto kbNeeded = byteNumber / 1024.;
-        std::cout << "Need at least " << kbNeeded
-                  << "KB space (enough for " << ( kbNeeded < 32 ? "L1"
-                                                                : kbNeeded < 256 ? "L2"
-                                                                                 : kbNeeded < 8'000 * 1'024 ? "L3" : "DRAM" )
-                  << ")" << std::endl;
-    }
-
-    constexpr auto operator""   _KB( size_t s )
-    {
-        return s * 1024;
+        auto result = std::accumulate( trials.begin() + 2, trials.end() - 2, 0.0 ) / ( trials.size() - 4 ) * 1E6;
+        std::cout << "- " << s << ": " << result << " microseconds" << std::endl;
+        return result;
     }
 }
 
@@ -79,19 +123,11 @@ BOOST_AUTO_TEST_SUITE( CacheTestSuite )
 
 namespace
 {
-    template < typename S, typename Container >
-    auto    measure_accumulate( S&& s, Container&& c )
-    {
-        return measure_accumulate_op( std::forward< S >( s ), std::forward< Container >( c ), []( auto r, auto n ) { return r + n; } );
-    }
-
     // always use accumulate to ensure O(n) traversal
     template < typename S, typename Container, typename BinaryOperation >
-    auto    measure_accumulate_op( S&& s, Container&& c, BinaryOperation&& op )
+    auto    measure_accumulate( S&& s, Container&& c, BinaryOperation&& op )
     {
-        auto result = measure( [ & ] { return std::accumulate( std::begin( c ), std::end( c ), 0, op ); } );
-        std::cout << "- " << s << ": " << result << " microseconds" << std::endl;
-        return result;
+        return measure( std::forward< S >( s ), [ & ] { return std::accumulate( std::begin( c ), std::end( c ), 0, op ); } );
     }
 
     auto    generateShuffledList( int size )
@@ -107,20 +143,62 @@ namespace
     }
 }
 
+// |oooooooooooooooooooo|-----------------------|
+// | current cache line | prefetched cache line |
+// Two aspects to watch out for
+// - Locality
+// - Prefetching
+// std::vector / std::array excels at both
+// std::list sequentially allocated nodes provide some sort of non-guaranteed locality
+// shuffled nodes is the worst scenario
 BOOST_AUTO_TEST_CASE( LinearTraversalTest )
 {
-    for ( auto n : { 4096, 100'000, 1'000'000 } )
+    auto f = [] ( auto r, auto n ) { return r + n; };
+    for ( auto n : { 4'096, 100'000, 1'000'000 } )
     {
-        displaySpaceInformation( n );
+        displaySpaceInformation< int >( n );
 
-        auto vectorTime         = measure_accumulate( "vector       ", std::vector< int >( n ) );
-        auto listTime           = measure_accumulate( "list         ", std::list< int >( n ) );
-        auto shuffledListTime   = measure_accumulate( "shuffled list", generateShuffledList( n ) );
+        auto vectorTime         = measure_accumulate( "vector       ", std::vector< int >( n ), f );
+        auto listTime           = measure_accumulate( "list         ", std::list< int >( n ), f );
+        auto shuffledListTime   = measure_accumulate( "shuffled list", generateShuffledList( n ), f );
 
         BOOST_CHECK( vectorTime <= listTime );
         // In case all the node could be hold in L1 cache
-        if ( n > 32_KB )
-            BOOST_CHECK( listTime <= shuffledListTime );
+        if ( byteToAppropriateCacheSize< int >( n ) > CacheSize::L1 )
+            BOOST_CHECK( listTime < shuffledListTime );
+    }
+}
+
+BOOST_AUTO_TEST_CASE( MatrixTraversalTest )
+{
+    for ( auto n : { 124, 512, 1'024 } )
+    {
+        displaySpaceInformation< int >( n * n );
+
+        // multiple array with contiguous data
+        boost::multi_array< int, 2 > m1( boost::extents[ n ][ n ] ), m2( boost::extents[ n ][ n ] );
+
+        auto rowTraversalTime = measure( "row traversal", [ &m1, n ]
+            {
+                auto res = 0;
+                for ( auto row = 0; row < n; ++row )
+                    for ( auto col = 0; col < n; ++col )
+                        res += m1[row][col];
+                return res;
+            } );
+
+        auto colTraversalTime = measure( "col traversal", [ &m2, n ]
+        {
+            auto res = 0;
+            for ( auto col = 0; col < n; ++col )
+                for ( auto row = 0; row < n; ++row )
+                    res += m2[ row ][ col ];
+            return res;
+        } );
+
+        // In case all the node could be hold in L2 cache
+        if ( byteToAppropriateCacheSize< int >( n * n ) > CacheSize::L2 )
+            BOOST_CHECK( rowTraversalTime < colTraversalTime );
     }
 }
 
@@ -164,40 +242,133 @@ namespace
 BOOST_AUTO_TEST_CASE( AssociativeTraversalIteratorTest )
 {
     auto binaryOperation = [] ( auto r, const auto& p ) { return r + p.second; };
-    for ( auto n : { 4096, 100'000, 1'000'000, 10'000'000 } )
+    for ( auto n : { 4'096, 100'000, 1'000'000, 10'000'000 } )
     {
-        displaySpaceInformation( n );
+        displaySpaceInformation< int >( n );
 
-        measure_accumulate_op( "unordered_map", generateUnorderedMap( n ), binaryOperation );
-        measure_accumulate_op( "map          ", generateMap( n ), binaryOperation );
+        measure_accumulate( "unordered_map", generateUnorderedMap( n ), binaryOperation );
+        measure_accumulate( "map          ", generateMap( n ), binaryOperation );
 
         // unordered_map beat map for low N, at some point map is more cache friendly (in this case from 1M)
     }
     BOOST_CHECK( true );
 }
 
-namespace
-{
-    template < typename S, typename Container >
-    auto    measure_traversal( S&& s, Container&& c )
-    {
-        auto result = measure( [ &c ] { auto n = 0; for ( auto i = 0; i < c.size(); ++i ) n += c[ i ]; return n; } );
-        std::cout << "- " << s << ": " << result << " microseconds" << std::endl;
-        return result;
-    }
-}
-
 BOOST_AUTO_TEST_CASE( AssociativeTraversalTest )
 {
     // Cache is less a factor than complexity in this test
-    for ( auto n : { 4096, 100'000, 1'000'000 } )
+    for ( auto n : { 4'096, 100'000, 1'000'000 } )
     {
-        displaySpaceInformation( n );
+        displaySpaceInformation< int >( n );
 
-        auto unorderedMapTime   = measure_traversal( "unordered_map", generateUnorderedMap( n ) ); // hash + access(O(1))
-        auto mapTime            = measure_traversal( "map          ", generateMap( n ) ); // access(O(log n))
+        auto um = generateUnorderedMap( n );
+        auto unorderedMapTime   = measure( "unordered_map", [ &um ] { auto n = 0; for ( auto i = 0; i < um.size(); ++i ) n += um[ i ]; return n; } ); // hash + access(O(1))
 
-        BOOST_CHECK( unorderedMapTime <= mapTime );
+        auto m = generateMap( n );
+        auto mapTime            = measure( "map          ", [ &m ] { auto n = 0; for ( auto i = 0; i < m.size(); ++i ) n += m[ i ]; return n; } ); // access(O(log n))
+
+        BOOST_CHECK( unorderedMapTime < mapTime );
+    }
+}
+
+// Array-Of-Structure vs Structure-Of-Array
+namespace
+{
+    struct Particle { int x, y, z, dx, dy, dz; };
+    using AOSParticle = std::vector< Particle >;
+
+    struct SOAParticle
+    {
+        SOAParticle( size_t n ) : x( n ), y( n ), z( n ), dx( n ), dy( n ), dz( n ) {}
+        std::vector<int> x, y, z, dx, dy, dz;
+    };
+}
+
+BOOST_AUTO_TEST_CASE( AOSvsSOATest )
+{
+    for ( auto n : { 4'096, 8'192, 16'384 } )
+    {
+        displaySpaceInformation< Particle >( n );
+
+        AOSParticle aos( n );
+        // 64 / ( 6 / 3 ) / sizeof( int ) = 8 useful values per fetch average (6 / 3 :  only need x, y, z)
+        auto aosTime = measure( "aos", [ &aos, n ]{ auto res = 0; for ( auto i = 0; i < n; ++i ) res += aos[i].x + aos[i].y + aos[i].z; return res; } );
+
+
+        SOAParticle soa( n );
+        // 64 / sizeof( int ) = 16 useful values per fetch
+        auto soaTime = measure( "soa", [ &soa, n ] { auto res = 0; for ( auto i = 0; i < n; ++i ) res += soa.x[ i ] + soa.y[ i ] + soa.z[ i ]; return res; } );
+
+        BOOST_CHECK( aosTime > soaTime );
+    }
+}
+
+namespace
+{
+    struct CompactParticle { int x, y, z; };
+    using AOSCompactParticle = std::vector< CompactParticle >;
+
+    struct SOACompactParticle
+    {
+        SOACompactParticle( size_t n ) : x( n ), y( n ), z( n ) {}
+        std::vector<int> x, y, z;
+    };
+}
+
+BOOST_AUTO_TEST_CASE( CompactAOSvsSOATest )
+{
+    for ( auto n : { 4'096, 16'384, 100'000, 1'000'000 } )
+    {
+        displaySpaceInformation< CompactParticle >( n );
+
+        // Both fetch only useful values
+        // SOA is faster (diminishingly as n grows), because CPU can prefetch x, y, z in parallel
+        // (e.g. big picture: aos need to prefetch (stale) every N bytes, but soa only need to prefetch every N * 3 (the is more expensive, but less than the stale depending of the cache layer))
+        AOSCompactParticle aos( n );
+        auto aosTime = measure( "aos", [ &aos, n ] { auto res = 0; for ( auto i = 0; i < n; ++i ) res += aos[ i ].x + aos[ i ].y + aos[ i ].z; return res; } );
+
+        SOACompactParticle soa( n );
+        auto soaTime = measure( "soa", [ &soa, n ] { auto res = 0; for ( auto i = 0; i < n; ++i ) res += soa.x[ i ] + soa.y[ i ] + soa.z[ i ]; return res; } );
+
+
+        if ( byteToAppropriateCacheSize< CompactParticle >( n ) < CacheSize::DRAM )
+            BOOST_CHECK( aosTime > soaTime );
+    }
+}
+
+BOOST_AUTO_TEST_CASE( CompactRandomAccessAOSvsSOATest )
+{
+    for ( auto n : { 512, 4'096, 16'384, 100'000, 1'000'000 } )
+    {
+        displaySpaceInformation< CompactParticle >( n );
+
+        AOSCompactParticle aos( n );
+        auto aosTime = measure( "aos", [ &aos, n ]
+                        {
+                            auto res = 0; std::uniform_int_distribution<> rnd( 0, n - 1 ); std::mt19937 gen;
+                            for ( auto i = 0; i < n; ++i )
+                            {
+                                auto idx = rnd( gen );
+                                res += aos[ idx ].x + aos[ idx ].y + aos[ idx ].z;
+                            }
+                            return res;
+                        } );
+
+        SOACompactParticle soa( n );
+        auto soaTime = measure( "soa", [ &soa, n ]
+                        {
+                            auto res = 0; std::uniform_int_distribution<> rnd( 0, n - 1 ); std::mt19937 gen;
+                            for ( auto i = 0; i < n; ++i )
+                            {
+                                auto idx = rnd( gen );
+                                res += soa.x[ idx ] + soa.y[ idx ] + soa.z[ idx ];
+                            }
+                            return res;
+                        } );
+
+        // Similar results, but passed L2 cache, aos is more efficient (less staling due to the prefetch)
+        if ( byteToAppropriateCacheSize< CompactParticle >( n ) > CacheSize::L2 )
+            BOOST_CHECK( aosTime < soaTime );
     }
 }
 
