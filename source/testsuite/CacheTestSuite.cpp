@@ -25,7 +25,7 @@ namespace
     // Intel Core i5-4460 (4 cores)
     // cache line : 64B
     // L1 instruction cache : 32KB
-    // - L1  (32KB):    1   ns /   4 cycles (2 per processor (hyperthreading can have 2 thread per processor))
+    // - L1  (32KB):    1   ns /   4 cycles (2 per processor (hyperthreading delivers two processing threads per physical core))
     // - L2 (256KB):    3.1 ns /  12 cycles (per processor)
     // - L3   (6MB):    7.7 ns /  30 cycles (share among all the processors)
     // - DRAM  (XX):   60   ns / 237 cycles
@@ -256,16 +256,17 @@ BOOST_AUTO_TEST_CASE( AssociativeTraversalIteratorTest )
 
 BOOST_AUTO_TEST_CASE( AssociativeTraversalTest )
 {
+    auto test = [] ( auto& m ) { auto n = 0; for ( auto i = 0; i < m.size(); ++i ) n += m[ i ]; return n; };
     // Cache is less a factor than complexity in this test
     for ( auto n : { 4'096, 100'000, 1'000'000 } )
     {
         displaySpaceInformation< int >( n );
 
         auto um = generateUnorderedMap( n );
-        auto unorderedMapTime   = measure( "unordered_map", [ &um ] { auto n = 0; for ( auto i = 0; i < um.size(); ++i ) n += um[ i ]; return n; } ); // hash + access(O(1))
+        auto unorderedMapTime   = measure( "unordered_map", [ &um, &test ] { return test( um ); } ); // hash + access(O(1))
 
         auto m = generateMap( n );
-        auto mapTime            = measure( "map          ", [ &m ] { auto n = 0; for ( auto i = 0; i < m.size(); ++i ) n += m[ i ]; return n; } ); // access(O(log n))
+        auto mapTime            = measure( "map          ", [ &m, &test ] { return test( m ); } ); // access(O(log n))
 
         BOOST_CHECK( unorderedMapTime < mapTime );
     }
@@ -286,11 +287,12 @@ namespace
 
 BOOST_AUTO_TEST_CASE( AOSvsSOATest )
 {
-    for ( auto n : { 4'096, 8'192, 16'384 } )
+    for ( auto n : { 4'096, 16'384, 100'000, 1'000'000, 10'000'000 } )
     {
         displaySpaceInformation< Particle >( n );
 
         AOSParticle aos( n );
+        //init_aos_particle( aos, n );
         // 64 / ( 6 / 3 ) / sizeof( int ) = 8 useful values per fetch average (6 / 3 :  only need x, y, z)
         auto aosTime = measure( "aos", [ &aos, n ]{ auto res = 0; for ( auto i = 0; i < n; ++i ) res += aos[i].x + aos[i].y + aos[i].z; return res; } );
 
@@ -299,7 +301,7 @@ BOOST_AUTO_TEST_CASE( AOSvsSOATest )
         // 64 / sizeof( int ) = 16 useful values per fetch
         auto soaTime = measure( "soa", [ &soa, n ] { auto res = 0; for ( auto i = 0; i < n; ++i ) res += soa.x[ i ] + soa.y[ i ] + soa.z[ i ]; return res; } );
 
-        BOOST_CHECK( aosTime > soaTime );
+        BOOST_CHECK( soaTime < aosTime );
     }
 }
 
@@ -317,7 +319,7 @@ namespace
 
 BOOST_AUTO_TEST_CASE( CompactAOSvsSOATest )
 {
-    for ( auto n : { 4'096, 16'384, 100'000, 1'000'000 } )
+    for ( auto n : { 4'096, 16'384, 100'000, 1'000'000, 10'000'000, 20'000'000 } )
     {
         displaySpaceInformation< CompactParticle >( n );
 
@@ -330,15 +332,15 @@ BOOST_AUTO_TEST_CASE( CompactAOSvsSOATest )
         SOACompactParticle soa( n );
         auto soaTime = measure( "soa", [ &soa, n ] { auto res = 0; for ( auto i = 0; i < n; ++i ) res += soa.x[ i ] + soa.y[ i ] + soa.z[ i ]; return res; } );
 
-
+        // SOA is faster (diminishingly as n grows)
         if ( byteToAppropriateCacheSize< CompactParticle >( n ) < CacheSize::DRAM )
-            BOOST_CHECK( aosTime > soaTime );
+            BOOST_CHECK( soaTime < aosTime );
     }
 }
 
 BOOST_AUTO_TEST_CASE( CompactRandomAccessAOSvsSOATest )
 {
-    for ( auto n : { 512, 4'096, 16'384, 100'000, 1'000'000 } )
+    for ( auto n : { 512, 4'096, 16'384, 100'000, 1'000'000, 1'200'000, 1'800'000 } )
     {
         displaySpaceInformation< CompactParticle >( n );
 
@@ -366,9 +368,83 @@ BOOST_AUTO_TEST_CASE( CompactRandomAccessAOSvsSOATest )
                             return res;
                         } );
 
-        // Similar results, but passed L2 cache, aos is more efficient (less staling due to the prefetch)
+        // Similar results, but passed L2 cache, aos is more efficient (less staling due to the 1 prefetch instead of 3)
         if ( byteToAppropriateCacheSize< CompactParticle >( n ) > CacheSize::L2 )
             BOOST_CHECK( aosTime < soaTime );
+    }
+}
+
+namespace
+{
+    std::vector< int >  generate_vector( int size )
+    {
+        std::uniform_int_distribution<> rnd( 0, 256 );
+        std::mt19937 gen;
+
+        std::vector< int > result( size );
+        std::generate( result.begin(), result.end(), [ &rnd, &gen ] { return rnd( gen ); } );
+        return result;
+    }
+}
+
+// About branch-prediction and pipelining
+//
+// Branch instructions represent 20% of dynamic instruction count of most programs
+//
+// - A branch predictor is a digital circuit that tries to guess which way a branch (e.g. an if-then-else structure) will go before this is known for sure.
+//   The purpose of the branch predictor is to improve the flow in the instruction pipeline. 
+//   Without branch prediction, the processor would have to wait until the conditional jump instruction has passed the execute stage before the next instruction can enter the fetch stage in the pipeline.
+//   The branch predictor attempts to avoid this waste of time by trying to guess whether the conditional jump is most likely to be taken or not taken.
+//   The branch that is guessed to be the most likely is then fetched and speculatively executed.
+//   If it is later detected that the guess was wrong then the speculatively executed or partially executed instructions are discarded and the pipeline starts over with the correct branch, incurring a delay.
+//
+// - The branch predictor keeps records of whether branches are taken or not taken. When it encounters a conditional jump that has been seen several times before then it can base the prediction on the history.
+//   The branch predictor may, for example, recognize that the conditional jump is taken more often than not, or that it is taken every second time.
+//
+// - Instruction pipelining is a technique that implements a form of parallelism called instruction-level parallelism within a single processor.
+//   It therefore allows faster CPU throughput (the number of instructions that can be executed in a unit of time) than would otherwise be possible at a given clock rate.
+//   The basic instruction cycle is broken up into a series called a pipeline. Rather than processing each instruction sequentially (finishing one instruction before starting the next),
+//   each instruction is split up into a sequence of steps so different steps can be executed in parallel and instructions can be processed concurrently (starting one instruction before finishing the previous one).
+// - Pipelining increases instruction throughput by performing multiple operations at the same time, but does not reduce instruction latency, which is the time to complete a single instruction from start to finish,
+//   as it still must go through all steps. Indeed, it may increase latency due to additional overhead from breaking the computation into separate steps and worse, the pipeline may stall (or even need to be flushed),
+//   further increasing the latency. Thus, pipelining increases throughput at the cost of latency
+// 
+// - Pipelining increase instruction execution throughput by N (latency remains the same)
+//   Each pipeline stage is expected to complete in one clock cycle
+//   /!\ The clock period should be long enough to let the slowest pipeline stage to complete, faster stages can only wait for the slowest one to complete (stall)
+//     - i.e. if one stage finish in one cycle, and another on the same pipeline finish in 3 cycle, the pipeline is said to have been stalled for two clock cycles
+//   If each instruction needs to be fetched from main memory, pipeline is almost useless
+//   - Sandy bridge: 14 - 17 stages
+//   - Ivy bridge:   14 - 19 stage
+//
+// - The time that is wasted in case of a branch misprediction is equal to the number of stages in the pipeline from the fetch stage to the execute stage.
+//   Modern microprocessors tend to have quite long pipelines so that the misprediction delay is between 10 and 20 clock cycles.
+//   As a result, making a pipeline longer increases the need for a more advanced branch predictor.
+//
+// - Flow:
+//   - Waiting instructions
+//   - Pipelining
+//     1 - Fetch
+//     2 - Decode
+//     3 - Execute
+//     4 - Write-back (writing the results of the instruction to processor registers or to memory)
+//   - Completed instructions
+BOOST_AUTO_TEST_CASE( BranchPredictionTest )
+{
+    auto test = []( auto& v ) { auto res = 0; for ( auto x : v ) if ( x > 128 ) res += x; return res; };
+    for ( auto n : { 512, 4'096, 16'384, 100'000 } )
+    {
+        displaySpaceInformation< int >( n );
+
+        auto sortedVector = generate_vector( n );
+        std::sort( sortedVector.begin(), sortedVector.end() );
+        auto sortedTime = measure( "sorted vector  ", [ &sortedVector, &test ] { return test( sortedVector ); } );
+
+        auto unsortedVector = generate_vector( n );
+        auto unsortedTime = measure( "unsorted vector", [ &unsortedVector, &test ] { return test( unsortedVector ); } );
+
+        // much faster (around *6)
+        BOOST_CHECK( sortedTime < unsortedTime );
     }
 }
 

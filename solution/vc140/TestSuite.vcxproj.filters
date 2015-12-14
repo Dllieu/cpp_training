@@ -100,9 +100,6 @@
     <ClCompile Include="..\..\source\testsuite\SmartPointer.cpp">
       <Filter>Source Files\STL</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\testsuite\BranchPredictionTestSuite.cpp">
-      <Filter>Source Files\ImpracticalTest</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\source\testsuite\FunctionCallTestSuite.cpp">
       <Filter>Source Files\ImpracticalTest</Filter>
     </ClCompile>
