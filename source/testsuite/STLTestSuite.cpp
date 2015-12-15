@@ -237,6 +237,9 @@ BOOST_AUTO_TEST_CASE( AlgoTest )
     BOOST_CHECK( ( z == std::vector< int >{ 2, 3 } ) );
 
     v = { 1, 2, 2, 3 };
+    // lower_bound / upper_bound requires it
+    BOOST_REQUIRE( std::is_sorted( v.begin(), v.end() ) );
+    // lower_bound / upper_bound are O(log(n)) for random iterator, O(n) otherwise
     auto lowerBound = std::lower_bound( v.begin(), v.end(), 2 ); // first occurence that is >= val
     BOOST_CHECK( *lowerBound == 2 /*the first one*/ );
     auto upperBound = std::upper_bound( v.begin(), v.end(), 2 ); // first occurence that is > val
