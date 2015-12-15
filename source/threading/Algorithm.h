@@ -11,6 +11,7 @@
 #define ALGORITHM_SPLITLENGTH 25
 
 // Recursion based for code clarity, could use an iterative way with promise / future
+// Beware of false sharing
 namespace threading
 {
     template < typename It, typename F >

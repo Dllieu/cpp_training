@@ -1,4 +1,4 @@
-//--------------------------------------------------------------------------------
+﻿//--------------------------------------------------------------------------------
 // (C) Copyright 2014-2015 Stephane Molina, All rights reserved.
 // See https://github.com/Dllieu for updates, documentation, and revision history.
 //--------------------------------------------------------------------------------
@@ -12,6 +12,7 @@
 #include <array>
 #include <random>
 #include <unordered_map>
+#include <thread>
 
 #include "generic/Typetraits.h"
 
@@ -22,13 +23,42 @@ namespace
     constexpr auto operator""   _KB( size_t s ) { return s * 1024; }
     constexpr auto operator""   _MB( size_t s ) { return s * 1024 * 1000; }
 
-    // Intel Core i5-4460 (4 cores)
-    // cache line : 64B
-    // L1 instruction cache : 32KB
-    // - L1  (32KB):    1   ns /   4 cycles (2 per processor (hyperthreading delivers two processing threads per physical core))
+    // Intel Core i5-4460 (4 cores) (give a general idea)
+    //
+    // Translation Lookaside Buffer (TLB)
+    // CPU cache that memory management hardware uses to improve virtual address translation speed, it has a fixed number of slots that contain page table entries, which map virtual addresses to physical addresses.
+    // It is typically a content-addressable memory (CAM), in which the search key is the virtual address and the search result is a physical address.
+    // - 2MB pages mode
+    //   - L1  (32 entries), Miss Penalty = 16 cycles. Parallel miss: 20 cycles per access
+    // - 4KB page mode
+    //   - L1  (64 entries), 4-WAY
+    //                   * miss penalty : 7 cycles, parallel miss: 1 cycle per access
+    //   - L2 (512 entries), 4-WAY
+    //                   * miss penalty : 9 cycles, parallel miss: 21 cycle per access
+    //
+    // Instruction cache
+    // - L1  (32KB), 8-WAY, 64B / line
+    //
+    // Data Cache (8-WAY, 64B / line)
+    // - L1  (32KB):    1   ns /   4 cycles
+    //             * 2 per processor (hyperthreading delivers two processing threads per physical core)
+    //             * 4 cycles for simple access via pointer (p), 5 cycles for access with complex address calculation (p[n])
     // - L2 (256KB):    3.1 ns /  12 cycles (per processor)
     // - L3   (6MB):    7.7 ns /  30 cycles (share among all the processors)
+    //             * 29.5 cycles for cores (1, 2)
+    //             * 30.5 cycles for cores (0, 3)
     // - DRAM  (XX):   60   ns / 237 cycles
+    //
+    //
+    // -> Check for more infos: http://www.7-cpu.com/
+
+    // About cache misses
+    //  A cache miss refers to a failed attempt to read or write a piece of data in the cache, which results in a main memory access with much longer latency.
+    //  There are three kinds of cache misses: instruction read miss, data read miss, and data write miss.
+    //  - Cache read misses from an instruction cache generally cause the largest delay, because the processor, or at least the thread of execution, has to wait (stall) until the instruction is fetched from main memory.
+    //  - Cache read misses from a data cache usually cause a smaller delay, because instructions not dependent on the cache read can be issued and continue execution until the data is returned from main memory,
+    //    and the dependent instructions can resume execution.
+    //  - Cache write misses to a data cache generally cause the shortest delay, because the write can be queued and there are few limitations on the execution of subsequent instructions; the processor can continue until the queue is full.
 
     // Max number of segment in L1 = 32KB / 64 = 512
     enum class CacheSize
@@ -400,6 +430,10 @@ namespace
 //
 // - The branch predictor keeps records of whether branches are taken or not taken. When it encounters a conditional jump that has been seen several times before then it can base the prediction on the history.
 //   The branch predictor may, for example, recognize that the conditional jump is taken more often than not, or that it is taken every second time.
+//   The processor may or may not branch, depending on a calculation that has not yet occurred. Various processors may stall, may attempt branch prediction,
+//       and may be able to begin to execute two different program sequences (eager execution), both assuming the branch is and is not taken, discarding all work that pertains to the incorrect guess.
+//   Programs written for a pipelined processor deliberately avoid branching to minimize possible loss of speed.
+//       For example, the programmer can handle the usual case with sequential execution and branch only on detecting unusual cases.
 //
 // - Instruction pipelining is a technique that implements a form of parallelism called instruction-level parallelism within a single processor.
 //   It therefore allows faster CPU throughput (the number of instructions that can be executed in a unit of time) than would otherwise be possible at a given clock rate.
@@ -411,11 +445,19 @@ namespace
 // 
 // - Pipelining increase instruction execution throughput by N (latency remains the same)
 //   Each pipeline stage is expected to complete in one clock cycle
-//   /!\ The clock period should be long enough to let the slowest pipeline stage to complete, faster stages can only wait for the slowest one to complete (stall)
+//   /!\ The clock period should be long enough to let the slowest pipeline stage to complete, faster stages can only wait for the slowest one to complete (stall), called hazard
 //     - i.e. if one stage finish in one cycle, and another on the same pipeline finish in 3 cycle, the pipeline is said to have been stalled for two clock cycles
+//     - i.e. if we have two register instructions : r5 += 1; r6 = r5; second instruction is dependant of the first instructions : compiler might rearrange the code to generate machine code that avoid such hazards
 //   If each instruction needs to be fetched from main memory, pipeline is almost useless
 //   - Sandy bridge: 14 - 17 stages
 //   - Ivy bridge:   14 - 19 stage
+//
+// - CPU STALL: The time taken to fetch one cache line from memory (read latency) matters because the CPU will run out of things to do while waiting for the cache line. When a CPU reaches this state, it is called a stall.
+//   As CPUs become faster compared to main memory, stalls due to cache misses displace more potential computation; modern CPUs can execute hundreds of instructions in the time taken to fetch a single cache line from main memory.
+//   Various techniques have been employed to keep the CPU busy during this time, including out - of - order execution in which the CPU( Pentium Pro and later Intel designs, for example )
+//   attempts to execute independent instructions after the instruction that is waiting for the cache miss data.Another technology, used by many processors, is simultaneous multithreading( SMT ),
+//   or-​in Intel's terminology—​hyper-threading (HT), which allows an alternate thread to use the CPU core while the first thread waits for required CPU resources to become available.
+//
 //
 // - The time that is wasted in case of a branch misprediction is equal to the number of stages in the pipeline from the fetch stage to the execute stage.
 //   Modern microprocessors tend to have quite long pipelines so that the misprediction delay is between 10 and 20 clock cycles.
@@ -431,20 +473,108 @@ namespace
 //   - Completed instructions
 BOOST_AUTO_TEST_CASE( BranchPredictionTest )
 {
-    auto test = []( auto& v ) { auto res = 0; for ( auto x : v ) if ( x > 128 ) res += x; return res; };
-    for ( auto n : { 512, 4'096, 16'384, 100'000 } )
+    for ( auto n : { 4'096, 16'384, 100'000 } )
     {
         displaySpaceInformation< int >( n );
 
-        auto sortedVector = generate_vector( n );
-        std::sort( sortedVector.begin(), sortedVector.end() );
-        auto sortedTime = measure( "sorted vector  ", [ &sortedVector, &test ] { return test( sortedVector ); } );
+        auto v = generate_vector( n );
+        auto test = [ &v ] { auto res = 0; for ( auto x : v ) if ( x > 128 ) res += x; return res; };
 
-        auto unsortedVector = generate_vector( n );
-        auto unsortedTime = measure( "unsorted vector", [ &unsortedVector, &test ] { return test( unsortedVector ); } );
+        auto unsortedTime = measure( "unsorted vector", test );
 
-        // much faster (around *6)
+        std::sort( v.begin(), v.end() );
+        auto sortedTime = measure( "sorted vector  ", test );
+
+        // much faster
         BOOST_CHECK( sortedTime < unsortedTime );
+    }
+}
+
+// In symmetric multiprocessor (SMP) systems, each processor has a local cache. The memory system must guarantee cache coherence.
+// False sharing occurs when threads on different processors modify variables that reside on the same cache line. This invalidates the cache line and forces an update, which hurts performance.
+// Coherence management requires full write to DRAM
+// Rule of thumb: use shared write memory only to communicate
+BOOST_AUTO_TEST_CASE( FalseSharingTest )
+{
+    for ( auto n : { 1'000'000, 10'000'000, 100'000'000 } )
+    {
+        displaySpaceInformation< int >( n );
+
+        auto v = generate_vector( n );
+        auto test = [ &v, n ] ( int& r1, int& r2, int& r3, int& r4 )
+        {
+            auto processFunctor = [] ( int& r, int* first, int* last )
+            {
+                r = 0;
+                while ( first != last )
+                    r += *first++; // read-write
+            };
+
+            // thread management is costly and will bloat the result timing (making the false sharing effect less important that it should)
+            std::thread t1( processFunctor, std::ref( r1 ), v.data(), v.data() + n / 4 );
+            std::thread t2( processFunctor, std::ref( r2 ), v.data() + n / 4, v.data() + n / 2 );
+            std::thread t3( processFunctor, std::ref( r3 ), v.data() + n / 2, v.data() + n * 3 / 4 );
+            std::thread t4( processFunctor, std::ref( r4 ), v.data() + n * 3 / 4, v.data() + n );
+
+            t1.join(); t2.join(); t3.join(); t4.join();
+            return r1 + r2 + r3 + r4;
+        };
+
+        std::array< int, 49 > res;
+        auto sameCachelineTime = measure( "same     cacheline", [ &res, &test ] { return test( res[ 0 ], res[ 1 ], res[ 2 ], res[ 3 ] ); } );
+        auto separateCachelineTime = measure( "separate cacheline", [ &res, &test ] { return test( res[ 0 ], res[ 16 ], res[ 32 ], res[ 48 ] ); } );
+
+        BOOST_CHECK( separateCachelineTime < sameCachelineTime );
+    }
+}
+
+namespace
+{
+    struct ArrowWithState
+    {
+        int     x, y, z;
+        double  dx, dy, dz;
+        bool    isActive;
+
+        double process() const { return x + y + z + dx + dy + dz; }
+    };
+
+    struct Arrow
+    {
+        int     x, y, z;
+        double  dx, dy, dz;
+
+        double process() const { return x + y + z + dx + dy + dz; }
+    };
+}
+
+BOOST_AUTO_TEST_CASE( DataLayoutTest )
+{
+    for ( auto n : { 4'096, 16'384, 50'000, 100'000 } )
+    {
+        displaySpaceInformation< ArrowWithState >( n );
+
+        std::vector< ArrowWithState > arrowsWithState( n );
+
+        // Remove active flag by smartly laying out objects
+        // Better cache density, no branching, fewer elements processed
+        std::vector< Arrow > arrows( n );
+        std::vector< int > activeArrows; // index of active arrow
+
+        std::uniform_int_distribution<> rnd( n / 100, n - 1 );
+        std::mt19937 gen;
+        for ( auto i = 0, size = rnd( gen ); i < size; ++i )
+        {
+            auto rdm = rnd( gen );
+            arrowsWithState[ rdm ].isActive = true;
+            activeArrows.push_back( rdm );
+        }
+
+        auto arrowTime = measure( "arrow           ", [ &arrows, &activeArrows ] { auto res = 0.0; for ( auto i : activeArrows ) res += arrows[ i ].process(); return res; } );
+        auto arrowStateTime = measure( "arrow with state", [ &arrowsWithState ] { auto res = 0.0; for ( auto& a: arrowsWithState ) if ( a.isActive ) res += a.process(); return res; } );
+
+        // result will vary due to random
+        BOOST_CHECK( arrowTime < arrowStateTime );
     }
 }
 
