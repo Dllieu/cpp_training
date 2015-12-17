@@ -2,7 +2,10 @@
 // (C) Copyright 2014-2015 Stephane Molina, All rights reserved.
 // See https://github.com/Dllieu for updates, documentation, and revision history.
 //--------------------------------------------------------------------------------
+#pragma warning( push )
+#pragma warning( disable : 4996 ) // warning raise when using unit_test with multi_array instanciation
 #include <boost/test/unit_test.hpp>
+#pragma warning( pop )
 #include <boost/multi_array.hpp>
 
 #include <algorithm>
@@ -13,8 +16,11 @@
 #include <random>
 #include <unordered_map>
 #include <thread>
+#include <type_traits>
+#include <typeindex>
 
 #include "generic/Typetraits.h"
+#include "containers/PolymorphicCollection.h"
 
 namespace sch = std::chrono;
 
@@ -104,22 +110,22 @@ namespace
     }
 
     template < typename T >
-    void    displaySpaceInformation( size_t numberElements )
+    void    display_information( size_t n )
     {
-        std::cout << "-----\nnumber of elements to run: " << numberElements << "\n";
-
-        auto byteNumber = numberElements * sizeof( T );
-        std::cout << "(optimal) cache line needed: " << std::ceil( byteNumber / 64 ) << "\n";
-        std::cout << "Need at least " << byteNumber / 1024. << "KB space (" << toString( byteToAppropriateCacheSize< T >( numberElements ) ) << ")" << std::endl;
+        auto byteNumber = n * sizeof( T );
+        std::cout << "(CL=" << std::ceil( byteNumber / 64 );
+        std::cout << "|SN=" << std::ceil( byteNumber / 1024. ) << "KB[" << toString( byteToAppropriateCacheSize< T >( n ) ) << "]);" << n << ";";
     }
 
-    static constexpr int                NumberTrials = 14;
+    static constexpr int                NumberTrials = 20;
     static constexpr sch::milliseconds  MinTimePerTrial( 200 );
 
     // return average of microseconds per f() call
     template < typename S, typename F >
     auto    measure( S&& s, F&& f )
     {
+        static_assert( !std::is_void< std::result_of_t< F() > >(), "F cannot be void" );
+
         volatile decltype( f() ) res; // to avoid optimizing f() away
 
         std::array< double, NumberTrials > trials;
@@ -141,8 +147,58 @@ namespace
 
         std::sort( trials.begin(), trials.end() );
         auto result = std::accumulate( trials.begin() + 2, trials.end() - 2, 0.0 ) / ( trials.size() - 4 ) * 1E6;
-        std::cout << "- " << s << ": " << result << " microseconds" << std::endl;
+        //std::cout << "- " << s << ": " << result << " microseconds" << std::endl;
         return result;
+    }
+
+    template < typename F >
+    auto    measure( size_t n, F&& f )
+    {
+        volatile decltype( f() ) res; // to avoid optimizing f() away
+
+        std::array< double, NumberTrials > trials;
+        for ( auto i = 0; i < NumberTrials; ++i )
+        {
+            auto runs = 0;
+
+            sch::high_resolution_clock::time_point now;
+            auto startTimer = sch::high_resolution_clock::now();
+            do
+            {
+                res = f();
+                ++runs;
+                now = sch::high_resolution_clock::now();
+            } while ( now - startTimer < MinTimePerTrial );
+            trials[ i ] = sch::duration_cast< sch::duration< double > >( now - startTimer ).count() / runs;
+        }
+        static_cast< void >( res );
+
+        std::sort( trials.begin(), trials.end() );
+        auto result = std::accumulate( trials.begin() + 2, trials.end() - 2, 0.0 ) / ( trials.size() - 4 ) * 1E6 / n;
+        std::cout << result << ";";
+
+        return result;
+    }
+
+    template < typename... Fs >
+    auto    measure_test( size_t n, Fs&&... fs )
+    {
+        // std::make_tuple reverse the call oder of fs when executed (he start by the end?)
+        // auto result = std::make_tuple( measure( n, std::forward< Fs >( fs ) )... );
+        auto result = std::vector< double >( { measure( n, std::forward< Fs >( fs ) )... } );
+        std::cout << std::endl;
+        return result;
+    }
+
+    template < typename ELEMENT_TYPE, typename F, typename... Ns >
+    void    run_test( const std::string& header, F&& f, Ns... range )
+    {
+        std::cout << "infos;n;" << header << std::endl;
+        for ( auto n : { range... } )
+        {
+            display_information< ELEMENT_TYPE >( n );
+            f( n );
+        }
     }
 }
 
@@ -186,7 +242,7 @@ BOOST_AUTO_TEST_CASE( LinearTraversalTest )
     auto f = [] ( auto r, auto n ) { return r + n; };
     for ( auto n : { 4'096, 100'000, 1'000'000 } )
     {
-        displaySpaceInformation< int >( n );
+        //displaySpaceInformation< int >( n );
 
         auto vectorTime         = measure_accumulate( "vector       ", std::vector< int >( n ), f );
         auto listTime           = measure_accumulate( "list         ", std::list< int >( n ), f );
@@ -203,7 +259,7 @@ BOOST_AUTO_TEST_CASE( MatrixTraversalTest )
 {
     for ( auto n : { 124, 512, 1'024 } )
     {
-        displaySpaceInformation< int >( n * n );
+        //displaySpaceInformation< int >( n * n );
 
         // multiple array with contiguous data
         boost::multi_array< int, 2 > m1( boost::extents[ n ][ n ] ), m2( boost::extents[ n ][ n ] );
@@ -274,7 +330,7 @@ BOOST_AUTO_TEST_CASE( AssociativeTraversalIteratorTest )
     auto binaryOperation = [] ( auto r, const auto& p ) { return r + p.second; };
     for ( auto n : { 4'096, 100'000, 1'000'000, 10'000'000 } )
     {
-        displaySpaceInformation< int >( n );
+        //displaySpaceInformation< int >( n );
 
         measure_accumulate( "unordered_map", generateUnorderedMap( n ), binaryOperation );
         measure_accumulate( "map          ", generateMap( n ), binaryOperation );
@@ -290,7 +346,7 @@ BOOST_AUTO_TEST_CASE( AssociativeTraversalTest )
     // Cache is less a factor than complexity in this test
     for ( auto n : { 4'096, 100'000, 1'000'000 } )
     {
-        displaySpaceInformation< int >( n );
+        //displaySpaceInformation< int >( n );
 
         auto um = generateUnorderedMap( n );
         auto unorderedMapTime   = measure( "unordered_map", [ &um, &test ] { return test( um ); } ); // hash + access(O(1))
@@ -319,7 +375,7 @@ BOOST_AUTO_TEST_CASE( AOSvsSOATest )
 {
     for ( auto n : { 4'096, 16'384, 100'000, 1'000'000, 10'000'000 } )
     {
-        displaySpaceInformation< Particle >( n );
+        //displaySpaceInformation< Particle >( n );
 
         AOSParticle aos( n );
         //init_aos_particle( aos, n );
@@ -351,7 +407,7 @@ BOOST_AUTO_TEST_CASE( CompactAOSvsSOATest )
 {
     for ( auto n : { 4'096, 16'384, 100'000, 1'000'000, 10'000'000, 20'000'000 } )
     {
-        displaySpaceInformation< CompactParticle >( n );
+        //displaySpaceInformation< CompactParticle >( n );
 
         // Both fetch only useful values
         // SOA is faster (diminishingly as n grows), because CPU can prefetch x, y, z in parallel
@@ -372,7 +428,7 @@ BOOST_AUTO_TEST_CASE( CompactRandomAccessAOSvsSOATest )
 {
     for ( auto n : { 512, 4'096, 16'384, 100'000, 1'000'000, 1'200'000, 1'800'000 } )
     {
-        displaySpaceInformation< CompactParticle >( n );
+        //displaySpaceInformation< CompactParticle >( n );
 
         AOSCompactParticle aos( n );
         auto aosTime = measure( "aos", [ &aos, n ]
@@ -475,7 +531,7 @@ BOOST_AUTO_TEST_CASE( BranchPredictionTest )
 {
     for ( auto n : { 4'096, 16'384, 100'000 } )
     {
-        displaySpaceInformation< int >( n );
+        //displaySpaceInformation< int >( n );
 
         auto v = generate_vector( n );
         auto test = [ &v ] { auto res = 0; for ( auto x : v ) if ( x > 128 ) res += x; return res; };
@@ -498,7 +554,7 @@ BOOST_AUTO_TEST_CASE( FalseSharingTest )
 {
     for ( auto n : { 1'000'000, 10'000'000, 100'000'000 } )
     {
-        displaySpaceInformation< int >( n );
+        //displaySpaceInformation< int >( n );
 
         auto v = generate_vector( n );
         auto test = [ &v, n ] ( int& r1, int& r2, int& r3, int& r4 )
@@ -510,7 +566,7 @@ BOOST_AUTO_TEST_CASE( FalseSharingTest )
                     r += *first++; // read-write
             };
 
-            // thread management is costly and will bloat the result timing (making the false sharing effect less important that it should)
+            // thread management is costly and will bloat the result timing (making the false sharing effect less important that it is)
             std::thread t1( processFunctor, std::ref( r1 ), v.data(), v.data() + n / 4 );
             std::thread t2( processFunctor, std::ref( r2 ), v.data() + n / 4, v.data() + n / 2 );
             std::thread t3( processFunctor, std::ref( r3 ), v.data() + n / 2, v.data() + n * 3 / 4 );
@@ -552,7 +608,7 @@ BOOST_AUTO_TEST_CASE( DataLayoutTest )
 {
     for ( auto n : { 4'096, 16'384, 50'000, 100'000 } )
     {
-        displaySpaceInformation< ArrowWithState >( n );
+        //displaySpaceInformation< ArrowWithState >( n );
 
         std::vector< ArrowWithState > arrowsWithState( n );
 
@@ -576,6 +632,71 @@ BOOST_AUTO_TEST_CASE( DataLayoutTest )
         // result will vary due to random
         BOOST_CHECK( arrowTime < arrowStateTime );
     }
+}
+
+namespace
+{
+    struct Base { virtual ~Base() {}; virtual int f() const = 0; };
+    struct Derived1 : Base { virtual int f() const override final { return 1; } };
+    struct Derived2 : Base { virtual int f() const override final { return 2; } };
+    struct Derived3 : Base { virtual int f() const override final { return 3; } };
+
+    template < typename T, typename V, typename C >
+    void    polymorphism_container_add_element( V& v1, V& v2, C& p )
+    {
+        v1.emplace_back( std::make_unique< T >() );
+        v2.emplace_back( std::make_unique< T >() );
+        p.insert( T() );
+    }
+
+    template < typename V, typename C >
+    void    init_polymorphic_container( V& v1, V& v2, C& p, size_t n )
+    {
+        v1.reserve( n );
+        v2.reserve( n );
+
+        std::mt19937 gen;
+        std::uniform_int_distribution<> rnd( 1, 3 );
+        for ( auto i = 0; i < n; ++i )
+        {
+            switch ( rnd( gen ) )
+            {
+                case 1: polymorphism_container_add_element< Derived1 >( v1, v2, p ); break;
+                case 2: polymorphism_container_add_element< Derived2 >( v1, v2, p ); break;
+                case 3: default: polymorphism_container_add_element< Derived3 >( v1, v2, p ); break;
+            }
+        }
+
+        // Shuffle to avoid same derived class instances to be in the same cache line (as they are being allocated in order)
+        std::shuffle( v1.begin(), v1.end(), gen );
+
+        std::shuffle( v2.begin(), v2.end(), gen );
+        std::sort( v2.begin(), v2.end(), [] ( auto& p, auto& q ) { return std::type_index( typeid( *p ) ) < std::type_index( typeid( *q ) ); } );
+    }
+}
+
+// Sorting improve branch prediction even without data locality
+// In this test, it helps greatly the branch prediction as the same virtual table will be used for a long period of time
+BOOST_AUTO_TEST_CASE( PolymorphicContainerTest )
+{
+    auto f = [] ( auto& v ) { auto res = 0; for ( const auto& e : v ) res += e->f(); return res; };
+    auto test = [ &f ] ( auto n )
+    {
+        std::vector< std::unique_ptr< Base > > unsorted, sorted;
+        containers::PolymorphicCollection< Base > collection;
+
+        init_polymorphic_container( unsorted, sorted, collection, n );
+
+        auto r = measure_test( n,
+                               [ &unsorted, &f ] { return f( unsorted ); },
+                               [ &sorted, &f ] { return f( sorted ); },
+                               [ &collection ] { auto res = 0; collection.for_each( [ &res ] ( auto& e ) { res += e.f(); } ); return res; } );
+
+        BOOST_CHECK( r[ 0 ] > r[ 1 ] );
+        BOOST_CHECK( r[ 1 ] > r[ 2 ] );
+    };
+
+    run_test< int >( "unsorted;sorted;collection;", test, 15'000, 100'000, 500'000 );
 }
 
 BOOST_AUTO_TEST_SUITE_END() // ! CacheTestSuite

@@ -17,6 +17,29 @@ BOOST_AUTO_TEST_SUITE( MetaProg )
 
 namespace
 {
+    struct FooA { void method() const { BOOST_CHECK( true ); } };
+    struct FooB { void method() const { BOOST_CHECK( true ); } };
+    struct FooC { void method() const { BOOST_CHECK( true ); } };
+
+    template<class F, class... Ts>
+    void    for_all( F&& f, Ts&&... ts )
+    {
+        using swallow = int[];
+        (void)swallow{ 0, ( f( std::forward< Ts >( ts ) ), 0 )... }; // non-recursive call
+    }
+}
+
+BOOST_AUTO_TEST_CASE( ForAllTest )
+{
+    FooA a;
+    FooB b;
+    FooC c;
+
+    for_all( [] ( auto& o ) { o.method(); }, a, b, c );
+}
+
+namespace
+{
     // Diff enum != static :
     // Enums aren't lvals, static member values are and if passed by reference the template will be instanciated
     // e.g. void f(const int&); f( Factorial<1>::value ); ( with static const unsigned value; )

@@ -25,5 +25,8 @@
     <ClInclude Include="..\..\source\containers\LockFreeQueueSPSC.h">
       <Filter>Source Files\ThreadSafe</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\source\containers\PolymorphicCollection.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

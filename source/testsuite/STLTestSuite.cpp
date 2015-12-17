@@ -10,6 +10,8 @@
 #include <iostream>
 #include <numeric>
 #include <random>
+#include <unordered_map>
+#include <typeindex>
 
 #include "generic/TupleForEach.h"
 #include "generic/TuplePrinter.h"
@@ -122,6 +124,34 @@ BOOST_AUTO_TEST_CASE( TransparentOperatorFunctorTest )
     std::sort( v.begin(), v.end(), std::greater<>() ); // type deduced
 
     BOOST_CHECK( std::is_sorted( v.begin(), v.end(), std::greater<>() ) );
+}
+
+namespace
+{
+    struct Base {};
+    struct Derived : Base {};
+}
+
+BOOST_AUTO_TEST_CASE( TypeIndexTest )
+{
+    // The type_index class is a wrapper class around a std::type_info object, that can be used as index
+    std::unordered_map< std::type_index, std::string > typeNames{
+        { std::type_index( typeid( int ) ), "int" },
+        { std::type_index( typeid( double ) ), "double" },
+        { std::type_index( typeid( Base ) ), "Base" },
+        { std::type_index( typeid( Derived ) ), "Derived" },
+    };
+
+    // typeid returns type identification information at run time, it returns a type_info object, which is equality-comparable with other type_info objects
+    BOOST_CHECK( typeid( int ) == typeid( int ) ); // can't be computed at compile time
+    Derived d;
+    Base* b = &d;
+    BOOST_CHECK( typeid( b ) == typeid( Base* ) );
+    BOOST_CHECK( typeid( b ) != typeid( Derived* ) );
+
+    BOOST_CHECK( typeNames[ std::type_index( typeid( int ) ) ] == "int" );
+    BOOST_CHECK( typeNames[ std::type_index( typeid( Base ) ) ] == "Base" );
+    BOOST_CHECK( typeNames[ std::type_index( typeid( Derived ) ) ] == "Derived" );
 }
 
 namespace
