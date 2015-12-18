@@ -110,47 +110,8 @@ namespace
         }
     }
 
-    template < typename T >
-    void    display_information( size_t n )
-    {
-        auto byteNumber = n * sizeof( T );
-        std::cout << "(CL=" << std::ceil( byteNumber / 64 );
-        std::cout << "|SN=" << std::ceil( byteNumber / 1024. ) << "KB[" << toString( byteToAppropriateCacheSize< T >( n ) ) << "]);" << n << ";";
-    }
-
     static constexpr int                NumberTrials = 20;
     static constexpr sch::milliseconds  MinTimePerTrial( 200 );
-
-    // return average of microseconds per f() call
-    template < typename S, typename F >
-    auto    measure( S&& s, F&& f )
-    {
-        static_assert( !std::is_void< std::result_of_t< F() > >(), "F cannot be void" );
-
-        volatile decltype( f() ) res; // to avoid optimizing f() away
-
-        std::array< double, NumberTrials > trials;
-        for ( auto i = 0; i < NumberTrials; ++i )
-        {
-            auto runs = 0;
-
-            sch::high_resolution_clock::time_point now;
-            auto startTimer = sch::high_resolution_clock::now();
-            do
-            {
-                res = f();
-                ++runs;
-                now = sch::high_resolution_clock::now();
-            } while ( now - startTimer < MinTimePerTrial );
-            trials[ i ] = sch::duration_cast< sch::duration< double > >( now - startTimer ).count() / runs;
-        }
-        static_cast< void >( res );
-
-        std::sort( trials.begin(), trials.end() );
-        auto result = std::accumulate( trials.begin() + 2, trials.end() - 2, 0.0 ) / ( trials.size() - 4 ) * 1E6;
-        //std::cout << "- " << s << ": " << result << " microseconds" << std::endl;
-        return result;
-    }
 
     template < typename F >
     auto    measure( size_t n, F&& f )
@@ -188,6 +149,14 @@ namespace
         return result;
     }
 
+    template < typename T >
+    void    display_information( size_t n )
+    {
+        auto byteNumber = n * sizeof( T );
+        std::cout << "(CL=" << std::ceil( byteNumber / 64 );
+        std::cout << "|SN=" << std::ceil( byteNumber / 1024. ) << "KB[" << toString( byteToAppropriateCacheSize< T >( n ) ) << "]);" << n << ";";
+    }
+
     template < typename ELEMENT_TYPE, typename F, typename... Ns >
     void    run_test( const std::string& header, F&& f, Ns... range )
     {
@@ -208,10 +177,10 @@ BOOST_AUTO_TEST_SUITE( CacheTestSuite )
 namespace
 {
     // always use accumulate to ensure O(n) traversal
-    template < typename S, typename Container, typename BinaryOperation >
-    auto    measure_accumulate( S&& s, Container&& c, BinaryOperation&& op )
+    template < typename Container, typename BinaryOperation >
+    auto    measure_accumulate( Container&& c, BinaryOperation&& op )
     {
-        return measure( std::forward< S >( s ), [ & ] { return std::accumulate( std::begin( c ), std::end( c ), 0, op ); } );
+        return measure_test( 1, [ & ] { return std::accumulate( std::begin( c ), std::end( c ), 0, op ); } );
     }
 
     auto    generateShuffledList( int size )
@@ -237,53 +206,52 @@ namespace
 // shuffled nodes is the worst scenario
 BOOST_AUTO_TEST_CASE( LinearTraversalTest )
 {
-    auto f = [] ( auto r, auto n ) { return r + n; };
-    for ( auto n : { 4'096, 100'000, 1'000'000 } )
+    auto test = [] ( auto n )
     {
-        //displaySpaceInformation< int >( n );
+        auto v = std::vector< int >( n );
 
-        auto vectorTime         = measure_accumulate( "vector       ", std::vector< int >( n ), f );
-        auto listTime           = measure_accumulate( "list         ", std::list< int >( n ), f );
-        auto shuffledListTime   = measure_accumulate( "shuffled list", generateShuffledList( n ), f );
+        double vectorT, listT, shuffledListT;
+        std::tie( vectorT, listT, shuffledListT ) = measure_test( n,
+                                                                 [ v = std::vector< int >( n ) ] { return std::accumulate( std::begin( v ), std::end( v ), 0 ); },
+                                                                 [ l = std::list< int >( n ) ] { return std::accumulate( std::begin( l ), std::end( l ), 0 ); },
+                                                                 [ sl = generateShuffledList( n ) ] { return std::accumulate( std::begin( sl ), std::end( sl ), 0 ); } );
 
-        BOOST_CHECK( vectorTime <= listTime );
-        // In case all the node could be hold in L1 cache
+        BOOST_CHECK( vectorT <= listT );
         if ( byteToAppropriateCacheSize< int >( n ) > CacheSize::L1 )
-            BOOST_CHECK( listTime < shuffledListTime );
-    }
+            BOOST_CHECK( listT < shuffledListT );
+    };
+    run_test< int >( "vector;list;shuffled_list;", test, 4'096, 100'000, 1'000'000 );
 }
 
 BOOST_AUTO_TEST_CASE( MatrixTraversalTest )
 {
-    for ( auto n : { 124, 512, 1'024 } )
+    auto test = [] ( auto n )
     {
-        //displaySpaceInformation< int >( n * n );
-
         // multiple array with contiguous data
-        boost::multi_array< int, 2 > m1( boost::extents[ n ][ n ] ), m2( boost::extents[ n ][ n ] );
-
-        auto rowTraversalTime = measure( "row traversal", [ &m1, n ]
-            {
-                auto res = 0;
-                for ( auto row = 0; row < n; ++row )
-                    for ( auto col = 0; col < n; ++col )
-                        res += m1[row][col];
-                return res;
-            } );
-
-        auto colTraversalTime = measure( "col traversal", [ &m2, n ]
-        {
-            auto res = 0;
-            for ( auto col = 0; col < n; ++col )
-                for ( auto row = 0; row < n; ++row )
-                    res += m2[ row ][ col ];
-            return res;
-        } );
+        double rowT, colT;
+        std::tie( rowT, colT ) = measure_test( n,
+                                               [ m1 = boost::multi_array< int, 2 >( boost::extents[ n ][ n ] ), n ]
+                                               {
+                                                   auto res = 0;
+                                                   for ( auto row = 0; row < n; ++row )
+                                                       for ( auto col = 0; col < n; ++col )
+                                                           res += m1[row][col];
+                                                   return res;
+                                               },
+                                               [ m2 = boost::multi_array< int, 2 >( boost::extents[ n ][ n ] ), n ]
+                                               {
+                                                   auto res = 0;
+                                                   for ( auto col = 0; col < n; ++col )
+                                                       for ( auto row = 0; row < n; ++row )
+                                                           res += m2[ row ][ col ];
+                                                   return res;
+                                               } );
 
         // In case all the node could be hold in L2 cache
         if ( byteToAppropriateCacheSize< int >( n * n ) > CacheSize::L2 )
-            BOOST_CHECK( rowTraversalTime < colTraversalTime );
-    }
+            BOOST_CHECK( rowT < colT );
+    };
+    run_test< int >( "row;col;", test, 124, 512, 1'024 );
 }
 
 namespace
@@ -325,35 +293,33 @@ namespace
 // and do less distinct allocations and deallocations as well as working better with caches, but it's far from guaranteed.
 BOOST_AUTO_TEST_CASE( AssociativeTraversalIteratorTest )
 {
-    auto binaryOperation = [] ( auto r, const auto& p ) { return r + p.second; };
-    for ( auto n : { 4'096, 100'000, 1'000'000, 10'000'000 } )
+    auto op = [] ( auto r, const auto& p ) { return r + p.second; };
+    auto test = [ &op ] ( auto n )
     {
-        //displaySpaceInformation< int >( n );
-
-        measure_accumulate( "unordered_map", generateUnorderedMap( n ), binaryOperation );
-        measure_accumulate( "map          ", generateMap( n ), binaryOperation );
+        double unorderedMapT, mapT;
+        std::tie( unorderedMapT, mapT ) = measure_test( n,
+                                                        [ unorderedMap = generateUnorderedMap( n ), &op ] { return std::accumulate( std::begin( unorderedMap ), std::end( unorderedMap ), 0, op ); },
+                                                        [ map = generateMap( n ), &op ] { return std::accumulate( std::begin( map ), std::end( map ), 0, op ); } );
 
         // unordered_map beat map for low N, at some point map is more cache friendly (in this case from 1M)
-    }
-    BOOST_CHECK( true );
+    };
+    run_test< int >( "unordered_map;map;", test, 4'096, 100'000, 1'000'000, 10'000'000 );
 }
 
 BOOST_AUTO_TEST_CASE( AssociativeTraversalTest )
 {
-    auto test = [] ( auto& m ) { auto n = 0; for ( auto i = 0; i < m.size(); ++i ) n += m[ i ]; return n; };
+    auto f = [] ( auto& m ) { auto n = 0; for ( auto i = 0; i < m.size(); ++i ) n += m.at( i ); return n; };
     // Cache is less a factor than complexity in this test
-    for ( auto n : { 4'096, 100'000, 1'000'000 } )
+    auto test = [ &f ] ( auto n )
     {
-        //displaySpaceInformation< int >( n );
+        double unorderedMapT, mapT;
+        std::tie( unorderedMapT, mapT ) = measure_test( n,
+                                                       [ um = generateUnorderedMap( n ), &f ] { return f( um ); }, // hash + access(O(1))
+                                                       [ m = generateMap( n ), &f ] { return f( m ); } ); // access(O(log n))
 
-        auto um = generateUnorderedMap( n );
-        auto unorderedMapTime   = measure( "unordered_map", [ &um, &test ] { return test( um ); } ); // hash + access(O(1))
-
-        auto m = generateMap( n );
-        auto mapTime            = measure( "map          ", [ &m, &test ] { return test( m ); } ); // access(O(log n))
-
-        BOOST_CHECK( unorderedMapTime < mapTime );
-    }
+        BOOST_CHECK( unorderedMapT < mapT );
+    };
+    run_test< int >( "unordered_map;map;", test, 4'096, 100'000, 1'000'000 );
 }
 
 // Array-Of-Structure vs Structure-Of-Array
@@ -371,22 +337,19 @@ namespace
 
 BOOST_AUTO_TEST_CASE( AOSvsSOATest )
 {
-    for ( auto n : { 4'096, 16'384, 100'000, 1'000'000, 10'000'000 } )
+    auto test = [] ( auto n )
     {
-        //displaySpaceInformation< Particle >( n );
+        double aosT, soaT;
+        std::tie( aosT, soaT ) = measure_test( n,
+                                               // 64 / ( 6 / 3 ) / sizeof( int ) = 8 useful values per fetch average (6 / 3 :  only need x, y, z)
+                                               [ aos = AOSParticle( n ), n ] { auto res = 0; for ( auto i = 0; i < n; ++i ) res += aos[ i ].x + aos[ i ].y + aos[ i ].z; return res; },
 
-        AOSParticle aos( n );
-        //init_aos_particle( aos, n );
-        // 64 / ( 6 / 3 ) / sizeof( int ) = 8 useful values per fetch average (6 / 3 :  only need x, y, z)
-        auto aosTime = measure( "aos", [ &aos, n ]{ auto res = 0; for ( auto i = 0; i < n; ++i ) res += aos[i].x + aos[i].y + aos[i].z; return res; } );
+                                               // 64 / sizeof( int ) = 16 useful values per fetch
+                                               [ soa = SOAParticle( n ), n ] { auto res = 0; for ( auto i = 0; i < n; ++i ) res += soa.x[ i ] + soa.y[ i ] + soa.z[ i ]; return res; } );
 
-
-        SOAParticle soa( n );
-        // 64 / sizeof( int ) = 16 useful values per fetch
-        auto soaTime = measure( "soa", [ &soa, n ] { auto res = 0; for ( auto i = 0; i < n; ++i ) res += soa.x[ i ] + soa.y[ i ] + soa.z[ i ]; return res; } );
-
-        BOOST_CHECK( soaTime < aosTime );
-    }
+        BOOST_CHECK( aosT > soaT );
+    };
+    run_test< int >( "aos;soa;", test, 4'096, 16'384, 100'000, 1'000'000, 10'000'000 );
 }
 
 namespace
@@ -403,59 +366,56 @@ namespace
 
 BOOST_AUTO_TEST_CASE( CompactAOSvsSOATest )
 {
-    for ( auto n : { 4'096, 16'384, 100'000, 1'000'000, 10'000'000, 20'000'000 } )
+    auto test = [] ( auto n )
     {
-        //displaySpaceInformation< CompactParticle >( n );
-
         // Both fetch only useful values
         // SOA is faster (diminishingly as n grows), because CPU can prefetch x, y, z in parallel
         // (e.g. big picture: aos need to prefetch (stale) every N bytes, but soa only need to prefetch every N * 3 (the is more expensive, but less than the stale depending of the cache layer))
-        AOSCompactParticle aos( n );
-        auto aosTime = measure( "aos", [ &aos, n ] { auto res = 0; for ( auto i = 0; i < n; ++i ) res += aos[ i ].x + aos[ i ].y + aos[ i ].z; return res; } );
 
-        SOACompactParticle soa( n );
-        auto soaTime = measure( "soa", [ &soa, n ] { auto res = 0; for ( auto i = 0; i < n; ++i ) res += soa.x[ i ] + soa.y[ i ] + soa.z[ i ]; return res; } );
+        double aosT, soaT;
+        std::tie( aosT, soaT ) = measure_test( n,
+                                               [ aos = AOSCompactParticle( n ), n ] { auto res = 0; for ( auto i = 0; i < n; ++i ) res += aos[ i ].x + aos[ i ].y + aos[ i ].z; return res; },
+                                               [ soa = SOACompactParticle( n ), n ] { auto res = 0; for ( auto i = 0; i < n; ++i ) res += soa.x[ i ] + soa.y[ i ] + soa.z[ i ]; return res; } );
 
         // SOA is faster (diminishingly as n grows)
         if ( byteToAppropriateCacheSize< CompactParticle >( n ) < CacheSize::DRAM )
-            BOOST_CHECK( soaTime < aosTime );
-    }
+            BOOST_CHECK( aosT > soaT );
+    };
+    run_test< int >( "aos;soa;", test, 4'096, 16'384, 100'000, 1'000'000, 10'000'000, 20'000'000 );
 }
 
 BOOST_AUTO_TEST_CASE( CompactRandomAccessAOSvsSOATest )
 {
-    for ( auto n : { 512, 4'096, 16'384, 100'000, 1'000'000, 1'200'000, 1'800'000 } )
+    auto test = [] ( auto n )
     {
-        //displaySpaceInformation< CompactParticle >( n );
-
-        AOSCompactParticle aos( n );
-        auto aosTime = measure( "aos", [ &aos, n ]
-                        {
-                            auto res = 0; std::uniform_int_distribution<> rnd( 0, n - 1 ); std::mt19937 gen;
-                            for ( auto i = 0; i < n; ++i )
-                            {
-                                auto idx = rnd( gen );
-                                res += aos[ idx ].x + aos[ idx ].y + aos[ idx ].z;
-                            }
-                            return res;
-                        } );
-
-        SOACompactParticle soa( n );
-        auto soaTime = measure( "soa", [ &soa, n ]
-                        {
-                            auto res = 0; std::uniform_int_distribution<> rnd( 0, n - 1 ); std::mt19937 gen;
-                            for ( auto i = 0; i < n; ++i )
-                            {
-                                auto idx = rnd( gen );
-                                res += soa.x[ idx ] + soa.y[ idx ] + soa.z[ idx ];
-                            }
-                            return res;
-                        } );
+        double aosT, soaT;
+        std::tie( aosT, soaT ) = measure_test( n,
+                                               [ aos = AOSCompactParticle( n ), n ]
+                                               {
+                                                   auto res = 0; std::uniform_int_distribution<> rnd( 0, n - 1 ); std::mt19937 gen;
+                                                   for ( auto i = 0; i < n; ++i )
+                                                   {
+                                                       auto idx = rnd( gen );
+                                                       res += aos[ idx ].x + aos[ idx ].y + aos[ idx ].z;
+                                                   }
+                                                   return res;
+                                               },
+                                               [ soa = SOACompactParticle( n ), n ]
+                                               {
+                                                   auto res = 0; std::uniform_int_distribution<> rnd( 0, n - 1 ); std::mt19937 gen;
+                                                   for ( auto i = 0; i < n; ++i )
+                                                   {
+                                                       auto idx = rnd( gen );
+                                                       res += soa.x[ idx ] + soa.y[ idx ] + soa.z[ idx ];
+                                                   }
+                                                   return res;
+                                               } );
 
         // Similar results, but passed L2 cache, aos is more efficient (less staling due to the 1 prefetch instead of 3)
         if ( byteToAppropriateCacheSize< CompactParticle >( n ) > CacheSize::L2 )
-            BOOST_CHECK( aosTime < soaTime );
-    }
+            BOOST_CHECK( aosT < soaT );
+    };
+    run_test< int >( "aos;soa;", test, 512, 4'096, 16'384, 100'000, 1'000'000, 1'200'000, 1'800'000 );
 }
 
 namespace
@@ -527,21 +487,21 @@ namespace
 //   - Completed instructions
 BOOST_AUTO_TEST_CASE( BranchPredictionTest )
 {
-    for ( auto n : { 4'096, 16'384, 100'000 } )
+    auto f = [] ( auto& v ) { auto res = 0; for ( auto x : v ) if ( x > 128 ) res += x; return res; };
+    auto test = [ &f ] ( auto n )
     {
-        //displaySpaceInformation< int >( n );
+        auto sorted = generate_vector( n );
+        std::sort( sorted.begin(), sorted.end() );
 
-        auto v = generate_vector( n );
-        auto test = [ &v ] { auto res = 0; for ( auto x : v ) if ( x > 128 ) res += x; return res; };
-
-        auto unsortedTime = measure( "unsorted vector", test );
-
-        std::sort( v.begin(), v.end() );
-        auto sortedTime = measure( "sorted vector  ", test );
+        double sortedT, unsortedT;
+        std::tie( sortedT, unsortedT ) = measure_test( n,
+                                                       [ &sorted, &f ] { return f( sorted ); },
+                                                       [ unsorted = generate_vector( n ), &f ] { return f( unsorted ); } );
 
         // much faster
-        BOOST_CHECK( sortedTime < unsortedTime );
-    }
+        BOOST_CHECK( sortedT < unsortedT );
+    };
+    run_test< int >( "sorted;unsorted;", test, 1'000'000, 10'000'000, 100'000'000 );
 }
 
 // In symmetric multiprocessor (SMP) systems, each processor has a local cache. The memory system must guarantee cache coherence.
@@ -550,12 +510,10 @@ BOOST_AUTO_TEST_CASE( BranchPredictionTest )
 // Rule of thumb: use shared write memory only to communicate
 BOOST_AUTO_TEST_CASE( FalseSharingTest )
 {
-    for ( auto n : { 1'000'000, 10'000'000, 100'000'000 } )
+    auto test = [] ( auto n )
     {
-        //displaySpaceInformation< int >( n );
-
         auto v = generate_vector( n );
-        auto test = [ &v, n ] ( int& r1, int& r2, int& r3, int& r4 )
+        auto f = [ &v, n ] ( int& r1, int& r2, int& r3, int& r4 )
         {
             auto processFunctor = [] ( int& r, int* first, int* last )
             {
@@ -575,11 +533,14 @@ BOOST_AUTO_TEST_CASE( FalseSharingTest )
         };
 
         std::array< int, 49 > res;
-        auto sameCachelineTime = measure( "same     cacheline", [ &res, &test ] { return test( res[ 0 ], res[ 1 ], res[ 2 ], res[ 3 ] ); } );
-        auto separateCachelineTime = measure( "separate cacheline", [ &res, &test ] { return test( res[ 0 ], res[ 16 ], res[ 32 ], res[ 48 ] ); } );
+        double sameCacheT, separateCacheT;
+        std::tie( sameCacheT, separateCacheT ) = measure_test( n,
+                                                               [ &res, &f ] { return f( res[ 0 ], res[ 1 ], res[ 2 ], res[ 3 ] ); },
+                                                               [ &res, &f ] { return f( res[ 0 ], res[ 16 ], res[ 32 ], res[ 48 ] ); } );
 
-        BOOST_CHECK( separateCachelineTime < sameCachelineTime );
-    }
+        BOOST_CHECK( separateCacheT < sameCacheT );
+    };
+    run_test< int >( "sameCache;separateCache;", test, 1'000'000, 10'000'000, 100'000'000 );
 }
 
 namespace
@@ -604,10 +565,8 @@ namespace
 
 BOOST_AUTO_TEST_CASE( DataLayoutTest )
 {
-    for ( auto n : { 4'096, 16'384, 50'000, 100'000 } )
+    auto test = [] ( auto n )
     {
-        //displaySpaceInformation< ArrowWithState >( n );
-
         std::vector< ArrowWithState > arrowsWithState( n );
 
         // Remove active flag by smartly laying out objects
@@ -624,12 +583,15 @@ BOOST_AUTO_TEST_CASE( DataLayoutTest )
             activeArrows.push_back( rdm );
         }
 
-        auto arrowTime = measure( "arrow           ", [ &arrows, &activeArrows ] { auto res = 0.0; for ( auto i : activeArrows ) res += arrows[ i ].process(); return res; } );
-        auto arrowStateTime = measure( "arrow with state", [ &arrowsWithState ] { auto res = 0.0; for ( auto& a: arrowsWithState ) if ( a.isActive ) res += a.process(); return res; } );
+        double arrowT, arrowStateT;
+        std::tie( arrowT, arrowStateT ) = measure_test( n,
+                                                        [ &arrows, &activeArrows ] { auto res = 0.0; for ( auto i : activeArrows ) res += arrows[ i ].process(); return res; },
+                                                        [ &arrowsWithState ] { auto res = 0.0; for ( auto& a : arrowsWithState ) if ( a.isActive ) res += a.process(); return res; } );
 
         // result will vary due to random
-        BOOST_CHECK( arrowTime < arrowStateTime );
-    }
+        BOOST_CHECK( arrowT < arrowStateT );
+    };
+    run_test< int >( "arrow;arrowState;", test, 15'000, 100'000, 500'000 );
 }
 
 namespace
