@@ -174,20 +174,15 @@ namespace
         static_cast< void >( res );
 
         std::sort( trials.begin(), trials.end() );
-        auto result = std::accumulate( trials.begin() + 2, trials.end() - 2, 0.0 ) / ( trials.size() - 4 ) * 1E6 / n;
-        std::cout << result << ";";
-
-        return result;
+        return std::accumulate( trials.begin() + 2, trials.end() - 2, 0.0 ) / ( trials.size() - 4 ) * 1E6 / n;
     }
 
     template < typename... Fs >
     auto    measure_test( size_t n, Fs&&... fs )
     {
-        // std::make_tuple reverse the call oder of fs when executed (he start by the end?)
-        // auto result = std::make_tuple( measure( n, std::forward< Fs >( fs ) )... );
-        auto result = std::vector< double >( { measure( n, std::forward< Fs >( fs ) )... } );
-        std::cout << std::endl;
-        return result;
+        // std::make_tuple reverse the call oder (VS2015 only?)
+        // todo: tuple -> iterate over them to cout -> std::tie on callee side
+        return std::array< double, sizeof...( fs ) >{ measure( n, std::forward< Fs >( fs ) )... };
     }
 
     template < typename ELEMENT_TYPE, typename F, typename... Ns >
