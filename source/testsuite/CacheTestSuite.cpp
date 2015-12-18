@@ -20,6 +20,7 @@
 #include <typeindex>
 
 #include "generic/Typetraits.h"
+#include "generic/TuplePrinter.h"
 #include "containers/PolymorphicCollection.h"
 
 namespace sch = std::chrono;
@@ -181,8 +182,10 @@ namespace
     auto    measure_test( size_t n, Fs&&... fs )
     {
         // std::make_tuple reverse the call oder (VS2015 only?)
-        // todo: tuple -> iterate over them to cout -> std::tie on callee side
-        return std::array< double, sizeof...( fs ) >{ measure( n, std::forward< Fs >( fs ) )... };
+        auto result = std::make_tuple( measure( n, std::forward< Fs >( fs ) )... );
+        generics::printTuple( std::cout, result, ';' );
+        std::cout << std::endl;
+        return result;
     }
 
     template < typename ELEMENT_TYPE, typename F, typename... Ns >
@@ -682,13 +685,14 @@ BOOST_AUTO_TEST_CASE( PolymorphicContainerTest )
 
         init_polymorphic_container( unsorted, sorted, collection, n );
 
-        auto r = measure_test( n,
-                               [ &unsorted, &f ] { return f( unsorted ); },
-                               [ &sorted, &f ] { return f( sorted ); },
-                               [ &collection ] { auto res = 0; collection.for_each( [ &res ] ( auto& e ) { res += e.f(); } ); return res; } );
+        double unsortedT, sortedT, collectionT;
+        std::tie( unsortedT, sortedT, collectionT ) = measure_test( n,
+            [ &unsorted, &f ] { return f( unsorted ); },
+            [ &sorted, &f ] { return f( sorted ); },
+            [ &collection ] { auto res = 0; collection.for_each( [ &res ] ( auto& e ) { res += e.f(); } ); return res; } );
 
-        BOOST_CHECK( r[ 0 ] > r[ 1 ] );
-        BOOST_CHECK( r[ 1 ] > r[ 2 ] );
+        BOOST_CHECK( unsortedT > sortedT );
+        BOOST_CHECK( sortedT > collectionT );
     };
 
     run_test< int >( "unsorted;sorted;collection;", test, 15'000, 100'000, 500'000 );
