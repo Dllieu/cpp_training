@@ -533,14 +533,14 @@ BOOST_AUTO_TEST_CASE( FalseSharingTest )
         };
 
         std::array< int, 49 > res;
-        double sameCacheT, separateCacheT;
-        std::tie( sameCacheT, separateCacheT ) = measure_test( n,
+        double sameCacheLineT, separateCacheLineT;
+        std::tie( sameCacheLineT, separateCacheLineT ) = measure_test( n,
                                                                [ &res, &f ] { return f( res[ 0 ], res[ 1 ], res[ 2 ], res[ 3 ] ); },
                                                                [ &res, &f ] { return f( res[ 0 ], res[ 16 ], res[ 32 ], res[ 48 ] ); } );
 
-        BOOST_CHECK( separateCacheT < sameCacheT );
+        BOOST_CHECK( sameCacheLineT > separateCacheLineT );
     };
-    run_test< int >( "sameCache;separateCache;", test, 1'000'000, 10'000'000, 100'000'000 );
+    run_test< int >( "sameCacheLine;separateCacheLine;", test, 10'000'000, 50'000'000 );
 }
 
 namespace
@@ -549,7 +549,7 @@ namespace
     {
         int     x, y, z;
         double  dx, dy, dz;
-        bool    isActive;
+        bool    isInactive;
 
         double process() const { return x + y + z + dx + dy + dz; }
     };
@@ -572,26 +572,26 @@ BOOST_AUTO_TEST_CASE( DataLayoutTest )
         // Remove active flag by smartly laying out objects
         // Better cache density, no branching, fewer elements processed
         std::vector< Arrow > arrows( n );
-        std::vector< int > activeArrows; // index of active arrow
+        std::vector< int > inactiveArrows; // index of active arrow
 
-        std::uniform_int_distribution<> rnd( n / 100, n - 1 );
+        // In the case only few arrows can be actives
+        std::uniform_int_distribution<> rnd( 1, n / 100 );
         std::mt19937 gen;
         for ( auto i = 0, size = rnd( gen ); i < size; ++i )
         {
             auto rdm = rnd( gen );
-            arrowsWithState[ rdm ].isActive = true;
-            activeArrows.push_back( rdm );
+            arrowsWithState[ rdm ].isInactive = true;
+            inactiveArrows.push_back( rdm );
         }
 
         double arrowT, arrowStateT;
         std::tie( arrowT, arrowStateT ) = measure_test( n,
-                                                        [ &arrows, &activeArrows ] { auto res = 0.0; for ( auto i : activeArrows ) res += arrows[ i ].process(); return res; },
-                                                        [ &arrowsWithState ] { auto res = 0.0; for ( auto& a : arrowsWithState ) if ( a.isActive ) res += a.process(); return res; } );
+                                                        [ &arrows, &inactiveArrows ] { auto res = 0.0; for ( auto i : inactiveArrows ) res += arrows[ i ].process(); return res; },
+                                                        [ &arrowsWithState ] { auto res = 0.0; for ( auto& a : arrowsWithState ) if ( a.isInactive ) res += a.process(); return res; } );
 
-        // result will vary due to random
         BOOST_CHECK( arrowT < arrowStateT );
     };
-    run_test< int >( "arrow;arrowState;", test, 15'000, 100'000, 500'000 );
+    run_test< int >( "arrow;arrowState;", test, 15'000, 70'000, 500'000 );
 }
 
 namespace
