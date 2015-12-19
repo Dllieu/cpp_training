@@ -8,10 +8,7 @@
 #pragma warning( pop )
 #include <boost/multi_array.hpp>
 
-#include <algorithm>
-#include <chrono>
 #include <iostream>
-#include <numeric>
 #include <array>
 #include <random>
 #include <unordered_map>
@@ -22,152 +19,46 @@
 #include "generic/Typetraits.h"
 #include "generic/TuplePrinter.h"
 #include "containers/PolymorphicCollection.h"
+#include "tools/Benchmark.h"
 
-namespace sch = std::chrono;
+using namespace tools;
 
-namespace
-{
-    constexpr auto operator""   _KB( size_t s ) { return s * 1024; }
-    constexpr auto operator""   _MB( size_t s ) { return s * 1024 * 1000; }
+// Intel Core i5-4460 (4 cores) (give a general idea)
+//
+// Translation Lookaside Buffer (TLB)
+// CPU cache that memory management hardware uses to improve virtual address translation speed, it has a fixed number of slots that contain page table entries, which map virtual addresses to physical addresses.
+// It is typically a content-addressable memory (CAM), in which the search key is the virtual address and the search result is a physical address.
+// - 2MB pages mode
+//   - L1  (32 entries), Miss Penalty = 16 cycles. Parallel miss: 20 cycles per access
+// - 4KB page mode
+//   - L1  (64 entries), 4-WAY
+//                   * miss penalty : 7 cycles, parallel miss: 1 cycle per access
+//   - L2 (512 entries), 4-WAY
+//                   * miss penalty : 9 cycles, parallel miss: 21 cycle per access
+//
+// Instruction cache
+// - L1  (32KB), 8-WAY, 64B / line
+//
+// Data Cache (8-WAY, 64B / line)
+// - L1  (32KB):    1   ns /   4 cycles
+//             * 2 per processor (hyperthreading delivers two processing threads per physical core)
+//             * 4 cycles for simple access via pointer (p), 5 cycles for access with complex address calculation (p[n])
+// - L2 (256KB):    3.1 ns /  12 cycles (per processor)
+// - L3   (6MB):    7.7 ns /  30 cycles (share among all the processors)
+//             * 29.5 cycles for cores (1, 2)
+//             * 30.5 cycles for cores (0, 3)
+// - DRAM  (XX):   60   ns / 237 cycles
+//
+//
+// -> Check for more infos: http://www.7-cpu.com/
 
-    // Intel Core i5-4460 (4 cores) (give a general idea)
-    //
-    // Translation Lookaside Buffer (TLB)
-    // CPU cache that memory management hardware uses to improve virtual address translation speed, it has a fixed number of slots that contain page table entries, which map virtual addresses to physical addresses.
-    // It is typically a content-addressable memory (CAM), in which the search key is the virtual address and the search result is a physical address.
-    // - 2MB pages mode
-    //   - L1  (32 entries), Miss Penalty = 16 cycles. Parallel miss: 20 cycles per access
-    // - 4KB page mode
-    //   - L1  (64 entries), 4-WAY
-    //                   * miss penalty : 7 cycles, parallel miss: 1 cycle per access
-    //   - L2 (512 entries), 4-WAY
-    //                   * miss penalty : 9 cycles, parallel miss: 21 cycle per access
-    //
-    // Instruction cache
-    // - L1  (32KB), 8-WAY, 64B / line
-    //
-    // Data Cache (8-WAY, 64B / line)
-    // - L1  (32KB):    1   ns /   4 cycles
-    //             * 2 per processor (hyperthreading delivers two processing threads per physical core)
-    //             * 4 cycles for simple access via pointer (p), 5 cycles for access with complex address calculation (p[n])
-    // - L2 (256KB):    3.1 ns /  12 cycles (per processor)
-    // - L3   (6MB):    7.7 ns /  30 cycles (share among all the processors)
-    //             * 29.5 cycles for cores (1, 2)
-    //             * 30.5 cycles for cores (0, 3)
-    // - DRAM  (XX):   60   ns / 237 cycles
-    //
-    //
-    // -> Check for more infos: http://www.7-cpu.com/
-
-    // About cache misses
-    //  A cache miss refers to a failed attempt to read or write a piece of data in the cache, which results in a main memory access with much longer latency.
-    //  There are three kinds of cache misses: instruction read miss, data read miss, and data write miss.
-    //  - Cache read misses from an instruction cache generally cause the largest delay, because the processor, or at least the thread of execution, has to wait (stall) until the instruction is fetched from main memory.
-    //  - Cache read misses from a data cache usually cause a smaller delay, because instructions not dependent on the cache read can be issued and continue execution until the data is returned from main memory,
-    //    and the dependent instructions can resume execution.
-    //  - Cache write misses to a data cache generally cause the shortest delay, because the write can be queued and there are few limitations on the execution of subsequent instructions; the processor can continue until the queue is full.
-
-    // Max number of segment in L1 = 32KB / 64 = 512
-    enum class CacheSize
-    {
-        L1 = 32_KB,
-        L2 = 256_KB,
-        L3 = 6_MB,
-        DRAM
-    };
-
-    template < typename T >
-    CacheSize   byteToAppropriateCacheSize( size_t numberElements )
-    {
-        auto byteSize = numberElements * sizeof( T );
-        if ( byteSize < generics::enum_cast( CacheSize::L1 ) )
-            return CacheSize::L1;
-
-        if ( byteSize < generics::enum_cast( CacheSize::L2 ) )
-            return CacheSize::L2;
-
-        if ( byteSize < generics::enum_cast( CacheSize::L3 ) )
-            return CacheSize::L3;
-
-        return CacheSize::DRAM;
-    }
-
-    const char* toString( CacheSize cacheSize )
-    {
-        switch ( cacheSize )
-        {
-            case CacheSize::L1:
-                return "L1";
-
-            case CacheSize::L2:
-                return "L2";
-
-            case CacheSize::L3:
-                return "L3";
-
-            default:
-                return "DRAM";
-        }
-    }
-
-    static constexpr int                NumberTrials = 20;
-    static constexpr sch::milliseconds  MinTimePerTrial( 200 );
-
-    template < typename F >
-    auto    measure( size_t n, F&& f )
-    {
-        volatile decltype( f() ) res; // to avoid optimizing f() away
-
-        std::array< double, NumberTrials > trials;
-        for ( auto i = 0; i < NumberTrials; ++i )
-        {
-            auto runs = 0;
-
-            sch::high_resolution_clock::time_point now;
-            auto startTimer = sch::high_resolution_clock::now();
-            do
-            {
-                res = f();
-                ++runs;
-                now = sch::high_resolution_clock::now();
-            } while ( now - startTimer < MinTimePerTrial );
-            trials[ i ] = sch::duration_cast< sch::duration< double > >( now - startTimer ).count() / runs;
-        }
-        static_cast< void >( res );
-
-        std::sort( trials.begin(), trials.end() );
-        return std::accumulate( trials.begin() + 2, trials.end() - 2, 0.0 ) / ( trials.size() - 4 ) * 1E6 / n;
-    }
-
-    template < typename... Fs >
-    auto    measure_test( size_t n, Fs&&... fs )
-    {
-        // std::make_tuple reverse the call oder (VS2015 only?)
-        auto result = std::make_tuple( measure( n, std::forward< Fs >( fs ) )... );
-        generics::printTuple( std::cout, result, ';' );
-        std::cout << std::endl;
-        return result;
-    }
-
-    template < typename T >
-    void    display_information( size_t n )
-    {
-        auto byteNumber = n * sizeof( T );
-        std::cout << "(CL=" << std::ceil( byteNumber / 64 );
-        std::cout << "|SN=" << std::ceil( byteNumber / 1024. ) << "KB[" << toString( byteToAppropriateCacheSize< T >( n ) ) << "]);" << n << ";";
-    }
-
-    template < typename ELEMENT_TYPE, typename F, typename... Ns >
-    void    run_test( const std::string& header, F&& f, Ns... range )
-    {
-        std::cout << "infos;n;" << header << std::endl;
-        for ( auto n : { range... } )
-        {
-            display_information< ELEMENT_TYPE >( n );
-            f( n );
-        }
-    }
-}
+// About cache misses
+//  A cache miss refers to a failed attempt to read or write a piece of data in the cache, which results in a main memory access with much longer latency.
+//  There are three kinds of cache misses: instruction read miss, data read miss, and data write miss.
+//  - Cache read misses from an instruction cache generally cause the largest delay, because the processor, or at least the thread of execution, has to wait (stall) until the instruction is fetched from main memory.
+//  - Cache read misses from a data cache usually cause a smaller delay, because instructions not dependent on the cache read can be issued and continue execution until the data is returned from main memory,
+//    and the dependent instructions can resume execution.
+//  - Cache write misses to a data cache generally cause the shortest delay, because the write can be queued and there are few limitations on the execution of subsequent instructions; the processor can continue until the queue is full
 
 // Classical big-O algorithmic complexity analysis proves insufficient to estimate program performance for modern computer architectures,
 // current processors are equipped with several low-level components (hierarchical cache structures, pipelining, branch prediction)
@@ -176,13 +67,6 @@ BOOST_AUTO_TEST_SUITE( CacheTestSuite )
 
 namespace
 {
-    // always use accumulate to ensure O(n) traversal
-    template < typename Container, typename BinaryOperation >
-    auto    measure_accumulate( Container&& c, BinaryOperation&& op )
-    {
-        return measure_test( 1, [ & ] { return std::accumulate( std::begin( c ), std::end( c ), 0, op ); } );
-    }
-
     auto    generateShuffledList( int size )
     {
         std::uniform_int_distribution<> rnd( 0, size - 1 );
@@ -211,10 +95,10 @@ BOOST_AUTO_TEST_CASE( LinearTraversalTest )
         auto v = std::vector< int >( n );
 
         double vectorT, listT, shuffledListT;
-        std::tie( vectorT, listT, shuffledListT ) = measure_test( n,
-                                                                 [ v = std::vector< int >( n ) ] { return std::accumulate( std::begin( v ), std::end( v ), 0 ); },
-                                                                 [ l = std::list< int >( n ) ] { return std::accumulate( std::begin( l ), std::end( l ), 0 ); },
-                                                                 [ sl = generateShuffledList( n ) ] { return std::accumulate( std::begin( sl ), std::end( sl ), 0 ); } );
+        std::tie( vectorT, listT, shuffledListT ) = benchmark( n,
+                                                               [ v = std::vector< int >( n ) ] { return std::accumulate( std::begin( v ), std::end( v ), 0 ); },
+                                                               [ l = std::list< int >( n ) ] { return std::accumulate( std::begin( l ), std::end( l ), 0 ); },
+                                                               [ sl = generateShuffledList( n ) ] { return std::accumulate( std::begin( sl ), std::end( sl ), 0 ); } );
 
         BOOST_CHECK( vectorT <= listT );
         if ( byteToAppropriateCacheSize< int >( n ) > CacheSize::L1 )
@@ -229,23 +113,23 @@ BOOST_AUTO_TEST_CASE( MatrixTraversalTest )
     {
         // multiple array with contiguous data
         double rowT, colT;
-        std::tie( rowT, colT ) = measure_test( n,
-                                               [ m1 = boost::multi_array< int, 2 >( boost::extents[ n ][ n ] ), n ]
-                                               {
-                                                   auto res = 0;
-                                                   for ( auto row = 0; row < n; ++row )
-                                                       for ( auto col = 0; col < n; ++col )
-                                                           res += m1[row][col];
-                                                   return res;
-                                               },
-                                               [ m2 = boost::multi_array< int, 2 >( boost::extents[ n ][ n ] ), n ]
-                                               {
-                                                   auto res = 0;
-                                                   for ( auto col = 0; col < n; ++col )
-                                                       for ( auto row = 0; row < n; ++row )
-                                                           res += m2[ row ][ col ];
-                                                   return res;
-                                               } );
+        std::tie( rowT, colT ) = benchmark( n,
+                                            [ m1 = boost::multi_array< int, 2 >( boost::extents[ n ][ n ] ), n ]
+                                            {
+                                                auto res = 0;
+                                                for ( auto row = 0; row < n; ++row )
+                                                    for ( auto col = 0; col < n; ++col )
+                                                        res += m1[row][col];
+                                                return res;
+                                            },
+                                            [ m2 = boost::multi_array< int, 2 >( boost::extents[ n ][ n ] ), n ]
+                                            {
+                                                auto res = 0;
+                                                for ( auto col = 0; col < n; ++col )
+                                                    for ( auto row = 0; row < n; ++row )
+                                                        res += m2[ row ][ col ];
+                                                return res;
+                                            } );
 
         // In case all the node could be hold in L2 cache
         if ( byteToAppropriateCacheSize< int >( n * n ) > CacheSize::L2 )
@@ -297,9 +181,9 @@ BOOST_AUTO_TEST_CASE( AssociativeTraversalIteratorTest )
     auto test = [ &op ] ( auto n )
     {
         double unorderedMapT, mapT;
-        std::tie( unorderedMapT, mapT ) = measure_test( n,
-                                                        [ unorderedMap = generateUnorderedMap( n ), &op ] { return std::accumulate( std::begin( unorderedMap ), std::end( unorderedMap ), 0, op ); },
-                                                        [ map = generateMap( n ), &op ] { return std::accumulate( std::begin( map ), std::end( map ), 0, op ); } );
+        std::tie( unorderedMapT, mapT ) = benchmark( n,
+                                                     [ unorderedMap = generateUnorderedMap( n ), &op ] { return std::accumulate( std::begin( unorderedMap ), std::end( unorderedMap ), 0, op ); },
+                                                     [ map = generateMap( n ), &op ] { return std::accumulate( std::begin( map ), std::end( map ), 0, op ); } );
 
         // unordered_map beat map for low N, at some point map is more cache friendly (in this case from 1M)
     };
@@ -313,9 +197,9 @@ BOOST_AUTO_TEST_CASE( AssociativeTraversalTest )
     auto test = [ &f ] ( auto n )
     {
         double unorderedMapT, mapT;
-        std::tie( unorderedMapT, mapT ) = measure_test( n,
-                                                       [ um = generateUnorderedMap( n ), &f ] { return f( um ); }, // hash + access(O(1))
-                                                       [ m = generateMap( n ), &f ] { return f( m ); } ); // access(O(log n))
+        std::tie( unorderedMapT, mapT ) = benchmark( n,
+                                                     [ um = generateUnorderedMap( n ), &f ] { return f( um ); }, // hash + access(O(1))
+                                                     [ m = generateMap( n ), &f ] { return f( m ); } ); // access(O(log n))
 
         BOOST_CHECK( unorderedMapT < mapT );
     };
@@ -340,12 +224,12 @@ BOOST_AUTO_TEST_CASE( AOSvsSOATest )
     auto test = [] ( auto n )
     {
         double aosT, soaT;
-        std::tie( aosT, soaT ) = measure_test( n,
-                                               // 64 / ( 6 / 3 ) / sizeof( int ) = 8 useful values per fetch average (6 / 3 :  only need x, y, z)
-                                               [ aos = AOSParticle( n ), n ] { auto res = 0; for ( auto i = 0; i < n; ++i ) res += aos[ i ].x + aos[ i ].y + aos[ i ].z; return res; },
+        std::tie( aosT, soaT ) = benchmark( n,
+                                            // 64 / ( 6 / 3 ) / sizeof( int ) = 8 useful values per fetch average (6 / 3 :  only need x, y, z)
+                                            [ aos = AOSParticle( n ), n ] { auto res = 0; for ( auto i = 0; i < n; ++i ) res += aos[ i ].x + aos[ i ].y + aos[ i ].z; return res; },
 
-                                               // 64 / sizeof( int ) = 16 useful values per fetch
-                                               [ soa = SOAParticle( n ), n ] { auto res = 0; for ( auto i = 0; i < n; ++i ) res += soa.x[ i ] + soa.y[ i ] + soa.z[ i ]; return res; } );
+                                            // 64 / sizeof( int ) = 16 useful values per fetch
+                                            [ soa = SOAParticle( n ), n ] { auto res = 0; for ( auto i = 0; i < n; ++i ) res += soa.x[ i ] + soa.y[ i ] + soa.z[ i ]; return res; } );
 
         BOOST_CHECK( aosT > soaT );
     };
@@ -373,9 +257,9 @@ BOOST_AUTO_TEST_CASE( CompactAOSvsSOATest )
         // (e.g. big picture: aos need to prefetch (stale) every N bytes, but soa only need to prefetch every N * 3 (the is more expensive, but less than the stale depending of the cache layer))
 
         double aosT, soaT;
-        std::tie( aosT, soaT ) = measure_test( n,
-                                               [ aos = AOSCompactParticle( n ), n ] { auto res = 0; for ( auto i = 0; i < n; ++i ) res += aos[ i ].x + aos[ i ].y + aos[ i ].z; return res; },
-                                               [ soa = SOACompactParticle( n ), n ] { auto res = 0; for ( auto i = 0; i < n; ++i ) res += soa.x[ i ] + soa.y[ i ] + soa.z[ i ]; return res; } );
+        std::tie( aosT, soaT ) = benchmark( n,
+                                            [ aos = AOSCompactParticle( n ), n ] { auto res = 0; for ( auto i = 0; i < n; ++i ) res += aos[ i ].x + aos[ i ].y + aos[ i ].z; return res; },
+                                            [ soa = SOACompactParticle( n ), n ] { auto res = 0; for ( auto i = 0; i < n; ++i ) res += soa.x[ i ] + soa.y[ i ] + soa.z[ i ]; return res; } );
 
         // SOA is faster (diminishingly as n grows)
         if ( byteToAppropriateCacheSize< CompactParticle >( n ) < CacheSize::DRAM )
@@ -389,27 +273,27 @@ BOOST_AUTO_TEST_CASE( CompactRandomAccessAOSvsSOATest )
     auto test = [] ( auto n )
     {
         double aosT, soaT;
-        std::tie( aosT, soaT ) = measure_test( n,
-                                               [ aos = AOSCompactParticle( n ), n ]
-                                               {
-                                                   auto res = 0; std::uniform_int_distribution<> rnd( 0, n - 1 ); std::mt19937 gen;
-                                                   for ( auto i = 0; i < n; ++i )
-                                                   {
-                                                       auto idx = rnd( gen );
-                                                       res += aos[ idx ].x + aos[ idx ].y + aos[ idx ].z;
-                                                   }
-                                                   return res;
-                                               },
-                                               [ soa = SOACompactParticle( n ), n ]
-                                               {
-                                                   auto res = 0; std::uniform_int_distribution<> rnd( 0, n - 1 ); std::mt19937 gen;
-                                                   for ( auto i = 0; i < n; ++i )
-                                                   {
-                                                       auto idx = rnd( gen );
-                                                       res += soa.x[ idx ] + soa.y[ idx ] + soa.z[ idx ];
-                                                   }
-                                                   return res;
-                                               } );
+        std::tie( aosT, soaT ) = benchmark( n,
+                                            [ aos = AOSCompactParticle( n ), n ]
+                                            {
+                                                auto res = 0; std::uniform_int_distribution<> rnd( 0, n - 1 ); std::mt19937 gen;
+                                                for ( auto i = 0; i < n; ++i )
+                                                {
+                                                    auto idx = rnd( gen );
+                                                    res += aos[ idx ].x + aos[ idx ].y + aos[ idx ].z;
+                                                }
+                                                return res;
+                                            },
+                                            [ soa = SOACompactParticle( n ), n ]
+                                            {
+                                                auto res = 0; std::uniform_int_distribution<> rnd( 0, n - 1 ); std::mt19937 gen;
+                                                for ( auto i = 0; i < n; ++i )
+                                                {
+                                                    auto idx = rnd( gen );
+                                                    res += soa.x[ idx ] + soa.y[ idx ] + soa.z[ idx ];
+                                                }
+                                                return res;
+                                            } );
 
         // Similar results, but passed L2 cache, aos is more efficient (less staling due to the 1 prefetch instead of 3)
         if ( byteToAppropriateCacheSize< CompactParticle >( n ) > CacheSize::L2 )
@@ -494,9 +378,9 @@ BOOST_AUTO_TEST_CASE( BranchPredictionTest )
         std::sort( sorted.begin(), sorted.end() );
 
         double sortedT, unsortedT;
-        std::tie( sortedT, unsortedT ) = measure_test( n,
-                                                       [ &sorted, &f ] { return f( sorted ); },
-                                                       [ unsorted = generate_vector( n ), &f ] { return f( unsorted ); } );
+        std::tie( sortedT, unsortedT ) = benchmark( n,
+                                                    [ &sorted, &f ] { return f( sorted ); },
+                                                    [ unsorted = generate_vector( n ), &f ] { return f( unsorted ); } );
 
         // much faster
         BOOST_CHECK( sortedT < unsortedT );
@@ -534,9 +418,9 @@ BOOST_AUTO_TEST_CASE( FalseSharingTest )
 
         std::array< int, 49 > res;
         double sameCacheLineT, separateCacheLineT;
-        std::tie( sameCacheLineT, separateCacheLineT ) = measure_test( n,
-                                                               [ &res, &f ] { return f( res[ 0 ], res[ 1 ], res[ 2 ], res[ 3 ] ); },
-                                                               [ &res, &f ] { return f( res[ 0 ], res[ 16 ], res[ 32 ], res[ 48 ] ); } );
+        std::tie( sameCacheLineT, separateCacheLineT ) = benchmark( n,
+                                                                    [ &res, &f ] { return f( res[ 0 ], res[ 1 ], res[ 2 ], res[ 3 ] ); },
+                                                                    [ &res, &f ] { return f( res[ 0 ], res[ 16 ], res[ 32 ], res[ 48 ] ); } );
 
         BOOST_CHECK( sameCacheLineT > separateCacheLineT );
     };
@@ -585,9 +469,9 @@ BOOST_AUTO_TEST_CASE( DataLayoutTest )
         }
 
         double arrowT, arrowStateT;
-        std::tie( arrowT, arrowStateT ) = measure_test( n,
-                                                        [ &arrows, &inactiveArrows ] { auto res = 0.0; for ( auto i : inactiveArrows ) res += arrows[ i ].process(); return res; },
-                                                        [ &arrowsWithState ] { auto res = 0.0; for ( auto& a : arrowsWithState ) if ( a.isInactive ) res += a.process(); return res; } );
+        std::tie( arrowT, arrowStateT ) = benchmark( n,
+                                                     [ &arrows, &inactiveArrows ] { auto res = 0.0; for ( auto i : inactiveArrows ) res += arrows[ i ].process(); return res; },
+                                                     [ &arrowsWithState ] { auto res = 0.0; for ( auto& a : arrowsWithState ) if ( a.isInactive ) res += a.process(); return res; } );
 
         BOOST_CHECK( arrowT < arrowStateT );
     };
@@ -596,6 +480,16 @@ BOOST_AUTO_TEST_CASE( DataLayoutTest )
 
 namespace
 {
+    // The big cost of virtual functions isn't really the lookup of a function pointer in the vtable (that's usually just a single cycle),
+    // but that the indirect jump usually cannot be branch-predicted. This can cause a large pipeline bubble as the processor
+    // cannot fetch any instructions until the indirect jump (the call through the function pointer) has retired and a new instruction pointer computed.
+    // So, the cost of a virtual function call is much bigger than it might seem from looking at the assembly
+
+    // a virtual function call may cause an instruction cache miss: if you jump to a code address that is not in cache then the whole program comes
+    // to a dead halt while the instructions are fetched from main memory. This is always a significant stall: on Xenon, about 650 cycles (by my tests).
+    // However this isn't a problem specific to virtual functions because even a direct function call will cause a miss if you jump to instructions
+    // that aren't in cache. What matters is whether the function has been run before recently (making it more likely to be in cache),
+    // and whether your architecture can predict static (not virtual) branches and fetch those instructions into cache ahead of time.
     struct Base { virtual ~Base() {}; virtual int f() const = 0; };
     struct Derived1 : Base { virtual int f() const override final { return 1; } };
     struct Derived2 : Base { virtual int f() const override final { return 2; } };
@@ -648,7 +542,7 @@ BOOST_AUTO_TEST_CASE( PolymorphicContainerTest )
         init_polymorphic_container( unsorted, sorted, collection, n );
 
         double unsortedT, sortedT, collectionT;
-        std::tie( unsortedT, sortedT, collectionT ) = measure_test( n,
+        std::tie( unsortedT, sortedT, collectionT ) = benchmark( n,
             [ &unsorted, &f ] { return f( unsorted ); },
             [ &sorted, &f ] { return f( sorted ); },
             [ &collection ] { auto res = 0; collection.for_each( [ &res ] ( auto& e ) { res += e.f(); } ); return res; } );

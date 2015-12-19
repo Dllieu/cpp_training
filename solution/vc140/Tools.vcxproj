@@ -11,11 +11,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\source\tools\CacheInformation.cpp" />
     <ClCompile Include="..\..\source\tools\MemoryPool.cpp" />
     <ClCompile Include="..\..\source\tools\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\source\tools\AnonymousVariable.h" />
+    <ClInclude Include="..\..\source\tools\Benchmark.h" />
+    <ClInclude Include="..\..\source\tools\CacheInformation.h" />
     <ClInclude Include="..\..\source\tools\MemoryPool.h" />
     <ClInclude Include="..\..\source\tools\ScopeGuard.h" />
     <ClInclude Include="..\..\source\tools\Timer.h" />

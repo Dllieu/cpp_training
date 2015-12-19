@@ -26,9 +26,6 @@
     <Filter Include="Source Files\Mocking">
       <UniqueIdentifier>{217cb8ca-0929-4cad-8505-633ceb6f2777}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\ImpracticalTest">
-      <UniqueIdentifier>{f71aa018-5c94-4e0e-8a7d-4f91cb31eb4e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\SyntaxSpecific">
       <UniqueIdentifier>{f3ad7e35-65da-4332-9f5c-1df8395a7801}</UniqueIdentifier>
     </Filter>
@@ -40,6 +37,9 @@
     </Filter>
     <Filter Include="Source Files\DesignPattern">
       <UniqueIdentifier>{aaedfbce-5910-4f83-bae6-12a094be0b68}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\BenchmarkTest">
+      <UniqueIdentifier>{f71aa018-5c94-4e0e-8a7d-4f91cb31eb4e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -101,10 +101,10 @@
       <Filter>Source Files\STL</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\testsuite\FunctionCallTestSuite.cpp">
-      <Filter>Source Files\ImpracticalTest</Filter>
+      <Filter>Source Files\BenchmarkTest</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\testsuite\OptimizationTricks.cpp">
-      <Filter>Source Files\ImpracticalTest</Filter>
+      <Filter>Source Files\BenchmarkTest</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\testsuite\FactoryTestSuite.cpp">
       <Filter>Source Files\DesignPattern</Filter>
@@ -149,7 +149,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\testsuite\SIMDTestSuite.cpp">
-      <Filter>Source Files\ImpracticalTest</Filter>
+      <Filter>Source Files\BenchmarkTest</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\testsuite\CoroutineTestSuite.cpp">
       <Filter>Source Files\Threading</Filter>
@@ -158,7 +158,7 @@
       <Filter>Source Files\Exercice</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\testsuite\CacheTestSuite.cpp">
-      <Filter>Source Files\ImpracticalTest</Filter>
+      <Filter>Source Files\BenchmarkTest</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -6,55 +6,24 @@
 #include <boost/timer/timer.hpp>
 #include <map>
 
+#include "tools/Benchmark.h"
+
 // http://www.codeproject.com/Articles/18389/Fast-C-Delegate-Boost-Function-drop-in-replacement
 BOOST_AUTO_TEST_SUITE( FunctionCallTestSuite )
 
-#define FUNCTOR_IMPLEMENTATION( uselessParam ) ++uselessParam;
+#define FUNCTOR_IMPLEMENTATION return 1;
 
 namespace
 {
-    using TypeArgument = /*std::vector< std::string >*/int;
-    inline void realImplementation( TypeArgument copiedData )
-    {
-        FUNCTOR_IMPLEMENTATION( copiedData );
-    }
+    inline int realImplementation() { FUNCTOR_IMPLEMENTATION; }
 
     struct ObjectFunctor
     {
-        inline void    operator()( TypeArgument copiedData ) const
-        {
-            FUNCTOR_IMPLEMENTATION( copiedData );
-        }
+        int    operator()() const { FUNCTOR_IMPLEMENTATION; }
     };
-
-    template <typename Functor>
-    boost::timer::nanosecond_type    timeCalls( Functor f, const std::string& name )
-    {
-        boost::timer::auto_cpu_timer t( name + ": %u\n" );
-        // kind of useless as it make branch prediction easier + good caching
-        // it will likely expand the call if its inlined, as the function doesnt do anything, it might just remove the call and the loop as it's compltely useless
-        for ( auto i = 0; i < 100'000; ++i )
-            f( i );
-
-        return t.elapsed().user;
-    }
-
-    boost::timer::nanosecond_type    dispatchDecreasingCall()
-    {
-        return 0;
-    }
-
-    template <typename T, typename ...Ts>
-    boost::timer::nanosecond_type    dispatchDecreasingCall( std::string&& name, T&& t, Ts&&... ts )
-    {
-        auto result = timeCalls( t, name );
-        // Not a great test as the function we are using are easily optimized by the compiler
-        BOOST_CHECK( result >= dispatchDecreasingCall( ts... ) || true );
-        return result;
-    }
 }
 
-BOOST_AUTO_TEST_CASE( FunctorCall )
+BOOST_AUTO_TEST_CASE( BenchmarkTest )
 {
     // std::bind can't be inlined
 
@@ -90,54 +59,28 @@ BOOST_AUTO_TEST_CASE( FunctorCall )
     // Each variable expressly named in the capture list is captured.
     // The default capture will only capture variables that are both not expressly named in the capture list and used in the body of the lambda expression.
     // If a variable is not expressly named and you don't use the variable in the lambda expression, then the variable is not capture
-    dispatchDecreasingCall( "bind",               std::bind( &realImplementation, std::placeholders::_1 ),
-                            "object functor",     ObjectFunctor(),
-                            "lambda",             []( TypeArgument copiedData ) { FUNCTOR_IMPLEMENTATION( copiedData ); },
-                            "direct call",        &realImplementation );
+
+    // When calling a ( non - inline ) function, the compiler has to place the function parameters / arguments in a location where the called function will expect to find them.In some cases,
+    // it will 'push' the arguments onto the process / thread's stack. In other cases, cpu registers might be assigned to specific arguments. Then, the "return address",
+    // or the address following the called function is pushed on the stack so that the called function will know how to return control back to the caller.
+    auto call_n = [] ( auto& f, auto n ) { auto res = 0; for ( auto i = 0; i < n; ++i ) res += f(); return res; };
+    auto test = [ &call_n ] ( auto n )
+    {
+        double bindT, directT, functorT, lambdaT;
+        std::tie( bindT, directT, functorT, lambdaT ) = tools::benchmark( n,
+                                                                          [ &, f = std::bind( &realImplementation ) ] { return call_n( f, n ); }, // no inlining
+                                                                          [ &, f = realImplementation ] { return call_n( f, n ); }, // no inlining
+                                                                          [ &, f = ObjectFunctor() ] { return call_n( f, n ); },
+                                                                          [ &, f = [] { FUNCTOR_IMPLEMENTATION; } ]{ return call_n( f, n ); } );
+
+        BOOST_CHECK( bindT > functorT && directT > functorT );
+        BOOST_CHECK( bindT > lambdaT && directT > lambdaT );
+    };
+
+    tools::run_test< int >( "bind;direct;functor;lambda;", test, 10'000, 100'000 );
 }
 
 #undef FUNCTOR_IMPLEMENTATION
-
-namespace
-{
-    class A
-    {
-    public:
-        virtual void    virtualF() { BOOST_CHECK( true ); }
-        inline void     f() { BOOST_CHECK( true ); }
-    };
-}
-
-BOOST_AUTO_TEST_CASE( VirtualMethodCall )
-{
-    A a;
-
-    // The big cost of virtual functions isn't really the lookup of a function pointer in the vtable (that's usually just a single cycle),
-    // but that the indirect jump usually cannot be branch-predicted. This can cause a large pipeline bubble as the processor
-    // cannot fetch any instructions until the indirect jump (the call through the function pointer) has retired and a new instruction pointer computed.
-    // So, the cost of a virtual function call is much bigger than it might seem from looking at the assembly
-
-    // a virtual function call may cause an instruction cache miss: if you jump to a code address that is not in cache then the whole program comes
-    // to a dead halt while the instructions are fetched from main memory. This is always a significant stall: on Xenon, about 650 cycles (by my tests).
-    // However this isn't a problem specific to virtual functions because even a direct function call will cause a miss if you jump to instructions
-    // that aren't in cache. What matters is whether the function has been run before recently (making it more likely to be in cache),
-    // and whether your architecture can predict static (not virtual) branches and fetch those instructions into cache ahead of time.
-    boost::timer::nanosecond_type timer = 0;
-    {
-        boost::timer::auto_cpu_timer t( "virtual function: %u\n" );
-        for ( auto i = 0; i < 100'000; ++i )
-            a.virtualF();
-        timer = t.elapsed().user;
-    }
-    {
-        boost::timer::auto_cpu_timer t( "direct method: %u\n" );
-        for ( auto i = 0; i < 100'000; ++i )
-            a.f();
-
-        // time is not a good measurement :(
-        BOOST_CHECK( timer >= t.elapsed().user || true );
-    }
-}
 
 BOOST_AUTO_TEST_CASE( LambdaDetails )
 {

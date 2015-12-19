@@ -13,6 +13,9 @@
     <ClCompile Include="..\..\source\tools\MemoryPool.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\source\tools\CacheInformation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\source\tools\Timer.h">
@@ -25,6 +28,12 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\tools\ScopeGuard.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\tools\Benchmark.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\tools\CacheInformation.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
