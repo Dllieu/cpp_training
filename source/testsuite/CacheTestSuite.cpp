@@ -41,10 +41,10 @@ using namespace tools;
 //
 // Data Cache (8-WAY, 64B / line)
 // - L1  (32KB):    1   ns /   4 cycles
-//             * 2 per processor (hyperthreading delivers two processing threads per physical core)
+//             * 1 per core (hyperthreading delivers two processing threads per physical core, shared by two HW thread)
 //             * 4 cycles for simple access via pointer (p), 5 cycles for access with complex address calculation (p[n])
-// - L2 (256KB):    3.1 ns /  12 cycles (per processor)
-// - L3   (6MB):    7.7 ns /  30 cycles (share among all the processors)
+// - L2 (256KB):    3.1 ns /  12 cycles (per processor, shared by 2 HW threads)
+// - L3   (6MB):    7.7 ns /  30 cycles (share among all the core (4 core -> 8 HW threads))
 //             * 29.5 cycles for cores (1, 2)
 //             * 30.5 cycles for cores (0, 3)
 // - DRAM  (XX):   60   ns / 237 cycles
