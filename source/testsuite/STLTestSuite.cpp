@@ -154,20 +154,6 @@ BOOST_AUTO_TEST_CASE( TypeIndexTest )
     BOOST_CHECK( typeNames[ std::type_index( typeid( Derived ) ) ] == "Derived" );
 }
 
-BOOST_AUTO_TEST_CASE( ContiguousContainerTest )
-{
-    std::vector< int > v;
-    v.reserve(300);
-    auto oldCapacity = v.capacity();
-    
-    v = { 1, 3, 5 }; // waste of at least 297 elements
-    std::vector< int >(v.begin(), v.end()).swap(v); // eliminate excess capacity, size will be at least 3, impl might establish minimum capacities
-    BOOST_CHECK( v.capacity() <= oldCapacity && v.capacity() >= 3 );
-    
-    v.shrink_to_fit();
-    BOOST_CHECK( v.capacity() == 3 );
-}
-
 namespace
 {
     struct GenerateHelper
