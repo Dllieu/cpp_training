@@ -24,10 +24,11 @@ BOOST_AUTO_TEST_CASE( EraseRemoveTest )
         std::vector< int > vOld = v;
 
         // remove shift element to be deleted at the end of the container (elements are ignored)
-        // erase delete them definitely
+        // erase delete them definitely, will change the size of the container
         v.erase( std::remove_if( v.begin(), v.end(), isOdd ), v.end() );
 
-        for ( auto it = vOld.begin(); it != vOld.end(); )
+        // BAD
+        for ( auto it = vOld.begin(); it != vOld.end(); ) 
             if ( isOdd( *it ) )
                 it = vOld.erase( it );
             else
@@ -45,6 +46,20 @@ BOOST_AUTO_TEST_CASE( EraseRemoveTest )
         std::set< int > s = { 6, 8, 3 };
         s.erase( 8 );
     }
+}
+
+BOOST_AUTO_TEST_CASE( ContiguousContainerTest )
+{
+    std::vector< int > v;
+    v.reserve(300);
+    auto oldCapacity = v.capacity();
+    
+    v = { 1, 3, 5 }; // waste of at least 297 elements
+    std::vector< int >(v.begin(), v.end()).swap(v); // eliminate excess capacity, size will be at least 3, impl might establish minimum capacities
+    BOOST_CHECK( v.capacity() <= oldCapacity && v.capacity() >= 3 );
+    
+    v.shrink_to_fit();
+    BOOST_CHECK( v.capacity() == 3 );
 }
 
 BOOST_AUTO_TEST_CASE( ContainerTest )
@@ -76,8 +91,8 @@ BOOST_AUTO_TEST_CASE( ContainerTest )
 
     // about container.emplace_back( Args&&... )
     // In principle, emplacement functions should sometimes be more efficient than their insertion counterparts, and they should never be less efficient.
-    // In practice, they’re most likely to be faster when( 1 ) the value being added is constructed into the container, not assigned; ( 2 ) the argument type( s ) passed
-    //     differ from the type held by the container; and( 3 ) the container won’t reject the value being added due to it being a duplicate.
+    // In practice, theyâ€™re most likely to be faster when( 1 ) the value being added is constructed into the container, not assigned; ( 2 ) the argument type( s ) passed
+    //     differ from the type held by the container; and( 3 ) the container wonâ€™t reject the value being added due to it being a duplicate.
     // Emplacement functions may perform type conversions that would be rejected by insertion functions.
 
     int i = 5;
