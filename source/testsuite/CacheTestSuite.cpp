@@ -50,7 +50,13 @@ using namespace tools;
 // - DRAM  (XX):   60   ns / 237 cycles
 //
 //
-// -> Check for more infos: http://www.7-cpu.com/
+// Caches are small, assume 100MB program at runtime (code + data).
+// - 8% fits in core-i79xx’s L3 cache.
+//   -> L3 cache shared by every running process (incl. OS).
+// - 0.25% fits in each L2 cache.
+// - 0.03% fits in each L1 cache.
+//
+// Check for more infos: http://www.7-cpu.com/
 
 // About cache misses
 //  A cache miss refers to a failed attempt to read or write a piece of data in the cache, which results in a main memory access with much longer latency.
