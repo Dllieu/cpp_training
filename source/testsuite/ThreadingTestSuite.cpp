@@ -21,6 +21,25 @@
 #include "threading/SemaphoreSingleProcess.h"
 #include "threading/ThreadPool.h"
 
+// Terminology:
+// - Wait-free: All continue to progress.
+//   No starvation, deadlock, livelock, priority inversion.
+// - Lock-free: At least one continues to progress.
+//   No deadlock, livelock, priority inversion.
+// - Obstruction-free: A single thread will progress if all other threads are suspended.
+//   Requires ability to abort/rollback other threads’ actions.
+//   Livelock is possible.
+// - Non-blocking: All continue to run.
+//   Starvation, deadlock, livelock, priority inversion all possible. (E.g., spinlocks.)
+// Wait-free < lock-free < obstruction-free < non-blocking
+
+// Mutex + “normal” Data Structure != concurrent DS
+// - Concurrent access serialized.
+//   No reader-writer mutex in standard C++ until C++14.
+//   Boost has shared_mutex, but writing still exclusive.
+//   Same for std::shared_timed_mutex in C++14.
+// - Concurrent DS permit (some) concurrent operations.
+//   At least one of which modifies the DS.
 BOOST_AUTO_TEST_SUITE( ThreadingTestSuite )
 
 BOOST_AUTO_TEST_CASE( ThreadGroupTest )
