@@ -371,7 +371,8 @@ namespace
 //   - Completed instructions
 BOOST_AUTO_TEST_CASE( BranchPredictionTest )
 {
-    auto f = [] ( auto& v ) { auto res = 0; for ( auto x : v ) if ( x > 128 ) res += x; return res; };
+    // could remove the branch (if x >= 128 ) with int t = (x - 128) >> 31; res += ~t & x;
+    auto f = [] ( auto& v ) { auto res = 0; for ( auto x : v ) if ( x >= 128 ) res += x; return res; };
     auto test = [ &f ] ( auto n )
     {
         auto sorted = generate_vector( n );
