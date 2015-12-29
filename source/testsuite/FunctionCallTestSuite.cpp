@@ -63,6 +63,8 @@ BOOST_AUTO_TEST_CASE( BenchmarkTest )
     // When calling a ( non - inline ) function, the compiler has to place the function parameters / arguments in a location where the called function will expect to find them.In some cases,
     // it will 'push' the arguments onto the process / thread's stack. In other cases, cpu registers might be assigned to specific arguments. Then, the "return address",
     // or the address following the called function is pushed on the stack so that the called function will know how to return control back to the caller.
+    
+    // Inline only along hot paths. Excessive inlining bloats executables. Can decrease I-Cache, TLB, and paging effectiveness.
     auto call_n = [] ( auto& f, auto n ) { auto res = 0; for ( auto i = 0; i < n; ++i ) res += f(); return res; };
     auto test = [ &call_n ] ( auto n )
     {
@@ -96,7 +98,7 @@ BOOST_AUTO_TEST_CASE( LambdaDetails )
     auto l1 = [&captured]( int x ){ captured -= x; };
     auto l2 = [&captured]( int x ){ captured = x + 1; };
 
-    // The type of the lambda-expression (which is also the type of the closure object) is a unique, unnamed non union class type — called the closure type
+    // The type of the lambda-expression (which is also the type of the closure object) is a unique, unnamed non union class type â€” called the closure type
     // Each lambda has a different type : l0, l1 and l2 have no common type., so either use boost::variant (but need to explicitly tell the type when getting the lambda) or std::function (same signature so it's accepted)
     // variant cannot be "empty", and for such a lambda-variant therefore it is not default-constructible. For std::function you will be able to default-construct it
     std::vector< std::function< void ( int ) >/*boost::variant< decltype( l0 ), decltype( l1 ), decltype( l2 ) >*/ > fs;
