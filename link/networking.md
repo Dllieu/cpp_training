@@ -18,3 +18,5 @@ http://www.tldp.org/HOWTO/Multicast-HOWTO-2.html
 https://blog.cloudflare.com/how-to-achieve-low-latency/
 
 https://blog.cloudflare.com/kernel-bypass/ (+ read linux link)
+
+select vs poll vs epoll : http://www.ulduzsoft.com/2014/01/select-poll-epoll-practical-difference-for-system-architects/
