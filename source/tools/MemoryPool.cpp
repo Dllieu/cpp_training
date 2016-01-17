@@ -13,9 +13,6 @@ MemoryPool::MemoryPool( size_t unitNumber /*= 50*/, size_t unitSize /*= 1024*/ )
     , allocatedBlock_( 0 )
     , freedBlock_( 0 )
 {
-    if ( ! memoryBlock_ )
-        return;
-
     char* realMemoryBlock = memoryBlock_.get();
     size_t unitRealSize = unitSize_ + sizeof( MemoryPool::Unit );
     for ( size_t i = 0; i < unitNumber; ++i )

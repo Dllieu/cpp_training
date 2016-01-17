@@ -8,9 +8,6 @@
     <Filter Include="Source Files\Intern">
       <UniqueIdentifier>{daf409f9-ded1-48a6-be77-7a4d3a4e7cec}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\MetaProgramming">
-      <UniqueIdentifier>{7b9f038a-93ec-4302-93d7-742c2119735f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Threading">
       <UniqueIdentifier>{9777bfd9-3eec-4bd7-9a00-f4dcbb14403f}</UniqueIdentifier>
     </Filter>
@@ -41,6 +38,12 @@
     <Filter Include="Source Files\BenchmarkTest">
       <UniqueIdentifier>{f71aa018-5c94-4e0e-8a7d-4f91cb31eb4e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Template">
+      <UniqueIdentifier>{7b9f038a-93ec-4302-93d7-742c2119735f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Allocator">
+      <UniqueIdentifier>{37cd6048-9909-4e23-873e-4d09b1a8453e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\source\testsuite\Initializer.cpp">
@@ -51,9 +54,6 @@
     </ClCompile>
     <ClCompile Include="..\..\source\testsuite\VisitorTestSuite.cpp">
       <Filter>Source Files\DesignPattern</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\source\testsuite\MemoryPoolTestSuite.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\testsuite\MacroTestSuite.cpp">
       <Filter>Source Files</Filter>
@@ -67,14 +67,11 @@
     <ClCompile Include="..\..\source\testsuite\FeatureTestSuite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\testsuite\CRTPTestSuite.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\source\testsuite\MetaProgTestSuite.cpp">
-      <Filter>Source Files\MetaProgramming</Filter>
+      <Filter>Source Files\Template</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\testsuite\TMPExercicesTestSuite.cpp">
-      <Filter>Source Files\MetaProgramming</Filter>
+      <Filter>Source Files\Template</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\testsuite\ThreadingTestSuite.cpp">
       <Filter>Source Files\Threading</Filter>
@@ -110,7 +107,7 @@
       <Filter>Source Files\DesignPattern</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\testsuite\TypeTraitsTestSuite.cpp">
-      <Filter>Source Files\MetaProgramming</Filter>
+      <Filter>Source Files\Template</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\testsuite\SyntaxSpecificityTestSuite.cpp">
       <Filter>Source Files\SyntaxSpecific</Filter>
@@ -158,6 +155,18 @@
       <Filter>Source Files\Exercice</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\testsuite\CacheTestSuite.cpp">
+      <Filter>Source Files\BenchmarkTest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\testsuite\CRTPTestSuite.cpp">
+      <Filter>Source Files\Template</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\testsuite\AllocatorTestSuite.cpp">
+      <Filter>Source Files\Allocator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\testsuite\MemoryPoolTestSuite.cpp">
+      <Filter>Source Files\Allocator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\testsuite\AlignmentTestSuite.cpp">
       <Filter>Source Files\BenchmarkTest</Filter>
     </ClCompile>
   </ItemGroup>

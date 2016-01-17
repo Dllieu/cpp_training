@@ -68,8 +68,6 @@ namespace
 {
     unsigned    divide( unsigned a, unsigned b )
     {
-        // ???
-
         int quotient = 0;
         while ( a >= b )
         {

@@ -12,6 +12,9 @@
 #include <random>
 #include <unordered_map>
 #include <typeindex>
+#include <chrono>
+#include <ctime>
+#include <iomanip>
 
 #include "generic/TupleForEach.h"
 #include "generic/TuplePrinter.h"
@@ -154,21 +157,25 @@ BOOST_AUTO_TEST_CASE( TypeIndexTest )
     BOOST_CHECK( typeNames[ std::type_index( typeid( Derived ) ) ] == "Derived" );
 }
 
+BOOST_AUTO_TEST_CASE( TimeTest )
+{
+    auto t = std::time( nullptr ); // equivalent : std::chrono::system_clock::to_time_t( std::chrono::system_clock::now() )
+    std::tm tm;
+    localtime_s( &tm, &t );
+
+    std::stringstream ss1, ss2;
+    ss1 << std::put_time( &tm, "%c" );
+    ss2 << std::put_time( &tm, "%m/%d/%y %H:%M:%S" );
+
+    BOOST_CHECK( ss1.str() == ss2.str() );
+}
+
 namespace
 {
     struct GenerateHelper
     {
-        GenerateHelper()
-            : n( 0 )
-        {
-            // NOTHING
-        }
-
-        int operator()()
-        {
-            return n++;
-        }
-
+        GenerateHelper() : n( 0 ) {}
+        int operator()() { return n++; }
         int n;
     };
 }

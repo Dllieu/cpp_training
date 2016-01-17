@@ -9,6 +9,7 @@
 #include <chrono>
 #include <numeric>
 #include <tuple>
+#include <iostream>
 
 #include "CacheInformation.h"
 #include "generic/TuplePrinter.h"

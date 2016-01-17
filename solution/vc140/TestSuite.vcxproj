@@ -87,6 +87,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\source\testsuite\AlignmentTestSuite.cpp" />
+    <ClCompile Include="..\..\source\testsuite\AllocatorTestSuite.cpp" />
     <ClCompile Include="..\..\source\testsuite\ArgumentTestSuite.cpp" />
     <ClCompile Include="..\..\source\testsuite\BasicNetworkingTestSuite.cpp" />
     <ClCompile Include="..\..\source\testsuite\CacheTestSuite.cpp" />

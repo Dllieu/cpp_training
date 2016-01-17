@@ -51,6 +51,20 @@ namespace generics
     {
         return static_cast<std::underlying_type_t< ENUM_TYPE >>( v );
     }
+
+    namespace
+    {
+        template <bool> struct __static_if_tag {};
+
+        template < typename T, typename F > auto static_if( __static_if_tag<true>, T&& t, F&& f ) { return t; }
+        template < typename T, typename F > auto static_if( __static_if_tag<false>, T&& t, F&& f ) { return f; }
+    }
+
+    template < bool B, typename T, typename F >
+    auto    static_if( T&& t, F&& f ) { return static_if( __static_if_tag<B>{}, std::forward< T >( t ), std::forward< F >( f ) ); }
+
+    template < bool B, typename T >
+    auto    static_if( T&& t ) { return static_if( __static_if_tag<B>{}, std::forward< T >( t ), []( auto&&... ){} ); }
 }
 
 #endif // ! __GENERICS_TYPETRAITS_H__

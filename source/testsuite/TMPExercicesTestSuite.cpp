@@ -8,8 +8,8 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/type_traits.hpp>
 #include <boost/mpl/if.hpp>
-
 #include <type_traits>
+#include <iostream>
 
 #include "generic/Typetraits.h"
 
@@ -258,6 +258,52 @@ BOOST_AUTO_TEST_CASE( TagDispatchTest )
     Prototype< FooEnum > e;     e.enumCase();
 
     BOOST_CHECK( true );
+}
+
+namespace
+{
+    template < bool LightFeed >
+    struct FeedData
+    {
+        void    doStuff() { generics::static_if< !LightFeed >([ & ] { std::cout << "!LightFeed infos..." << std::endl; } ); }
+        void    doOtherStuff() { value *= 2; }
+        void    generateFeed() { generics::static_if< LightFeed >( [ & ] { value = 0; }, [ & ] { value = 1; } ); }
+        int     value;
+    };
+
+    // Scenario that could be useful: only call methods of IHandler not often, but call FeedData many times within IHandler (to limit the cost of the virtuality)
+    struct IHandler
+    {
+        virtual ~IHandler() = default;
+        virtual int  processFeed() = 0;
+    };
+
+    template < bool LightFeed >
+    struct Handler final : public IHandler
+    {
+        virtual ~Handler() override final = default;
+        virtual int processFeed() override final
+        {
+            FeedData< LightFeed > feed;
+            feed.doStuff(); // only !LightFeed
+            feed.generateFeed(); // different behavior depending of LightFeed
+            feed.doOtherStuff(); // common case
+            return feed.value;
+        }
+    };
+}
+
+BOOST_AUTO_TEST_CASE( StaticIfTest )
+{
+    auto isLightFeed = true; // value known at runtime (e.g. from the conf)
+    
+    std::unique_ptr< IHandler > handler;
+    if ( isLightFeed )
+        handler = std::make_unique< Handler< true > >();
+    else
+        handler = std::make_unique< Handler< false > >();
+
+    BOOST_CHECK( handler->processFeed() == 0 );
 }
 
 BOOST_AUTO_TEST_SUITE_END() // TMPTestSuite
