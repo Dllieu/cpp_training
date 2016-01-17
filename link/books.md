@@ -7,11 +7,10 @@
 - Is Parallel Programming Hard, And, If So, What Can You Do About It?
 
 
+**Intel**
+- Combined Volume Set of Intel® 64 and IA-32 Architectures Software Developer’s Manuals (more an overview than anything, way too big)
+
 ##Reading
-**Richard Gerber, Kevin Smith, Aart J.C. Bik, Xinmin Tian**
-- The Software Optimization Cookbook: High Performance Recipes for IA-32 Platforms
-
-
 **Scott Meyers**
 - Fastware
 
@@ -25,6 +24,10 @@
 
 
 ##Read
+**Richard Gerber, Kevin Smith, Aart J.C. Bik, Xinmin Tian**
+- The Software Optimization Cookbook: High Performance Recipes for IA-32 Platforms
+
+
 **Agner Fog**
 - Optimizing software in C++: An optimization guide
 
