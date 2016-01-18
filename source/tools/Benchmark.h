@@ -19,35 +19,6 @@ namespace tools
     static constexpr int                        NumberTrials = 20;
     static constexpr std::chrono::milliseconds  MinTimePerTrial( 200 );
 
-    // Copied from folly
-    // Rather than using volatile keyword that could modify greatly the code generated
-    #ifdef _MSC_VER
-    #pragma optimize("", off)
-
-    template <class T>
-    void    do_not_optimize_away( T&& datum )
-    {
-        datum = datum;
-    }
-
-    #pragma optimize("", on)
-    #elif defined(__clang__)
-    template <class T>
-    __attribute__( ( __optnone__ ) ) void   do_not_optimize_away( T&& datum )
-    {}
-    #else /*e.g. GCC*/
-
-    template <class T>
-    void    do_not_optimize_away( T&& datum )
-    {
-        asm volatile( "" : "+r" ( datum ) );
-    }
-
-    // Also, it could be usefull to use clobbering (e.g. : asm volatile ("" ::: "memory"))
-    // This will cause GCC to not keep memory values cached in registers across the assembler instruction and not optimize stores or loads to that memory.
-    // That does not prevent a CPU from reordering loads and stores with respect to another CPU, though; you need real memory barrier instructions for that.
-    #endif
-
     template < typename F >
     auto    benchmark_impl( size_t n, F&& f )
     {
