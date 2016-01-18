@@ -104,7 +104,7 @@
     <ClCompile Include="..\..\source\testsuite\LockFreeTestSuite.cpp" />
     <ClCompile Include="..\..\source\testsuite\MemoryOrderingTestSuite.cpp" />
     <ClCompile Include="..\..\source\testsuite\MockTestSuite.cpp" />
-    <ClCompile Include="..\..\source\testsuite\OptimizationTricks.cpp" />
+    <ClCompile Include="..\..\source\testsuite\OptimizationTestSuite.cpp" />
     <ClCompile Include="..\..\source\testsuite\ProxyFunctorTestSuite.cpp" />
     <ClCompile Include="..\..\source\testsuite\ScopeGuardTestSuite.cpp" />
     <ClCompile Include="..\..\source\testsuite\SIMDTestSuite.cpp" />

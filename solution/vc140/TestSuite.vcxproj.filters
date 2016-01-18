@@ -100,9 +100,6 @@
     <ClCompile Include="..\..\source\testsuite\FunctionCallTestSuite.cpp">
       <Filter>Source Files\BenchmarkTest</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\testsuite\OptimizationTricks.cpp">
-      <Filter>Source Files\BenchmarkTest</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\source\testsuite\FactoryTestSuite.cpp">
       <Filter>Source Files\DesignPattern</Filter>
     </ClCompile>
@@ -167,6 +164,9 @@
       <Filter>Source Files\Allocator</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\testsuite\AlignmentTestSuite.cpp">
+      <Filter>Source Files\BenchmarkTest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\testsuite\OptimizationTestSuite.cpp">
       <Filter>Source Files\BenchmarkTest</Filter>
     </ClCompile>
   </ItemGroup>
