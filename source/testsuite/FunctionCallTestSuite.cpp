@@ -51,6 +51,7 @@ BOOST_AUTO_TEST_CASE( BenchmarkTest )
     //   This is typically the case when you have a collection of callbacks of potentially different types, but which you need to invoke uniformly;
     //   the type and number of the registered callbacks is determined at run-time based on the state of your program and the application logic. Some of those callbacks could be functors,
     //   some could be plain functions, some could be the result of binding other functions to certain arguments
+    // - vs function ptr : std::function have a size overhead of 24 bytes (64bit), the extra size is to allow at least a member function and an object pointer to be stored without requiring heap allocation
 
     // tl;dr : never use bind, always use lambda, or use transparent operator functor
     //       - std::function does have an overhead, always use template for the signature except if no choice
