@@ -66,6 +66,8 @@ using namespace tools;
 //    and the dependent instructions can resume execution.
 //  - Cache write misses to a data cache generally cause the shortest delay, because the write can be queued and there are few limitations on the execution of subsequent instructions; the processor can continue until the queue is full
 //  - could possibly have cache miss on unlinked data (two static data that are put on the same cache line, N global on different translation unit could also be put in same cache line, same thing for different dynamic allocation, or stack for that matter)
+//  - As data cache is 8-way associative, we can know in which block a cache line is depending of the address of the data (i.e. address % 8)
+//    theoretically we could only work with data that are contains in the same cache block which could result in horrible performance as we would only use 1/8 of the cache available
 
 // About Instruction Cache friendly
 // Any code that changes the flow of execution affects the Instruction Cache. This includes function calls and loops as well as dereferencing function pointers.
@@ -75,7 +77,7 @@ using namespace tools;
 // - Reduce "if" statements
 // - Define small functions as inline or macros
 //     -> There is an overhead associated with calling functions, such as storing the return location and reloading the instruction cache.
-//     -> it's not as straightforward though, this could incurr code bloat, specially if the function inlined is unlikely called (in branch) and that the function is inlined in several place in the code
+//     -> it's not as straightforward though, this could incurr code bloat, specially if the function inlined is unlikely called (in branch) and that the function is inlined in several place in the code (code duplication reduces effective cache size)
 // - Unroll loops
 // - Use table lookups, not "if" statements
 // - Change data or data structures (For example, a program handling message packets could base its operations based on the packet IDs (think array of function pointers (cache miss?)). Functions would be optimized for packet processing)
@@ -83,6 +85,15 @@ using namespace tools;
 // Classical big-O algorithmic complexity analysis proves insufficient to estimate program performance for modern computer architectures,
 // current processors are equipped with several low-level components (hierarchical cache structures, pipelining, branch prediction)
 // that greatly favor certain code and data layout patterns not taken into account by naive computation models.
+
+// Take advantage of
+// - PGO (Profile-guided optimization) (i.e. -fprofile-generate in gcc), It works by placing extra code to count the number of times each codepath is taken. The profiling test must be representative to the production
+//   When you compile a second time the compiler uses the knowledge gained about execution of your program that it could only guess at before (frequency statemants, branching, ...). There are a couple things PGO can work toward:
+//     Deciding which functions should be inlined or not depending on how often they are called.
+//     Deciding how to place hints about which branch of an "if" statement should be predicted on based on the percentage of calls going one way or the other.
+//     Deciding how to optimize loops based on how many iterations get taken each time that loop is called.
+//   It help the compiler to be less reliant on heuristics when making compilation decisions
+// - WPO (whole program optimization (O3 + unsafe unloop + omit frame ptr + specific target arch instructions + ...))
 BOOST_AUTO_TEST_SUITE( CacheTestSuite )
 
 namespace
@@ -105,6 +116,7 @@ namespace
 // Two aspects to watch out for
 // - Locality
 // - Prefetching
+// hardware speculatively prefetches cache lines, thus can generally prefecth for you as long as the access is consistent (i.e. i++ or i += 4 or even i--), will prefetch (if applicable) line n - 1 or n + 1 depending of the access pattern
 // std::vector / std::array excels at both
 // std::list sequentially allocated nodes provide some sort of non-guaranteed locality
 // shuffled nodes is the worst scenario
@@ -410,7 +422,7 @@ BOOST_AUTO_TEST_CASE( BranchPredictionTest )
 }
 
 // In symmetric multiprocessor (SMP) systems, each processor has a local cache. The memory system must guarantee cache coherence.
-// False sharing occurs when threads on different processors modify variables that reside on the same cache line. This invalidates the cache line and forces an update, which hurts performance.
+// False sharing occurs when threads on different processors (i.e. dosnt apply on HW on the same core) modify variables that reside on the same cache line. This invalidates the cache line and forces an update, which hurts performance.
 // Coherence management requires full write to DRAM
 // Rule of thumb: use shared write memory only to communicate
 BOOST_AUTO_TEST_CASE( FalseSharingTest )
@@ -468,6 +480,7 @@ namespace
     };
 }
 
+// Having a bool in a structure is most likely a anti pattern
 BOOST_AUTO_TEST_CASE( DataLayoutTest )
 {
     auto test = [] ( auto n )
