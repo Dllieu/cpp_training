@@ -17,7 +17,8 @@
 // - Prefer( 32 - bit ) array indexing to pointers
 // - Prefer a[ i++ ] to a[ ++i ] (data dependencies)
 // - Prefer regular memory access patterns
-// - Minimize flow, avoid data dependencies
+// - Minimize flow, avoid data dependencies
+
 // Storage pecking order
 // - Use static const for all immutables
 //     Beware cache issues
@@ -48,7 +49,7 @@
 // - ints -> FPs cheap, FPs -> ints expensive
 
 // Strength reduction
-// - Don’t waste time replacing a /= 2 with a >>= 1
+// - Don't waste time replacing a /= 2 with a >>= 1
 // - Speed hierarchy :
 //      comparisons
 //      ( u )int add, subtract, bitops, shift

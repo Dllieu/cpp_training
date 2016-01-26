@@ -51,7 +51,7 @@ using namespace tools;
 //
 //
 // Caches are small, assume 100MB program at runtime (code + data).
-// - 8% fits in core-i79xx’s L3 cache.
+// - 8% fits in core-i79xx's L3 cache.
 //   -> L3 cache shared by every running process (incl. OS).
 // - 0.25% fits in each L2 cache.
 // - 0.03% fits in each L1 cache.
@@ -65,6 +65,20 @@ using namespace tools;
 //  - Cache read misses from a data cache usually cause a smaller delay, because instructions not dependent on the cache read can be issued and continue execution until the data is returned from main memory,
 //    and the dependent instructions can resume execution.
 //  - Cache write misses to a data cache generally cause the shortest delay, because the write can be queued and there are few limitations on the execution of subsequent instructions; the processor can continue until the queue is full
+//  - could possibly have cache miss on unlinked data (two static data that are put on the same cache line, N global on different translation unit could also be put in same cache line, same thing for different dynamic allocation, or stack for that matter)
+
+// About Instruction Cache friendly
+// Any code that changes the flow of execution affects the Instruction Cache. This includes function calls and loops as well as dereferencing function pointers.
+// - When a branch or jump instruction is executed, the processor has to spend extra time deciding if the code is already in the instruction cache or whether it needs to reload the instruction cache( from the destination of the branch ).
+// - For example, some processors may have a large enough instruction cache to hold the execution code for small loops.Some processors don't have a large instruction cache and simple reload it. Reloading of the instruction cache takes time that could be spent executing instructions.
+// What can help
+// - Reduce "if" statements
+// - Define small functions as inline or macros
+//     -> There is an overhead associated with calling functions, such as storing the return location and reloading the instruction cache.
+//     -> it's not as straightforward though, this could incurr code bloat, specially if the function inlined is unlikely called (in branch) and that the function is inlined in several place in the code
+// - Unroll loops
+// - Use table lookups, not "if" statements
+// - Change data or data structures (For example, a program handling message packets could base its operations based on the packet IDs (think array of function pointers (cache miss?)). Functions would be optimized for packet processing)
 
 // Classical big-O algorithmic complexity analysis proves insufficient to estimate program performance for modern computer architectures,
 // current processors are equipped with several low-level components (hierarchical cache structures, pipelining, branch prediction)
