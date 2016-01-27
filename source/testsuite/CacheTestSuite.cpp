@@ -15,6 +15,7 @@
 #include <thread>
 #include <type_traits>
 #include <typeindex>
+#include <atomic>
 
 #include "generic/Typetraits.h"
 #include "generic/TuplePrinter.h"
@@ -49,6 +50,7 @@ using namespace tools;
 //             * 30.5 cycles for cores (0, 3)
 // - DRAM  (XX):   60   ns / 237 cycles
 //
+// DRAM (dynamic ram) SRAM (static ram)
 //
 // Caches are small, assume 100MB program at runtime (code + data).
 // - 8% fits in core-i79xx's L3 cache.
@@ -66,7 +68,7 @@ using namespace tools;
 //    and the dependent instructions can resume execution.
 //  - Cache write misses to a data cache generally cause the shortest delay, because the write can be queued and there are few limitations on the execution of subsequent instructions; the processor can continue until the queue is full
 //  - could possibly have cache miss on unlinked data (two static data that are put on the same cache line, N global on different translation unit could also be put in same cache line, same thing for different dynamic allocation, or stack for that matter)
-//  - As data cache is 8-way associative, we can know in which block a cache line is depending of the address of the data (i.e. address % 8)
+//  - As data cache is 8-way associative, we can know in which block a cache line is depending of the address of the data (i.e. beginning_adress_cache_line(address) % 8)
 //    theoretically we could only work with data that are contains in the same cache block which could result in horrible performance as we would only use 1/8 of the cache available
 
 // About Instruction Cache friendly
@@ -424,8 +426,8 @@ BOOST_AUTO_TEST_CASE( BranchPredictionTest )
 // In symmetric multiprocessor (SMP) systems, each processor has a local cache. The memory system must guarantee cache coherence.
 // False sharing occurs when threads on different processors (i.e. dosnt apply on HW on the same core) modify variables that reside on the same cache line. This invalidates the cache line and forces an update, which hurts performance.
 // Coherence management requires full write to DRAM
-// Rule of thumb: use shared write memory only to communicate
-BOOST_AUTO_TEST_CASE( FalseSharingTest )
+// Rule of thumb: use shared write memory only to communicate (the less the better)
+BOOST_AUTO_TEST_CASE( FalseSharing1Test )
 {
     auto test = [] ( auto n )
     {
@@ -458,6 +460,74 @@ BOOST_AUTO_TEST_CASE( FalseSharingTest )
         BOOST_CHECK( sameCacheLineT > separateCacheLineT );
     };
     run_test< int >( "sameCacheLine;separateCacheLine;", test, 10'000'000, 50'000'000 );
+}
+
+namespace
+{
+    static constexpr const size_t MatrixThreadNumber = 10;
+}
+
+BOOST_AUTO_TEST_CASE( FalseSharing2Test )
+{
+    auto test = [ & ] ( auto dimension )
+    {
+        std::vector< int > matrix( dimension * dimension );
+        std::generate( matrix.begin(), matrix.end(), std::rand );
+
+        double notCacheFriendlyT, temporaryT;
+        std::tie( notCacheFriendlyT, temporaryT ) = benchmark( dimension,
+                                                     [ & ]
+                                                     {
+                                                         std::vector< std::thread > threads;
+                                                         threads.reserve( MatrixThreadNumber );
+                                                         std::array< int, MatrixThreadNumber > resultPerThread{ 0 };
+                                                         for ( auto p = 0; p < MatrixThreadNumber; ++p )
+                                                         {
+                                                             threads.emplace_back( [&]( int threadNumber )
+                                                             {
+                                                                 auto startIndex = p * dimension;
+                                                                 auto endIndex = std::min( startIndex + dimension, dimension );
+                                                                 for ( auto i = startIndex; i < endIndex; ++i )
+                                                                     for ( auto j = 0; j < dimension; ++j )
+                                                                         if ( ( matrix[ i * dimension + j ] & 2 ) != 0 )
+                                                                             ++resultPerThread[ threadNumber ]; // each write will invalidate the cache line holding this adress in the other cores
+                                                             }, p );
+                                                         }
+
+                                                         for ( auto& thread : threads )
+                                                             thread.join();
+                                                         return std::accumulate( resultPerThread.begin(), resultPerThread.end(), 0 );
+                                                     },
+                                                     [ & ]
+                                                     {
+                                                         std::vector< std::thread > threads;
+                                                         threads.reserve( MatrixThreadNumber );
+                                                         std::array< int, MatrixThreadNumber > resultPerThread{ 0 };
+                                                         for ( auto p = 0; p < MatrixThreadNumber; ++p )
+                                                         {
+                                                             threads.emplace_back( [ & ]( int threadNumber )
+                                                             {
+                                                                 auto result = 0;
+                                                                 auto startIndex = threadNumber * dimension;
+                                                                 auto endIndex = std::min( startIndex + dimension, dimension );
+                                                                 for ( auto i = startIndex; i < endIndex; ++i )
+                                                                     for ( auto j = 0; j < dimension; ++j )
+                                                                         if ( ( matrix[ i * dimension + j ] & 2 ) != 0 )
+                                                                             ++result;
+
+                                                                 resultPerThread[ threadNumber ] = result; // Diminushing the effect of false sharing
+                                                             }, p );
+                                                         }
+
+                                                         for ( auto& thread : threads )
+                                                             thread.join();
+                                                         return std::accumulate( resultPerThread.begin(), resultPerThread.end(), 0 );
+                                                     } );
+
+        BOOST_CHECK( temporaryT < notCacheFriendlyT );
+    };
+    // Effect is more apparent with bigger dimension
+    run_test< long long >( "notCacheFriendly;temporary;", test, 1'000, 5'000, 10'000 );
 }
 
 namespace

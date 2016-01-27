@@ -20,11 +20,10 @@ namespace
     A*      legacyMakeA( const std::string s ) { return new A( s ); }
 }
 
-// always use make shared_ptr : http://herbsutter.com/2013/05/29/gotw-89-solution-smart-pointers/
-// only case you can't : - shared ptr need to be made from a raw pointer (legacy code)
-//                       - or if you need custom deletor
 BOOST_AUTO_TEST_CASE( MakeSmartPointer )
 {
+    // unique_ptr hold tuple< raw_ptr, deleter >, in case deleter == default_deleter, deleter is an empty class, with tuple empty class arg optimization, it will have 0 overhead on the size (even if emptyclass >= sizeof(char))
+    // if you give a custom deleter, there will be a small size overhead, and also a slight overhead when calling the destructor (possible cache miss during the indirection)
     std::unique_ptr< A > legacy( legacyMakeA( "legacy" ) );
     auto goodWay = std::make_unique< A >( "good way" );
 
@@ -61,11 +60,25 @@ BOOST_AUTO_TEST_CASE( ArrayTest )
     }
 }
 
+// About shared_ptr
+// always use make shared_ptr for the creation : http://herbsutter.com/2013/05/29/gotw-89-solution-smart-pointers/
+// only pass shared_ptr by copy IF IT MAKE SENSE (i.e. it's not free! (it will at least modify the shared counter twice (scope in/out)))
+// only case you can't : - shared ptr need to be made from a raw pointer (legacy code)
+//                       - or if you need custom deleter
+//
+// all reference counter are atomic, but not the underlying ptr
+// shared_ptr have overhead in size, it hold at least (underlying ptr + control block):
+//    - underlying ptr
+//    - ptr to the underlying_ptr (no overhead if use make_shared, there will be only the underlying_ptr,
+//                                 and it will be in the same block as the control block, also it will be only one allocation/deletion instead of two)
+//    - reference count
+//    - weak reference count
+//    - allocator (no overhead if default)
+//    - deleter (no overhead if default)
+// It also hold some overhead as it contains virtual methods for the type erasure, and overhead for the synchronisation of the reference counter
 BOOST_AUTO_TEST_CASE( WeakPtrTest )
 {
     {
-        // shared_ptr are thread safe
-        // Ptr to A + Ptr to control block (containing reference count / weak count / other data such as allocator, custom deleter, ...)
         std::shared_ptr< A > shared = std::make_shared< A >();
         {
             std::weak_ptr< A > weak = shared;

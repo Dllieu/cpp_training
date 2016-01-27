@@ -9,6 +9,16 @@ BOOST_AUTO_TEST_SUITE( MacroTestSuite )
 #define LOG_TYPE( type ) \
     BOOST_TEST_MESSAGE( #type << ": " << sizeof( type ) )
 
+namespace
+{
+    // All attributes must have unique address, instanciation of empty class still have size overhead, but inheritance of EmptyClass have 0 overhead (as there's no attributes)
+    class EmptyClass{};
+    static_assert( sizeof( EmptyClass ) == sizeof( char ), "wrong size" ); // usually sizeof( char ) to be aligned
+
+    class EmptyVirtualClass{ virtual void foo() {}; }; // sizeof == max( sizeof( char ), sizeof( ptr ) )
+    static_assert( sizeof( EmptyVirtualClass ) == sizeof( size_t ), "wrong size" );
+}
+
 BOOST_AUTO_TEST_CASE( TypeTest )
 {
     LOG_TYPE( bool );
@@ -20,6 +30,8 @@ BOOST_AUTO_TEST_CASE( TypeTest )
     LOG_TYPE( double );
     LOG_TYPE( long double );
     LOG_TYPE( std::string );
+    LOG_TYPE( EmptyClass );
+    LOG_TYPE( EmptyVirtualClass );
 
     BOOST_CHECK( true );
 }

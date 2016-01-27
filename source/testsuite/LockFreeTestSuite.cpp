@@ -11,6 +11,38 @@
 #include "tools/Timer.h"
 
 // http://preshing.com/20120612/an-introduction-to-lock-free-programming/
+// Custom concurrent data structures should be use as a last resort
+//  - shown that concurrent DS is needed (e.g. scalability of non concurrent DS unacceptable)
+//  - library don't suffice
+
+// Concurrency
+//  - A condition that exists when at least two threads are making progress. A more generalized form of parallelism that can include time-slicing as a form of virtual parallelism.
+//    (i.e. many concurrently decompositions of the tasks (at least one step require that only one thread can do that substep))
+//    (e.g. feedchecker (one thread parse the log file, one thread split and push to worker threads, all checker works parallely))
+// Parallelism
+//  - A condition that arises when at least two threads are executing simultaneously
+//    (i.e. at least two thread that do the same task simultaneously)
+//    (e.g. parallel sort (splitted in chunk per thread))
+
+// About ABA problem
+// Suppose you want to implement an ordered list using a traditional linked list. Suppose you want to add a new value V to the list.
+// First, you have to find the right position to insert the new element using an auxiliary pointer AUX and locate it in the last node with a value smaller than V,
+// and also save AUX->next to make the comparison in the CAS operation. Once you have the reference you make NEW->next points to AUX->next and then using a CAS
+// you switch AUX->next to NEW if AUX->next is still the same reference you saved. It should be something like this:
+//
+//     AUX = list.HEAD;
+//     WHILE( AUX->next.value < V )
+//         AUX = AUX->next;
+//     OLD = AUX->next;                 // line 4
+//     NEW->next = AUX->next;           // line 5
+//     IF( CAS( AUX->next, NEW, OLD ) ) // line 6
+//         Success!!!
+//     ELSE
+//         Try again or what ever
+//
+// This is the simplest way to do it. The problem is that between lines 4 and 5, another thread might have been removed "OLD" and then have inserted another element X
+// smaller than V but still greater than AUX.value.If this happen, and the memory assigned to the node with value X is in the same address that used to have OLD, the CAS will succeed,
+// but the list will not be ordered.If the actions of the second thread occur between lines 5 and 6 you will lose the node with the value X.All of these is because of the ABA problem.
 BOOST_AUTO_TEST_SUITE( LockFreeTestSuite )
 
 namespace

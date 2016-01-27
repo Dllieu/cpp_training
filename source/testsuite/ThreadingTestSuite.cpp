@@ -33,13 +33,21 @@
 //   Starvation, deadlock, livelock, priority inversion all possible. (E.g., spinlocks.)
 // Wait-free < lock-free < obstruction-free < non-blocking
 
-// Mutex + “normal” Data Structure != concurrent DS
+// Mutex + "normal" Data Structure != concurrent DS
 // - Concurrent access serialized.
 //   No reader-writer mutex in standard C++ until C++14.
 //   Boost has shared_mutex, but writing still exclusive.
 //   Same for std::shared_timed_mutex in C++14.
 // - Concurrent DS permit (some) concurrent operations.
 //   At least one of which modifies the DS.
+
+// The principal threat to scalability in concurrent applications is the excluse resource lock
+//   - e.g. per Data Structures mutex can limit scalability (for large number of threads / few thread with very frequent DS access)
+// For concurrent DS, no mutex needed for concurrent ops
+
+// When DS not a bottle neck, scalability is unimportant
+// For serial use -> concurrent DS usually slower
+// Largely serial use -> DS + mutex may be faster
 BOOST_AUTO_TEST_SUITE( ThreadingTestSuite )
 
 BOOST_AUTO_TEST_CASE( ThreadGroupTest )
