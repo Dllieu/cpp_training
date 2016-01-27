@@ -7,12 +7,16 @@
 - Is Parallel Programming Hard, And, If So, What Can You Do About It?
 
 
+**Agner Fog**
+- The microarchitecture of Intel, AMD and VIA CPUs: An optimization guide for assembly programmers and compiler makers (update 2016)
+
+
 **Intel**
 - Combined Volume Set of Intel® 64 and IA-32 Architectures Software Developer’s Manuals (more an overview than anything, way too big)
 
 ##Reading
 **Scott Meyers**
-- Fastware
+- Fastware (2014)
 
 
 **Herb Sutters**
@@ -29,15 +33,15 @@
 
 
 **Agner Fog**
-- Optimizing software in C++: An optimization guide
+- Optimizing software in C++: An optimization guide (updated 2015)
 
 
 **Anthony Williams**
-- C++ Concurrency in Action: Practical Multithreading
+- C++ Concurrency in Action: Practical Multithreading (2012)
 
 
 **Scott Meyers**
-- Effective Modern C++
+- Effective Modern C++ (2014)
 
 
 **Stroustrup**
