@@ -15,10 +15,6 @@
 - Combined Volume Set of Intel® 64 and IA-32 Architectures Software Developer’s Manuals (more an overview than anything, way too big)
 
 ##Reading
-**Scott Meyers**
-- Fastware (2014)
-
-
 **Herb Sutters**
 - Exceptional C++
 
@@ -42,6 +38,7 @@
 
 **Scott Meyers**
 - Effective Modern C++ (2014)
+- Fastware (2014)
 
 
 **Stroustrup**
