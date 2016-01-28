@@ -29,9 +29,6 @@ BOOST_AUTO_TEST_CASE( DeclTypeTest )
 
 namespace
 {
-    struct VBase { virtual ~VBase() = default; };
-    struct VDerived : public VBase { virtual ~VDerived() = default; };
-
     // Could find a way to generate it automatically
     enum class ClassHierarchy
     {
@@ -44,6 +41,8 @@ namespace
     struct Base
     {
         Base( ClassHierarchy classHierarchy = ClassHierarchy::Base ) : baseId( classHierarchy ) {}
+        virtual ~Base() = default;
+
         static bool   classof( const Base& ) { return true; }
         ClassHierarchy baseId;
     };
@@ -104,16 +103,20 @@ namespace
 // gcc can disable rtti : -fno-rtti
 BOOST_AUTO_TEST_CASE( RTTITest )
 {
-    std::unique_ptr< VBase > base = std::make_unique< VDerived >();
-    BOOST_CHECK( dynamic_cast< VDerived* >( base.get() ) != nullptr ); // need to loop over the hierarchy until we find a match
+    static_assert( std::is_base_of< Base, Derived >::value, "wrong inheritance hierarchy" );
 
     Base b;
     Derived d;
     DerivedLeft dl;
     DerivedRight dr;
+    std::unique_ptr< Base > base = std::make_unique< Derived >();
 
     BOOST_CHECK( typeid( b ) == typeid( Base ) ); // exact type, based on the direct RTTIDescriptor (no loop on hierarchy needed)
     BOOST_CHECK( typeid( d ) != typeid( Base ) );
+    BOOST_CHECK( typeid( base.get() ) == typeid( Base* ) );
+
+    BOOST_REQUIRE( typeid( *base ) == typeid( Derived ) );
+    BOOST_CHECK( static_cast< Derived& >( *base ).baseId == ClassHierarchy::Derived ); // if typeid equal then static_cast is cheaper than dynamic_cast (specially if multi-inheritance)
 
     BOOST_CHECK( is_a< Base >( b ) );
     BOOST_CHECK( is_a< Base >( d ) );
@@ -121,6 +124,11 @@ BOOST_AUTO_TEST_CASE( RTTITest )
     BOOST_CHECK( is_a< Derived >( dr ) );
     BOOST_CHECK( ! is_a< DerivedLeft >( dr ) );
     BOOST_CHECK( ! is_a< DerivedLeft >( d ) );
+
+    BOOST_REQUIRE( is_a< Derived >( *base.get() ) ); 
+    BOOST_CHECK( static_cast< Derived& >( *base ).baseId == ClassHierarchy::Derived ); // if is_a then static_cast is cheaper than typeid (no need to lookup the RTTI infos)
+
+    BOOST_CHECK( dynamic_cast< Derived* >( base.get() ) != nullptr ); // need to loop over the hierarchy until we find a match (most expensive case)
 }
 
 BOOST_AUTO_TEST_SUITE_END() // FeatureTestSuite
