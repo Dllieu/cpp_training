@@ -15,15 +15,6 @@
 //  - shown that concurrent DS is needed (e.g. scalability of non concurrent DS unacceptable)
 //  - library don't suffice
 
-// Concurrency
-//  - A condition that exists when at least two threads are making progress. A more generalized form of parallelism that can include time-slicing as a form of virtual parallelism.
-//    (i.e. many concurrently decompositions of the tasks (at least one step require that only one thread can do that substep))
-//    (e.g. feedchecker (one thread parse the log file, one thread split and push to worker threads, all checker works parallely))
-// Parallelism
-//  - A condition that arises when at least two threads are executing simultaneously
-//    (i.e. at least two thread that do the same task simultaneously)
-//    (e.g. parallel sort (splitted in chunk per thread))
-
 // About ABA problem
 // Suppose you want to implement an ordered list using a traditional linked list. Suppose you want to add a new value V to the list.
 // First, you have to find the right position to insert the new element using an auxiliary pointer AUX and locate it in the last node with a value smaller than V,

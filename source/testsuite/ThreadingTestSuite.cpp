@@ -48,6 +48,26 @@
 // When DS not a bottle neck, scalability is unimportant
 // For serial use -> concurrent DS usually slower
 // Largely serial use -> DS + mutex may be faster
+
+// Concurrency
+//  - A condition that exists when at least two threads are making progress. A more generalized form of parallelism that can include time-slicing as a form of virtual parallelism.
+//    (i.e. many concurrently decompositions of the tasks (at least one step require that only one thread can do that substep))
+//    (e.g. feedchecker (one thread parse the log file, one thread split and push to worker threads, all checker works parallely))
+// Parallelism
+//  - A condition that arises when at least two threads are executing simultaneously
+//    (i.e. at least two thread that do the same task simultaneously)
+//    (e.g. parallel sort (splitted in chunk per thread))
+
+// Only CPU Concurrency is "Free"
+// Even when cores and L1 caches free, most system resources shared :
+//  - L2 and higher caches
+//  - Memory bus
+//  - Main memory
+//  - Network
+//  - Disks and other peripherals
+// "Free" work on "extra" cores can slow essential work elsewhere.
+//  - May also use more power, generate more heat, etc.
+//  - Which may cause system clock to slow down!
 BOOST_AUTO_TEST_SUITE( ThreadingTestSuite )
 
 BOOST_AUTO_TEST_CASE( ThreadGroupTest )

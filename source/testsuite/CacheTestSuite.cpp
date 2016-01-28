@@ -95,6 +95,10 @@ using namespace tools;
 //     Deciding how to place hints about which branch of an "if" statement should be predicted on based on the percentage of calls going one way or the other.
 //     Deciding how to optimize loops based on how many iterations get taken each time that loop is called.
 //   It help the compiler to be less reliant on heuristics when making compilation decisions
+//   Requires important representative use cases. Tends to be most helpful for large, non - loop - bound applications.
+//     Hundreds to thousands of functions.
+//     Most time spent in branches, calls / returns.
+//   Designed for use after source code freeze., By default, source code changes invalidate instrumentation data. Resource - intensive during builds and instrumented runs (e.g. Instrumentation insertion / execution / analysis not cheap)
 // - WPO (whole program optimization (O3 + unsafe unloop + omit frame ptr + specific target arch instructions + ...))
 BOOST_AUTO_TEST_SUITE( CacheTestSuite )
 
@@ -359,6 +363,9 @@ namespace
 //   The branch predictor attempts to avoid this waste of time by trying to guess whether the conditional jump is most likely to be taken or not taken.
 //   The branch that is guessed to be the most likely is then fetched and speculatively executed.
 //   If it is later detected that the guess was wrong then the speculatively executed or partially executed instructions are discarded and the pipeline starts over with the correct branch, incurring a delay.
+//   Analogy: When browsing a web page, we could pre-fetch image + other webpages that are linked in the current page,
+//            We could reduce the overhead of prefetching everything by prefetching a smaller subset that we would speculate from the common usage pattern on that website,
+//            or more advanced, by community use history (per collected usage stats), or per-user use history (per collected usage stats), if using stats, we also could do so either during runtime, or using PGO
 //
 // - The branch predictor keeps records of whether branches are taken or not taken. When it encounters a conditional jump that has been seen several times before then it can base the prediction on the history.
 //   The branch predictor may, for example, recognize that the conditional jump is taken more often than not, or that it is taken every second time.
