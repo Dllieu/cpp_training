@@ -11,7 +11,7 @@
 // new delete sizeof typeid
 // static_cast dynamic_cast const_cast reinterpret_cast
 
-// - Operator that can be specialized
+// - O  perator that can be specialized
 // operator new operator delete
 // operator new[] operator delete[]
 // + - * / % ^ & | ~
@@ -19,6 +19,24 @@
 // ^= &= |= << >> >>= <<= == !=
 // <= >= && || ++ -- , ->* ->
 // () []
+
+// - Operator Precedence
+//   ::
+//   a++ a-- type() type{} a() a[] . -?
+//   ++a --a +a -a ! ~ (type) *a &a sizeof new new[] delete delete[]
+//   .* ->*
+//   a*b a/b a%b
+//   a+b a-b
+//   << >>
+//   < <= > >=
+//   == !=
+//   a&b
+//   ^
+//   |
+//   &&
+//   ||
+//   a?b:c throw = += -= *= /= %= <<= >>= &= ^= |=
+//   ,
 
 // Unnamed namespace is private to the translation unit and this can be used to shield global variables and functions
 // with same names occurring in different translation units so that no link conflicts arise
@@ -487,4 +505,48 @@ namespace
         // nothrow is also accepted by overloaded operator delete for symmetry with new. The nothrow version of operator delete behaves just like the ordinary operator delete.
         // Like any placement delete function, it is called only if the placement new expression throws an exception
     };
+}
+
+namespace
+{
+// About Volatile
+// - A variable should be declared volatile whenever its value could change unexpectedly. e.g.:
+//   * Memory-mapped peripheral registers
+//   * Global variables modified by an interrupt service routine
+//   * Global variables within a multi-threaded application (if not using other memory barrier)
+
+// - volatile will prevent compiler to optimize code involving theses variables, but it has a side effect of forcing those variables into memory
+//   It will read and write theses variables on every loop iteration, adding quite a lot of overhead (additional load for every loop in our case)
+// - For every read from a volatile variable by the abstract machine, the actual machine must load from the memory address corresponding to that variable.
+//   Also, each read may return a different value.  For every write to a volatile variable by the abstract machine, the actual machine must store to the corresponding address.
+//   Otherwise, the address should not be accessed (with some exceptions) and also accesses to volatiles should not be reordered (with some exceptions, use memory barrier if needed).
+
+// const volatile int* ?
+// - The semantics of const are "I agree not to try to store to it" rather than "it does not change", const volatile is perfectly sane and meaningful and could be useful, for example
+//   to declare a timer register than spontaneously changes value, but that should not be stored to
+#define TCNT1 (*(volatile uint16_t *)(0x4C))
+    uint16_t    time_mul(char a, char b, char& result)
+    {
+        uint16_t start = TCNT1;
+        result = a * b;
+        uint16_t end = TCNT1;
+        return end - start; // not using volatile would have generate 0, start and end would have been removed at compile
+    }
+#undef TCNT1
+    
+    // Very unlikely that you would need this kind of things, as volatile force reloading for read, avoid it, prefer atomic or other barriers
+    volatile int silly_counter;
+    void    f_thread1()
+    {
+        silly_counter = 0;
+        while (silly_counter == 0) { ;/*sleep*/ } // likely to be optimized in while (true) if not using volatile
+        // so stuff...
+    }
+    
+    void    f_thread2()
+    {
+        // ...
+        silly_counter++;
+        // ...
+    }
 }
