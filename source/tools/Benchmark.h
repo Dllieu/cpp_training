@@ -22,6 +22,10 @@ namespace tools
     template < typename F >
     auto    benchmark_impl( size_t n, F&& f )
     {
+        // volatile will prevent compiler to optimize code involving theses variables, but it has a side effect of forcing those variables into memory
+        // It will read and write theses variables on every loop iteration, adding quite a lot of overhead (additional load for every loop in our case)
+        // For every read from a volatile variable by the abstract machine, the actual machine must load from the memory address corresponding to that variable.
+        // Also, each read may return a different value.  For every write to a volatile variable by the abstract machine, the actual machine must store to the corresponding address.  Otherwise, the address should not be accessed (with some exceptions) and also accesses to volatiles should not be reordered (with some exceptions).
         volatile decltype( f() ) res; // to avoid optimizing f() away
 
         std::array< double, NumberTrials > trials;
