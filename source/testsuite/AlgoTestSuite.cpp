@@ -87,6 +87,39 @@ BOOST_AUTO_TEST_CASE( SmallestRangeTest )
     BOOST_CHECK( result.first == 20 && result.second == 24 );
 }
 
+BOOST_AUTO_TEST_CASE( RotateTest )
+{
+    std::vector< int > v( 10 ), v1, v2;
+    std::iota( v.begin(), v.end(), 0 ); // 0 - 9
+    v1 = v2 = v;
+
+    auto rotate1 = []( auto first, auto newFirst, auto last )
+    {
+        auto next = newFirst;
+        while ( first != next )
+        {
+            std::iter_swap( first++, next++ );
+            if ( next == last )
+                next = newFirst;
+            else
+                newFirst = next;
+        };
+    };
+
+    auto rotate2 = []( auto first, auto newFirst, auto last )
+    {
+        std::reverse( first, newFirst );
+        std::reverse( newFirst, last );
+        std::reverse( first, last );
+    };
+
+    // Rotate left (0 1 2 3 -> 1 2 3 0)
+    std::rotate( v.begin(), v.begin() + 1, v.end() );
+    rotate1( v1.begin(), v1.begin() + 1, v1.end() );
+    rotate2( v2.begin(), v2.begin() + 1, v2.end() );
+    BOOST_CHECK( v == v1 && v == v2);
+}
+
 BOOST_AUTO_TEST_CASE( MinimumSumTest )
 {
     // Minimal sum of two numbers given a list of integers

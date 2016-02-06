@@ -19,7 +19,7 @@
 #include "generic/TupleForEach.h"
 #include "generic/TuplePrinter.h"
 
-BOOST_AUTO_TEST_SUITE( STL )
+BOOST_AUTO_TEST_SUITE( STLTestSuite )
 
 namespace
 {

@@ -59,15 +59,46 @@ namespace
     // A POD type is a C++ type that has an equivalent in C, and that uses the same rules as C uses for initialization, copying, layout, and addressing
     // To make sure the other rules match, the C++ version must not have virtual functions, base classes, non-static members that are private or protected, or a destructor.
     // It can, however, have static data members, static member functions, and non-static non-virtual member functions
-    // references are not allowed. In addition, a POD type can’t have constructors, virtual functions, base classes, or an overloaded assignment operator
+    // references are not allowed. In addition, a POD type can't have constructors, virtual functions, base classes, or an overloaded assignment operator
+
+    // A POD struct is a non - union class that is both a trivial class and a standard - layout class, and has no non - static data members of type non - POD struct, non - POD union ( or array of such types ).
+    // Similarly, a POD union is a union that is both a trivial class and a standard layout class, and has no non - static data members of type non - POD struct, non - POD union ( or array of such types ).
+    // A POD class is a class that is either a POD struct or a POD union.
+    // A trivially copyable class is a class that :
+    //    - has no non - trivial copy constructors( 12.8 ),
+    //    - has no non - trivial move constructors( 12.8 ),
+    //    - has no non - trivial copy assignment operators( 13.5.3, 12.8 ),
+    //    - has no non - trivial move assignment operators( 13.5.3, 12.8 ), and
+    //    - has a trivial destructor( 12.4 ).
+    // A trivial class is a class that has a trivial default constructor( 12.1 ) and is trivially copyable.
+    // [ Note:In particular, a trivially copyable or trivial class does not have virtual functions or virtual base classes. end note ]
+    // 
+    // So, what are all those trivial and non - trivial things ?
+    //     A copy / move constructor for class X is trivial if it is not user - provided and if
+    //    - class X has no virtual functions( 10.3 ) and no virtual base classes( 10.1 ), and
+    //    - the constructor selected to copy / move each direct base class subobject is trivial, and
+    //    - for each non - static data member of X that is of class type( or array thereof ), the constructor selected to copy / move that member is trivial;
+    // otherwise the copy / move constructor is non - trivial.
+    // 
+    // A standard - layout class is a class that :
+    //    - has no non - static data members of type non - standard - layout class ( or array of such types ) or reference,
+    //    - has no virtual functions( 10.3 ) and no virtual base classes( 10.1 ),
+    //    - has the same access control( Clause 11 ) for all non - static data mebers,
+    //    - has no non - standard - layout base classes,
+    //    - either has no non - static data members in the most derived class and at most one base class with non - static data members, or has no base classes with non - static data members, and
+    //    - has no base classes of the same type as the first non - static data member.
+    // A standard - layout struct is a standard - layout class defined with the class - key struct or the class - key class.
+    // A standard - layout union is a standard - layout class defined with the class - key union.
+    // [ Note:Standard - layout classes are useful for communicating with code written in other programming languages.Their layout is specified in 9.2. end note ]
     struct PodExample
     {
-      char          c;
-      static double sd;
-      double        d;
-      int           i;
+        char          c;
+        static double sd;
+        double        d;
+        int           i;
     };
 
+    static_assert( std::is_pod< PodExample >::value, "non-pod" );
     double PodExample::sd = 0;
 }
 
