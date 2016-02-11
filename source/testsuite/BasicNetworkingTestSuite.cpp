@@ -218,7 +218,6 @@ BOOST_AUTO_TEST_CASE( ClientServerRawSocketTest )
 
     ts.join();
     tc.join();
-    BOOST_CHECK( true );
 }
 
 BOOST_AUTO_TEST_SUITE_END() // ! BasicNetworkingTestSuite
