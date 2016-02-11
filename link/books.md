@@ -24,16 +24,20 @@
 
 
 ##Read
-**Richard Gerber, Kevin Smith, Aart J.C. Bik, Xinmin Tian**
-- The Software Optimization Cookbook: High Performance Recipes for IA-32 Platforms
-
-
 **Agner Fog**
 - Optimizing software in C++: An optimization guide (updated 2015)
 
 
 **Anthony Williams**
 - C++ Concurrency in Action: Practical Multithreading (2012)
+
+
+**Beej**
+- Beej's guides (http://beej.us/guide/)
+
+
+**Richard Gerber, Kevin Smith, Aart J.C. Bik, Xinmin Tian**
+- The Software Optimization Cookbook: High Performance Recipes for IA-32 Platforms
 
 
 **Scott Meyers**
