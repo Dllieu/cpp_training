@@ -213,30 +213,8 @@ namespace
 
 BOOST_AUTO_TEST_CASE( ClientServerRawSocketTest )
 {
-    std::thread ts( []
-    {
-        try
-        {
-            setup_server();
-        }
-        catch ( ... )
-        {
-            BOOST_REQUIRE( false );
-        }
-    } );
-
-    std::thread tc( []
-    {
-        try
-        {
-            std::this_thread::sleep_for( std::chrono::seconds( 1 ) );
-            setup_client();
-        }
-        catch ( ... )
-        {
-            BOOST_REQUIRE( false );
-        }
-    } );
+    std::thread ts( [] { BOOST_CHECK_NO_THROW( setup_server() ); } );
+    std::thread tc( [] { std::this_thread::sleep_for( std::chrono::seconds( 1 ) ); BOOST_CHECK_NO_THROW( setup_client() ); } );
 
     ts.join();
     tc.join();
