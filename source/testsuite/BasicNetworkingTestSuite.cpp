@@ -42,7 +42,58 @@ BOOST_AUTO_TEST_CASE( SynchronousTimerTest )
     io.run();
 }
 
-// OLD STYLE RAW SOCKET C-style
+// Big picture about layering:
+// ______________________________________________________________________________
+// | Ethernet                     | IP                  | UDP     | TFTP  | Data |
+// |______________________________|_____________________|_________|_______|______|
+//
+// When another computers receives the packet, the hardware strips the Ethernet header, the kernel strips the IP and UDP headers, the TFTP program strips the TFTP header, and it finally has the data
+//
+// Max size Ethernet packet 1522 bytes
+// Headers (big picture):
+// - Ethernet frame (24B)
+// - IPv4 (min 20B) / IPv6 (min 40B)
+// - TCP (min 20B <-> 60B (40B can be used for options)
+// - UDP (usually 8B)
+//
+// Min size (i.e. empty data) TCP packet = 24 + 20 + 20 = 64B
+// Min size (i.e. empty data) UDP packet = 24 + 20 +  8 = 52B
+//
+// About TCP and small packet:
+//   - Nagle's algorithm is a means of improving the efficiency of TCP/IP networks by reducing the number of packets that need to be sent over the network
+//      * if data is smaller than a limit (usually maximum segment size (MSS)), wait till receiving ack for previously sent packets and in the mean time accumulate data from user. Then send the accumulated data
+//      * since you are sending only one packet instead of ten, you will not be subject to the problem of having the packets routed differently (not frequent but possible)
+//         and this might even reduce latency because nothing guarantees you that all the packets will arrive in the right order
+//      * Altough, while sending streaming data, wait for the ACK may increase latency
+//      * if the receiver also implements 'delayed ACK policy', it will cause a temporary deadlock situation
+//      * You should disable the Nagle algorithm if your application writes its messages in a way that makes buffering irrelevant.
+//        Such cases includes: application that implements its own buffering mechanism or applications that send their messages in a single system call.
+//        If your program writes its message in a single call, the Nagle algorithm will not bring anything useful.
+//        It will at best do nothing and at worst add a delay by waiting for either the packet to be large enough or the remote host to acknowledge packets in flight, if any.
+//        This can severely impact performance by adding a delay equal to the roundtrip between the two hosts, while not improving the bandwidth since your message is complete and no further data may be sent.
+//   - TCP_NODELAY: disable Nagle's Algorithm. (must run benchmarking if it's for latency reason)
+//   - TCP_CORK: aggressively accumulates data. If TCP_CORK is enabled in a socket, it will not send data until the buffer fills to a fixed limit. (also deactivate Nagle's algo)
+//     
+// Quick notes:
+// - POSIX defines send/recv as atomic operations, in the case of multiple sends (in parallel), the second will likely block until the first completes
+// - The TCP/UDP stack (both on the sender and receiver side) will be able to buffer some data for you, and this is usually done in the OS kernel. So if calling recv too late, the data will likely be buffered by the OS
+//   can modify the size with SO_RCVBUF / SO_SNDBUF
+// - To setup specific option on your socket (e.g. TCP_NODELAY / SO_SNDBUF / ...), you can use setsockopt
+
+// OLD STYLE TCP RAW SOCKET C-style
+//
+// Usual flow (big picture)
+// TCP CLIENT           TCP SERVER
+//
+//                      socket()
+//                      bind()
+//                      listen()
+//                      accept()
+// socket()
+// connect() <--------> (connection established 3way handshake) (client -> SYN | server -> SYN+ACK | client -> ACK)
+// send()/recv() <----> send()/recv()
+// close()
+//                      close()
 namespace
 {
     void    print_addrinfo( addrinfo* res )
@@ -129,10 +180,12 @@ namespace
 
         print_addrinfo( socketInfos.res );
 
+        // When a socket is created with socket, it exists in a name space (address family) but has no address assigned to it.
         if ( ( socketInfos.socketFd = socket( socketInfos.res->ai_family, socketInfos.res->ai_socktype, socketInfos.res->ai_protocol ) ) == -1 ) // just use the first sock available
             throw std::runtime_error( "socket error" );
 
         // If you want to bind to a specific local IP address, drop the AI_PASSIVE and put an IP address in for the first argument to getaddrinfo()
+        // bind the socket to a physical address:port (e.g. all packet incoming to this host on this giving port will be forwarded to socketFd)
         if ( bind( socketInfos.socketFd, socketInfos.res->ai_addr, static_cast< int >( socketInfos.res->ai_addrlen ) ) == -1 )
             throw std::runtime_error( "bind error" );
 
@@ -183,9 +236,11 @@ namespace
 
         print_addrinfo( socketInfos.res );
 
+        // When a socket is created with socket, it exists in a name space (address family) but has no address assigned to it.
         if ( ( socketInfos.socketFd = socket( socketInfos.res->ai_family, socketInfos.res->ai_socktype, socketInfos.res->ai_protocol ) ) == -1 )
             throw std::runtime_error( "socket error" );
 
+        // system call connects the socket referred to by the file descriptor sockfd to the address specified by addr
         if ( connect( socketInfos.socketFd, socketInfos.res->ai_addr, static_cast< int >( socketInfos.res->ai_addrlen ) ) == -1 )
             throw std::runtime_error( "connect error" );
 
