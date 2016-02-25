@@ -1,4 +1,6 @@
 ## links
+http://www.lighterra.com/papers/modernmicroprocessors/?repost
+
 http://en.wikipedia.org/wiki/Arithmetic_logic_unit
 
 http://en.wikipedia.org/wiki/Processor_register
