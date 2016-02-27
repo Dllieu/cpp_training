@@ -7,6 +7,8 @@
 
 #include <boost/test/unit_test.hpp>
 #include <boost/type_traits.hpp>
+#include <boost/tti/has_member_function.hpp>
+#include <boost/function_types/result_type.hpp>
 #include <boost/mpl/if.hpp>
 #include <type_traits>
 #include <iostream>
@@ -265,9 +267,12 @@ namespace
     template < bool LightFeed >
     struct FeedData
     {
-        void    doStuff() { generics::static_if< !LightFeed >([ & ] { std::cout << "!LightFeed infos..." << std::endl; } ); }
+        FeedData() : value( 0 ) {}
+
+        void    doStuff() const { generics::static_if< !LightFeed >( [] { std::cout << "!LightFeed infos..." << std::endl; } ); }
+        void    generateData() { generics::static_if< LightFeed >( [ & ] { value = 1; }, [ & ] { value = 2; } ); }
         void    doOtherStuff() { value *= 2; }
-        void    generateFeed() { generics::static_if< LightFeed >( [ & ] { value = 0; }, [ & ] { value = 1; } ); }
+
         int     value;
     };
 
@@ -286,7 +291,7 @@ namespace
         {
             FeedData< LightFeed > feed;
             feed.doStuff(); // only !LightFeed
-            feed.generateFeed(); // different behavior depending of LightFeed
+            feed.generateData(); // different behavior depending of LightFeed
             feed.doOtherStuff(); // common case
             return feed.value;
         }
@@ -303,7 +308,50 @@ BOOST_AUTO_TEST_CASE( StaticIfTest )
     else
         handler = std::make_unique< Handler< false > >();
 
-    BOOST_CHECK( handler->processFeed() == 0 );
+    BOOST_CHECK( handler->processFeed() == 2 );
+}
+
+namespace
+{
+    struct ProtocolV1 { int     get_version() const { return 1; } };
+    struct ProtocolV2 { int     getValue() const { return 2; } };
+    struct ProtocolV3 { int     getVersion() const { return 3; } };
+
+    namespace detail
+    {
+        BOOST_TTI_HAS_MEMBER_FUNCTION( get_version );
+        BOOST_TTI_HAS_MEMBER_FUNCTION( getValue );
+        BOOST_TTI_HAS_MEMBER_FUNCTION( getVersion );
+    }
+
+    template < typename P >
+    struct GenericProtocol
+    {
+        template < typename T = P >
+        std::enable_if_t< detail::has_member_function_get_version< int ( T::* )() const >::value, int > requestVersion() const { return p_.get_version(); }
+
+        template < typename T = P >
+        std::enable_if_t< detail::has_member_function_getValue< int ( T::* )() const >::value, int > requestVersion() const { return p_.getValue(); }
+
+        template < typename T = P >
+        std::enable_if_t< detail::has_member_function_getVersion< int ( T::* )() const >::value, int > requestVersion() const { return p_.getVersion(); }
+
+        int    getVersion() const { return requestVersion(); }
+
+    private:
+        P   p_;
+    };
+}
+
+BOOST_AUTO_TEST_CASE( GenericInterfaceTest )
+{
+    GenericProtocol< ProtocolV1 > v1;
+    GenericProtocol< ProtocolV2 > v2;
+    GenericProtocol< ProtocolV3 > v3;
+
+    BOOST_CHECK( v1.getVersion() == 1 );
+    BOOST_CHECK( v2.getVersion() == 2 );
+    BOOST_CHECK( v3.getVersion() == 3 );
 }
 
 BOOST_AUTO_TEST_SUITE_END() // TMPTestSuite

@@ -56,8 +56,8 @@ namespace generics
     {
         template <bool> struct __static_if_tag {};
 
-        template < typename T, typename F > auto static_if( __static_if_tag<true>, T&& t, F&& f ) { return t; }
-        template < typename T, typename F > auto static_if( __static_if_tag<false>, T&& t, F&& f ) { return f; }
+        template < typename T, typename F > auto static_if( __static_if_tag<true>, T&& t, F&& f ) { return t(); }
+        template < typename T, typename F > auto static_if( __static_if_tag<false>, T&& t, F&& f ) { return f(); }
     }
 
     template < bool B, typename T, typename F >
