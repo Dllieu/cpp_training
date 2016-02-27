@@ -7,8 +7,6 @@
 
 #include <boost/test/unit_test.hpp>
 #include <boost/type_traits.hpp>
-#include <boost/tti/has_member_function.hpp>
-#include <boost/function_types/result_type.hpp>
 #include <boost/mpl/if.hpp>
 #include <type_traits>
 #include <iostream>
@@ -315,26 +313,20 @@ namespace
 {
     struct ProtocolV1 { int     get_version() const { return 1; } };
     struct ProtocolV2 { int     getValue() const { return 2; } };
-    struct ProtocolV3 { int     getVersion() const { return 3; } };
-
-    namespace detail
-    {
-        BOOST_TTI_HAS_MEMBER_FUNCTION( get_version );
-        BOOST_TTI_HAS_MEMBER_FUNCTION( getValue );
-        BOOST_TTI_HAS_MEMBER_FUNCTION( getVersion );
-    }
+    struct ProtocolV3 { int     version() const { return 3; } };
 
     template < typename P >
     struct GenericProtocol
     {
+        // Uncomment (int = 0) once visual studio fix SFINAE
         template < typename T = P >
-        std::enable_if_t< detail::has_member_function_get_version< int ( T::* )() const >::value, int > requestVersion() const { return p_.get_version(); }
+        auto requestVersion() const -> decltype( std::declval<T>().get_version() ) { return p_.get_version(); }
 
-        template < typename T = P >
-        std::enable_if_t< detail::has_member_function_getValue< int ( T::* )() const >::value, int > requestVersion() const { return p_.getValue(); }
+        template < typename T = P, int = 0 >
+        auto requestVersion() const -> decltype( std::declval<T>().getValue() ) { return p_.getValue(); }
 
-        template < typename T = P >
-        std::enable_if_t< detail::has_member_function_getVersion< int ( T::* )() const >::value, int > requestVersion() const { return p_.getVersion(); }
+        template < typename T = P, int = 0, int = 0 >
+        auto requestVersion() const -> decltype( std::declval<T>().version() ) { return p_.version(); }
 
         int    getVersion() const { return requestVersion(); }
 
