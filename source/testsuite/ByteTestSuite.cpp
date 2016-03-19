@@ -96,7 +96,7 @@ BOOST_AUTO_TEST_CASE( PowTest )
     BOOST_CHECK( isPowerOf2( 4 ) && ! isPowerOf2( 5 ) );
 }
 
-BOOST_AUTO_TEST_CASE( LongLongToCharArray )
+BOOST_AUTO_TEST_CASE( LongLongToCharArrayTest )
 {
     unsigned long long ll = 545178863445;
     std::array< unsigned char, sizeof( ll ) > buffer;

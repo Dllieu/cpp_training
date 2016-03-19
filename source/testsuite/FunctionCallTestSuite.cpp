@@ -23,7 +23,7 @@ namespace
     };
 }
 
-BOOST_AUTO_TEST_CASE( BenchmarkTest )
+BOOST_AUTO_TEST_CASE( CallBenchmark )
 {
     // std::bind can't be inlined
 
@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE( BenchmarkTest )
 
 #undef FUNCTOR_IMPLEMENTATION
 
-BOOST_AUTO_TEST_CASE( LambdaDetails )
+BOOST_AUTO_TEST_CASE( LambdaDetailsTest )
 {
     int captured = 42;
 

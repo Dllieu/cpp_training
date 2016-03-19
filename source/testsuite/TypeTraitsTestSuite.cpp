@@ -12,7 +12,7 @@
 #include <array>
 #include "generic/TypeTraits.h"
 
-BOOST_AUTO_TEST_SUITE( TypeTraits )
+BOOST_AUTO_TEST_SUITE( TypeTraitsTestSuite )
 
 namespace
 {
@@ -555,4 +555,4 @@ BOOST_AUTO_TEST_CASE( IndexSequenceTest )
     BOOST_CHECK( true );
 }
 
-BOOST_AUTO_TEST_SUITE_END() // TypeTraits
+BOOST_AUTO_TEST_SUITE_END() // TypeTraitsTestSuite

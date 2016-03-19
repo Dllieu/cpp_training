@@ -35,14 +35,14 @@
     <Filter Include="Source Files\DesignPattern">
       <UniqueIdentifier>{aaedfbce-5910-4f83-bae6-12a094be0b68}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\BenchmarkTest">
-      <UniqueIdentifier>{f71aa018-5c94-4e0e-8a7d-4f91cb31eb4e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Template">
       <UniqueIdentifier>{7b9f038a-93ec-4302-93d7-742c2119735f}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Allocator">
       <UniqueIdentifier>{37cd6048-9909-4e23-873e-4d09b1a8453e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Benchmark">
+      <UniqueIdentifier>{f71aa018-5c94-4e0e-8a7d-4f91cb31eb4e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -94,12 +94,6 @@
     <ClCompile Include="..\..\source\testsuite\MockTestSuite.cpp">
       <Filter>Source Files\Mocking</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\testsuite\SmartPointer.cpp">
-      <Filter>Source Files\STL</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\source\testsuite\FunctionCallTestSuite.cpp">
-      <Filter>Source Files\BenchmarkTest</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\source\testsuite\FactoryTestSuite.cpp">
       <Filter>Source Files\DesignPattern</Filter>
     </ClCompile>
@@ -142,17 +136,11 @@
     <ClCompile Include="..\..\source\testsuite\IPCTestSuite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\testsuite\SIMDTestSuite.cpp">
-      <Filter>Source Files\BenchmarkTest</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\source\testsuite\CoroutineTestSuite.cpp">
       <Filter>Source Files\Threading</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\testsuite\ExceptionalCppTestSuite.cpp">
       <Filter>Source Files\Exercice</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\source\testsuite\CacheTestSuite.cpp">
-      <Filter>Source Files\BenchmarkTest</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\testsuite\CRTPTestSuite.cpp">
       <Filter>Source Files\Template</Filter>
@@ -163,11 +151,23 @@
     <ClCompile Include="..\..\source\testsuite\MemoryPoolTestSuite.cpp">
       <Filter>Source Files\Allocator</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\source\testsuite\SmartPointerTestSuite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\testsuite\SIMDTestSuite.cpp">
+      <Filter>Source Files\Benchmark</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\source\testsuite\AlignmentTestSuite.cpp">
-      <Filter>Source Files\BenchmarkTest</Filter>
+      <Filter>Source Files\Benchmark</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\testsuite\CacheTestSuite.cpp">
+      <Filter>Source Files\Benchmark</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\testsuite\FunctionCallTestSuite.cpp">
+      <Filter>Source Files\Benchmark</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\testsuite\OptimizationTestSuite.cpp">
-      <Filter>Source Files\BenchmarkTest</Filter>
+      <Filter>Source Files\Benchmark</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

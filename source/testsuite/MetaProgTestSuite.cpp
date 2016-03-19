@@ -13,7 +13,7 @@
 #include "tools/Timer.h"
 
 
-BOOST_AUTO_TEST_SUITE( MetaProg )
+BOOST_AUTO_TEST_SUITE( MetaProgTestSuite )
 
 namespace
 {
@@ -330,4 +330,4 @@ BOOST_AUTO_TEST_CASE( FizzBuzzTest )
     BOOST_CHECK( true );
 }
 
-BOOST_AUTO_TEST_SUITE_END() // MetaProg
+BOOST_AUTO_TEST_SUITE_END() // MetaProgTestSuite

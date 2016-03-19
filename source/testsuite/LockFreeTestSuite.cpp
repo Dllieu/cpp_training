@@ -71,7 +71,7 @@ namespace
     }
 }
 
-BOOST_AUTO_TEST_CASE( AtomicFlagTest )
+BOOST_AUTO_TEST_CASE( AtomicFlagBenchmark )
 {
     // Locks actually suspend thread execution, freeing up cpu resources for other tasks, but incurring (possibly) in obvious context-switching overhead when stopping/restarting the thread.
     // On the contrary, threads attempting atomic operations don't wait and keep trying until success (so-called busy-waiting) (they have the option to suspend themselves though with std::this_thread::yield),
@@ -106,7 +106,7 @@ namespace
     }
 }
 
-BOOST_AUTO_TEST_CASE( Exchange )
+BOOST_AUTO_TEST_CASE( ExchangeTest )
 {
     std::vector< std::thread > threads;
 
@@ -166,7 +166,7 @@ namespace
     }
 }
 
-BOOST_AUTO_TEST_CASE( CompareExchange )
+BOOST_AUTO_TEST_CASE( CompareExchangeTest )
 {
     std::vector< std::thread > threads;
 

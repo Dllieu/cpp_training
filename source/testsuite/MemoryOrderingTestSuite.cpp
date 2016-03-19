@@ -52,7 +52,7 @@ BOOST_AUTO_TEST_SUITE( MemoryOrderingTestSuite )
 //   operation 4
 //   operation 5
 
-BOOST_AUTO_TEST_CASE( SequentialConsistency )
+BOOST_AUTO_TEST_CASE( SequentialConsistencyTest )
 {
     // If you omit the optional std::memory_order argument on all atomic library functions, the default value is std::memory_order_seq_cst, which turns all atomic variables into sequentially consistent atomics
     // With memory_order_seq_cst atomics, the whole algorithm is guaranteed to appear sequentially consistent (executed same order as in the code)(impossible to experience memory reordering) as long as there are no data races.
@@ -80,7 +80,7 @@ BOOST_AUTO_TEST_CASE( SequentialConsistency )
     // But we can think as when using memory_order_seq_cst, at worst case, we could have two memory barrier which surround the call of the atomic object
 }
 
-BOOST_AUTO_TEST_CASE( AcquireRelease )
+BOOST_AUTO_TEST_CASE( AcquireReleaseTest )
 {
     std::atomic< bool > ready( false );
     std::atomic< int > data( 0 );

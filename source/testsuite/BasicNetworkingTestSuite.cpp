@@ -19,6 +19,18 @@
 
 namespace ba = boost::asio;
 
+// TODO:
+// - What's the difference between Flow Control and Congestion Control in TCP? (http://stackoverflow.com/questions/16473038/whats-the-difference-between-flow-control-and-congestion-control-in-tcp)
+// - how tcp implement guarantee in order data transmission
+//   * (http://stackoverflow.com/questions/9936496/how-does-tcp-implement-guarantee-in-order-data-transmission)
+//   * what are retransmission rules (http://stackoverflow.com/questions/12956685/what-are-the-retransmission-rules-for-tcp)
+//   * http://stackoverflow.com/questions/16259774/what-if-a-tcp-handshake-segment-is-lost
+// - can tcp/udp split packet into pieces (http://serverfault.com/questions/534063/can-tcp-and-udp-packets-be-split-into-pieces)
+// - difference udp/tcp (http://serverfault.com/questions/8981/what-is-the-difference-between-udp-and-tcp?rq=1)
+// - why 3 way handshake tcp connection (http://serverfault.com/questions/35997/tcp-connection-handshake?lq=1)
+// - UDP flow
+// - real life example udp / tcp : quake 3(http://fabiensanglard.net/quake3/network.php) + http://stackoverflow.com/questions/6187456/tcp-vs-udp-on-video-stream?rq=1 + http://trac.bookofhook.com/bookofhook/trac.cgi/wiki/IntroductionToMultiplayerGameProgramming
+// - blocking vs non blocking socket http://www.beej.us/guide/bgnet/output/html/multipage/advanced.html http://stackoverflow.com/questions/10654286/why-should-i-use-non-blocking-or-blocking-sockets
 BOOST_AUTO_TEST_SUITE( BasicNetworkingTestSuite )
 
 BOOST_AUTO_TEST_CASE( SynchronousTimerTest )
@@ -42,6 +54,16 @@ BOOST_AUTO_TEST_CASE( SynchronousTimerTest )
     io.run();
 }
 
+BOOST_AUTO_TEST_CASE( BoostTcpTest )
+{
+    // TODO
+}
+
+BOOST_AUTO_TEST_CASE( BoostUdpTest )
+{
+    // TODO
+}
+
 // Big picture about layering:
 // ______________________________________________________________________________
 // | Ethernet                     | IP                  | UDP     | TFTP  | Data |
@@ -49,15 +71,29 @@ BOOST_AUTO_TEST_CASE( SynchronousTimerTest )
 //
 // When another computers receives the packet, the hardware strips the Ethernet header, the kernel strips the IP and UDP headers, the TFTP program strips the TFTP header, and it finally has the data
 //
+// Max MTU (Maximum Transmission Unit) (64K bytes)
+//   - size of the largest protocol data unit that the layer can pass onwards
+//   - In practicality, this is far larger than the size of the lower layers (e.g. ethernet)
 // Max size Ethernet packet 1522 bytes
 // Headers (big picture):
-// - Ethernet frame (24B)
-// - IPv4 (min 20B) / IPv6 (min 40B)
-// - TCP (min 20B <-> 60B (40B can be used for options)
-// - UDP (usually 8B)
+//   - Ethernet frame (24 bytes)
+//   - IPv4 (min 20 bytes) / IPv6 (min 40 bytes)
+//   - TCP (min 20 bytes <-> 60 bytes (40 bytes can be used for options))
+//   - UDP (usually 8 bytes)
 //
-// Min size (i.e. empty data) TCP packet = 24 + 20 + 20 = 64B
-// Min size (i.e. empty data) UDP packet = 24 + 20 +  8 = 52B
+// TCP packet Min size (i.e. empty data) = 24 + 20 + 20 = 64 bytes
+// UDP packet Min size (i.e. empty data) = 24 + 20 +  8 = 52 bytes
+//
+// TCP packet Max data size (i.e. no options) = 1522 - 64 ~= 1458 bytes
+// UDP packet Max data size = 1522 - 8 ~= 1514 bytes
+// Respecting the max size avoid having the packets fragmented by routers while traveling over the internet since most network MTU are around 1500 bytes
+// Avoiding fragmentation is very important:
+//    - Application layer loss is increased
+//    - Not all network handle fragmented packet
+//    - Fragmentation can cause re-ordering
+//    - Every part of the datagram have to be waited on and then time-costly re-assembled
+//
+//
 //
 // About TCP and small packet:
 //   - Nagle's algorithm is a means of improving the efficiency of TCP/IP networks by reducing the number of packets that need to be sent over the network
@@ -76,10 +112,13 @@ BOOST_AUTO_TEST_CASE( SynchronousTimerTest )
 //     
 // Quick notes:
 // - POSIX defines send/recv as atomic operations, in the case of multiple sends (in parallel), the second will likely block until the first completes
+// - About send/recv completion
+//      * send() will return after the memory has been pushed to the kernel buffer (might not been immediate as that could involve page fault -> additional delay from reloading from main memory)
+//      * recv() shall block until a message arrives if no messages are available at the socket and O_NONBLOCK is not set on the socket's file descriptor. if O_NONBLOCK is set on the socket's file descriptor, recv() shall fail and set errno to [EAGAIN] or [EWOULDBLOCK] if no message available
 // - The TCP/UDP stack (both on the sender and receiver side) will be able to buffer some data for you, and this is usually done in the OS kernel. So if calling recv too late, the data will likely be buffered by the OS
 //   can modify the size with SO_RCVBUF / SO_SNDBUF
 // - To setup specific option on your socket (e.g. TCP_NODELAY / SO_SNDBUF / ...), you can use setsockopt
-
+//
 // OLD STYLE TCP RAW SOCKET C-style
 //
 // Usual flow (big picture)
@@ -99,7 +138,7 @@ namespace
     void    print_addrinfo( addrinfo* res )
     {
         boost::system::error_code ec;
-        char ipstr[ INET6_ADDRSTRLEN ];
+        std::array< char, INET6_ADDRSTRLEN > ipstr;
         for ( auto p = res; p != 0; p = p->ai_next )
         {
             void* addr;
@@ -110,22 +149,22 @@ namespace
             // different fields in IPv4 and IPv6:
             if ( p->ai_family == AF_INET ) // IPv4
             {
-                struct sockaddr_in *ipv4 = ( struct sockaddr_in * )p->ai_addr;
+                auto ipv4 = reinterpret_cast< sockaddr_in* >( p->ai_addr );
                 addr = &( ipv4->sin_addr );
                 port = ipv4->sin_port;
                 ipver = "IPv4";
             }
             else // IPv6
             {
-                struct sockaddr_in6 *ipv6 = ( struct sockaddr_in6 * )p->ai_addr;
+                auto ipv6 = reinterpret_cast< sockaddr_in6* >( p->ai_addr );
                 addr = &( ipv6->sin6_addr );
                 port = ipv6->sin6_port;
                 ipver = "IPv6";
             }
 
             // convert the IP to a string and print it:
-            boost::asio::detail::socket_ops::inet_ntop( p->ai_family, addr, ipstr, sizeof ipstr, 0, ec );
-            printf( "  %s: %s@%d\n", ipver, ipstr, port );
+            boost::asio::detail::socket_ops::inet_ntop( p->ai_family, addr, ipstr.data(), ipstr.size(), 0, ec );
+            printf( "  %s: %s@%d\n", ipver, ipstr.data(), port );
         }
     }
 
@@ -273,6 +312,8 @@ BOOST_AUTO_TEST_CASE( ClientServerRawSocketTest )
 
     ts.join();
     tc.join();
+
+    BOOST_CHECK( true );
 }
 
 BOOST_AUTO_TEST_SUITE_END() // ! BasicNetworkingTestSuite

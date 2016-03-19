@@ -44,7 +44,7 @@ namespace
     }
 }
 
-BOOST_AUTO_TEST_CASE( StreamSiTest )
+BOOST_AUTO_TEST_CASE( StreamSiBenchmark )
 {
     constexpr size_t size = 16 * 100;
     constexpr int offset = 54;

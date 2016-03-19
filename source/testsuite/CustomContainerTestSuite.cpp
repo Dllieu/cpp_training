@@ -12,7 +12,7 @@
 
 using namespace containers;
 
-BOOST_AUTO_TEST_SUITE( CustomContainer )
+BOOST_AUTO_TEST_SUITE( CustomContainerTesSuite )
 
 namespace
 {
@@ -102,4 +102,4 @@ BOOST_AUTO_TEST_CASE( LockFreeQueueSPSCTest )
     BOOST_CHECK( q.pop() != nullptr );
 }
 
-BOOST_AUTO_TEST_SUITE_END() // CustomContainer
+BOOST_AUTO_TEST_SUITE_END() // CustomContainerTesSuite

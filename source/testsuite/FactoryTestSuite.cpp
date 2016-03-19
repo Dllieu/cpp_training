@@ -84,7 +84,7 @@ namespace
     }
 }
 
-BOOST_AUTO_TEST_CASE( CallTest )
+BOOST_AUTO_TEST_CASE( FactoryTest )
 {
     std::unique_ptr< A > a( create( TypeToCreate::A, 5 ) );
     BOOST_CHECK( a.get() );

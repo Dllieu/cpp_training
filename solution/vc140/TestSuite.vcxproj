@@ -114,7 +114,7 @@
     <ClCompile Include="..\..\source\testsuite\ScopeGuardTestSuite.cpp" />
     <ClCompile Include="..\..\source\testsuite\SIMDTestSuite.cpp" />
     <ClCompile Include="..\..\source\testsuite\SingletonTestSuite.cpp" />
-    <ClCompile Include="..\..\source\testsuite\SmartPointer.cpp" />
+    <ClCompile Include="..\..\source\testsuite\SmartPointerTestSuite.cpp" />
     <ClCompile Include="..\..\source\testsuite\StandardDeviationTestSuite.cpp" />
     <ClCompile Include="..\..\source\testsuite\TMPExercicesTestSuite.cpp" />
     <ClCompile Include="..\..\source\testsuite\ByteTestSuite.cpp" />

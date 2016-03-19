@@ -46,7 +46,7 @@ namespace
 }
 
 // returns T if it is a reference type, and otherwise returns T const&
-BOOST_AUTO_TEST_CASE( AddConstRef )
+BOOST_AUTO_TEST_CASE( AddConstRefTest )
 {
     static_assert( ( ! std::is_same< int, add_const_ref< int >::type >::value ), "" );
     static_assert( ( std::is_same< const int&, add_const_ref< int >::type >::value ), "" );
@@ -99,7 +99,7 @@ namespace
 }
 
 // metafunction replace_type< T, X, Y > takes an arbitrary type T as its first parameter, and replaces all occurrences of a type X within T with Y:
-BOOST_AUTO_TEST_CASE( ReplaceType )
+BOOST_AUTO_TEST_CASE( ReplaceTypeTest )
 {
     static_assert( ( std::is_same< int, replace_type< void, void, int >::type >::value ), "" );
     static_assert( ( std::is_same< int, replace_type< int, double, float >::type >::value ), "" );
@@ -134,7 +134,7 @@ namespace
     struct Derived : public Base {};
 }
 
-BOOST_AUTO_TEST_CASE( PolymorphicDowncast )
+BOOST_AUTO_TEST_CASE( PolymorphicDowncastTest )
 {
     Base b;
     Derived d;

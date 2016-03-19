@@ -7,7 +7,7 @@
 
 #include "generic/ThreadSafeSingleton.h"
 
-BOOST_AUTO_TEST_SUITE( Singleton )
+BOOST_AUTO_TEST_SUITE( SingletonTestSuite )
 
 // Why Singleton should be avoided
 // They are generally used as a global instance, why is that so bad? Because you hide the dependencies of your application in your code,
@@ -52,4 +52,4 @@ BOOST_AUTO_TEST_CASE( ThreadSafeSingletonTest )
     BOOST_CHECK( designpattern::ThreadSafeSingleton< int >::instance() == 5 );
 }
 
-BOOST_AUTO_TEST_SUITE_END() // Singleton
+BOOST_AUTO_TEST_SUITE_END() // SingletonTestSuite

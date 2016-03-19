@@ -8,7 +8,7 @@
 
 #include "generic/Visitor.h"
 
-BOOST_AUTO_TEST_SUITE( Visitor )
+BOOST_AUTO_TEST_SUITE( VisitorTestSuite )
 
 namespace
 {
@@ -127,4 +127,4 @@ BOOST_AUTO_TEST_CASE( BasicVisitorTest )
     BOOST_CHECK( b.haveBeenVisited );
 }
 
-BOOST_AUTO_TEST_SUITE_END() // Visitor
+BOOST_AUTO_TEST_SUITE_END() // VisitorTestSuite

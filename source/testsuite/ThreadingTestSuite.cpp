@@ -164,6 +164,8 @@ BOOST_AUTO_TEST_CASE( ThreadSwitchTest )
 
     thread1.join();
     thread2.join();
+
+    BOOST_CHECK( true );
 }
 
 namespace

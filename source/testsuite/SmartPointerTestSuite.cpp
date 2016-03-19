@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-BOOST_AUTO_TEST_SUITE( SmartPointer )
+BOOST_AUTO_TEST_SUITE( SmartPointerTestSuite )
 
 namespace
 {
@@ -20,7 +20,7 @@ namespace
     A*      legacyMakeA( const std::string s ) { return new A( s ); }
 }
 
-BOOST_AUTO_TEST_CASE( MakeSmartPointer )
+BOOST_AUTO_TEST_CASE( MakeSmartPointerTest )
 {
     // unique_ptr hold tuple< raw_ptr, deleter >, in case deleter == default_deleter, deleter is an empty class, with tuple empty class arg optimization, it will have 0 overhead on the size (even if emptyclass >= sizeof(char))
     // if you give a custom deleter, there will be a small size overhead, and also a slight overhead when calling the destructor (possible cache miss during the indirection)
@@ -42,13 +42,13 @@ namespace
     }
 }
 
-BOOST_AUTO_TEST_CASE( UniquePtr )
+BOOST_AUTO_TEST_CASE( UniquePtrTest )
 {
     std::unique_ptr< A > legacy( legacyMakeA( "legacy" ) );
     takeOwnership( std::move( legacy ) );
 }
 
-BOOST_AUTO_TEST_CASE( ArrayTest )
+BOOST_AUTO_TEST_CASE( ArrayTestTest )
 {
     {
         // can handle either delete / or delete []
@@ -58,6 +58,7 @@ BOOST_AUTO_TEST_CASE( ArrayTest )
         // shared need the custom deleter
         std::shared_ptr< A /*can't give A[] type*/ > sp( new A[2], []( A* a ) { delete[] a; } );
     }
+    BOOST_CHECK( true );
 }
 
 // About shared_ptr
@@ -166,4 +167,4 @@ BOOST_AUTO_TEST_CASE( SharedPtrTypeErasureTest )
     BOOST_CHECK( true );
 }
 
-BOOST_AUTO_TEST_SUITE_END() // SmartPointer
+BOOST_AUTO_TEST_SUITE_END() // SmartPointerTestSuite

@@ -96,7 +96,7 @@ namespace
     #pragma pack() // reset default alignment
 }
 
-BOOST_AUTO_TEST_CASE( AlignedVsUnalignedTest )
+BOOST_AUTO_TEST_CASE( AlignedVsUnalignedBenchmark )
 {
     auto a = generateArray< 4096 >( std::numeric_limits<int>::max() );
     auto indexes = generateArray< 10000 >( static_cast< int >( a.size() ) );

@@ -78,7 +78,7 @@ BOOST_AUTO_TEST_CASE( CompareTo0IfPossibleTest )
         BOOST_CHECK( true );
 }
 
-BOOST_AUTO_TEST_CASE( StrengthReductionTest )
+BOOST_AUTO_TEST_CASE( StrengthReductionBenchmark )
 {
     auto digits10Division = []( uint64_t v )
     {

@@ -24,7 +24,7 @@
 
 using namespace tools;
 
-// Intel Core i5-4460 (4 cores) (give a general idea)
+// Intel Core i5-4460 (4 cores) (give a general idea - most of the benchmark might give different result depending of the architecture (e.g. if running on a VM with appveyor))
 //
 // Translation Lookaside Buffer (TLB)
 // CPU cache that memory management hardware uses to improve virtual address translation speed, it has a fixed number of slots that contain page table entries, which map virtual addresses to physical addresses.
@@ -126,7 +126,7 @@ namespace
 // std::vector / std::array excels at both
 // std::list sequentially allocated nodes provide some sort of non-guaranteed locality
 // shuffled nodes is the worst scenario
-BOOST_AUTO_TEST_CASE( LinearTraversalTest )
+BOOST_AUTO_TEST_CASE( LinearTraversalBenchmark )
 {
     auto test = [] ( auto n )
     {
@@ -145,7 +145,7 @@ BOOST_AUTO_TEST_CASE( LinearTraversalTest )
     run_test< int >( "vector;list;shuffled_list;", test, 4'096, 100'000, 1'000'000 );
 }
 
-BOOST_AUTO_TEST_CASE( MatrixTraversalTest )
+BOOST_AUTO_TEST_CASE( MatrixTraversalBenchmark )
 {
     auto test = [] ( auto n )
     {
@@ -213,7 +213,7 @@ namespace
 // so maps tend to use less memory than a hash map with low utilisation and values stored directly in the buckets.But, you can often create a hash map of key / pointers - to - value which mitigates that problem.
 // So, there's the potential for a hash map to use less overall memory (particularly with small key/value types and a high used-to-unusued bucket ratio)
 // and do less distinct allocations and deallocations as well as working better with caches, but it's far from guaranteed.
-BOOST_AUTO_TEST_CASE( AssociativeTraversalIteratorTest )
+BOOST_AUTO_TEST_CASE( AssociativeTraversalIteratorBenchmark )
 {
     auto op = [] ( auto r, const auto& p ) { return r + p.second; };
     auto test = [ &op ] ( auto n )
@@ -228,7 +228,7 @@ BOOST_AUTO_TEST_CASE( AssociativeTraversalIteratorTest )
     run_test< int >( "unordered_map;map;", test, 4'096, 100'000, 1'000'000, 10'000'000 );
 }
 
-BOOST_AUTO_TEST_CASE( AssociativeTraversalTest )
+BOOST_AUTO_TEST_CASE( AssociativeTraversalBenchmark )
 {
     auto f = [] ( auto& m ) { auto n = 0; for ( auto i = 0; i < m.size(); ++i ) n += m.at( i ); return n; };
     // Cache is less a factor than complexity in this test
@@ -257,7 +257,7 @@ namespace
     };
 }
 
-BOOST_AUTO_TEST_CASE( AOSvsSOATest )
+BOOST_AUTO_TEST_CASE( AOSvsSOABenchmark )
 {
     auto test = [] ( auto n )
     {
@@ -286,7 +286,7 @@ namespace
     };
 }
 
-BOOST_AUTO_TEST_CASE( CompactAOSvsSOATest )
+BOOST_AUTO_TEST_CASE( CompactAOSvsSOABenchmark )
 {
     auto test = [] ( auto n )
     {
@@ -306,7 +306,7 @@ BOOST_AUTO_TEST_CASE( CompactAOSvsSOATest )
     run_test< int >( "aos;soa;", test, 4'096, 16'384, 100'000, 1'000'000, 10'000'000, 20'000'000 );
 }
 
-BOOST_AUTO_TEST_CASE( CompactRandomAccessAOSvsSOATest )
+BOOST_AUTO_TEST_CASE( CompactRandomAccessAOSvsSOABenchmark )
 {
     auto test = [] ( auto n )
     {
@@ -410,7 +410,7 @@ namespace
 //     3 - Execute
 //     4 - Write-back (writing the results of the instruction to processor registers or to memory)
 //   - Completed instructions
-BOOST_AUTO_TEST_CASE( BranchPredictionTest )
+BOOST_AUTO_TEST_CASE( BranchPredictionBenchmark )
 {
     // could remove the branch (if x >= 128 ) with int t = (x - 128) >> 31; res += ~t & x;
     auto f = [] ( auto& v ) { auto res = 0; for ( auto x : v ) if ( x >= 128 ) res += x; return res; };
@@ -434,7 +434,7 @@ BOOST_AUTO_TEST_CASE( BranchPredictionTest )
 // False sharing occurs when threads on different processors (i.e. dosnt apply on HW on the same core) modify variables that reside on the same cache line. This invalidates the cache line and forces an update, which hurts performance.
 // Coherence management requires full write to DRAM
 // Rule of thumb: use shared write memory only to communicate (the less the better)
-BOOST_AUTO_TEST_CASE( FalseSharing1Test )
+BOOST_AUTO_TEST_CASE( FalseSharing1Benchmark )
 {
     auto test = [] ( auto n )
     {
@@ -474,7 +474,7 @@ namespace
     static constexpr const size_t MatrixThreadNumber = 10;
 }
 
-BOOST_AUTO_TEST_CASE( FalseSharing2Test )
+BOOST_AUTO_TEST_CASE( FalseSharing2Benchmark )
 {
     auto test = [ & ] ( auto dimension )
     {
@@ -558,7 +558,7 @@ namespace
 }
 
 // Having a bool in a structure is most likely a anti pattern
-BOOST_AUTO_TEST_CASE( DataLayoutTest )
+BOOST_AUTO_TEST_CASE( DataLayoutBenchmark )
 {
     auto test = [] ( auto n )
     {
@@ -642,7 +642,7 @@ namespace
 
 // Sorting improve branch prediction even without data locality
 // In this test, it helps greatly the branch prediction as the same virtual table will be used for a long period of time
-BOOST_AUTO_TEST_CASE( PolymorphicContainerTest )
+BOOST_AUTO_TEST_CASE( PolymorphicContainerBenchmark )
 {
     auto f = [] ( auto& v ) { auto res = 0; for ( const auto& e : v ) res += e->f(); return res; };
     auto test = [ &f ] ( auto n )

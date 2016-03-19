@@ -19,7 +19,7 @@
 // Sometimes, you can achieve the same thing with both -- and the difference is only in whether the "polymorphism" is static (at compile-time) or dynamic (at run-time).
 // If you don't need run-time polymorphism then you generally go with CRTP because it's usually faster, as the compiler can see what's going on at compile time.
 
-BOOST_AUTO_TEST_SUITE( CRTP )
+BOOST_AUTO_TEST_SUITE( CRTPTestSuite )
 
 namespace
 {
@@ -73,7 +73,7 @@ namespace
     };
 }
 
-BOOST_AUTO_TEST_CASE( PerfTest )
+BOOST_AUTO_TEST_CASE( CRTPBenchmark )
 {
     auto testRange = 5'000'000;
     {
@@ -93,6 +93,7 @@ BOOST_AUTO_TEST_CASE( PerfTest )
 
     Derived         d;
     d.callDerivedImplementation();
+    BOOST_CHECK( true );
 }
 
 namespace
@@ -163,4 +164,4 @@ BOOST_AUTO_TEST_CASE( PolymorphicCopyConstructionTest )
     delete b.clone();
 }
 
-BOOST_AUTO_TEST_SUITE_END() // CRTP
+BOOST_AUTO_TEST_SUITE_END() // CRTPTestSuite

@@ -141,7 +141,7 @@ BOOST_AUTO_TEST_CASE( MinimumSumTest )
 
 namespace
 {
-    void    displayAllPermutations( std::string& str, std::size_t begin, std::size_t end, std::set< std::string >& result )
+    void    generate_all_permutations( std::string& str, std::size_t begin, std::size_t end, std::set< std::string >& result )
     {
 
         auto range = end - begin;
@@ -152,21 +152,20 @@ namespace
         if ( range == 1 )
         {
             result.insert( str );
-            std::cout << str << std::endl;
             return;
         }
 
         for ( auto i = 0; i < range; ++i )
         {
             std::swap( str[ begin ], str[ begin + i ] );
-            displayAllPermutations( str, begin + 1, end, result );
+            generate_all_permutations( str, begin + 1, end, result );
             std::swap( str[ begin ], str[ begin + i ] );
         }
     }
 
-    void    displayAllPermutations( std::string str, std::set< std::string >& result )
+    void    generate_all_permutations( std::string str, std::set< std::string >& result )
     {
-        displayAllPermutations( str, 0, str.size(), result );
+        generate_all_permutations( str, 0, str.size(), result );
     }
 }
 
@@ -180,7 +179,7 @@ BOOST_AUTO_TEST_CASE( PermutationTest )
     std::set< std::string > resultWithoutSTL;
     {
         BOOST_TEST_MESSAGE("-- Permutation without STL --");
-        displayAllPermutations( toBePermuted, resultWithoutSTL );
+        generate_all_permutations( toBePermuted, resultWithoutSTL );
     }
 
     std::set< std::string > resultWithSTL;
@@ -188,7 +187,6 @@ BOOST_AUTO_TEST_CASE( PermutationTest )
         BOOST_TEST_MESSAGE("-- Permutation with STL --");
         do
         {
-            std::cout << toBePermuted << std::endl;
             resultWithSTL.insert( toBePermuted );
         } while ( std::next_permutation( toBePermuted.begin(), toBePermuted.end() ) );
     }
@@ -265,7 +263,7 @@ namespace
     }
 }
 
-BOOST_AUTO_TEST_CASE( CheckBalancedParenthesis )
+BOOST_AUTO_TEST_CASE( CheckBalancedParenthesisTest )
 {
     BOOST_CHECK( isBalancedParenthesis("no parenthesis") );
     BOOST_CHECK( ! isBalancedParenthesis("(") );
@@ -300,7 +298,7 @@ namespace
     std::string    f3( Parent* p ) { return p->name(); }
 }
 
-BOOST_AUTO_TEST_CASE( HierarchyTestCase )
+BOOST_AUTO_TEST_CASE( HierarchyTest )
 {
     Child child;
 
@@ -393,7 +391,7 @@ namespace
     }
 }
 
-BOOST_AUTO_TEST_CASE( FindElementInSortedMatrix )
+BOOST_AUTO_TEST_CASE( FindElementInSortedMatrixTest )
 {
     const int rowSize = 6, colSize = 5;
     // The Boost Multidimensional Array Library provides a class template for multidimensional arrays, as well as semantically equivalent adaptors for arrays of contiguous data (i.e. cache friendly multi array)

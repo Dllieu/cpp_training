@@ -1,0 +1,41 @@
+version: "1.40.{build}"
+
+#vc140
+os: Visual Studio 2015
+
+platform: 
+  - x64
+
+environment:
+  MSVC_DEFAULT_OPTIONS: ON
+  #boost_1_60_0 not available
+  BOOST_VERSION: boost_1_59_0
+
+configuration:
+  - Debug
+  - Release
+
+init:
+  - set BOOST_ROOT=C:\Libraries\%BOOST_VERSION%
+  - set PATH=C:\Program Files (x86)\MSBuild\14.0\Bin;%PATH%
+  - cmd: msbuild /version
+  - cmd: set
+
+clone_folder: C:\projects\cpp_training
+
+install:
+  - cmd: mklink /j %APPVEYOR_BUILD_FOLDER%\dependencies\boost %BOOST_ROOT%
+
+build:
+  project: $(APPVEYOR_BUILD_FOLDER)\solution\vc140\CPP-Training.sln
+  parallel: true
+  verbosity: normal
+
+#TODO: - call boost test with equivalent of ctest for msbuild? (or upload manually the test report)
+after_build:
+  # Don't run the Benchmarks (*/*Benchmark) as we run the tests on a VM (inconsistent result when involving the cache or lock free based tests)
+  - cmd: cd %APPVEYOR_BUILD_FOLDER%\delivery\bin\%CONFIGURATION%
+  # cd before otherwise will have parsing error due to the mix between % and *
+  - cmd: TestSuite.exe --log_level=test_suite --show_progress=yes --run_test=*/*Test
+  
+test: off

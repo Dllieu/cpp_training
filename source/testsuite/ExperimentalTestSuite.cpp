@@ -8,11 +8,12 @@
 // http://en.cppreference.com/w/cpp/experimental
 // TODO : populate the test once the features are available with visual studio
 
-BOOST_AUTO_TEST_SUITE( Experimental )
+BOOST_AUTO_TEST_SUITE( ExperimentalTestSuite )
 
-BOOST_AUTO_TEST_CASE( StringView )
+BOOST_AUTO_TEST_CASE( StringViewTest )
 {
     // http://www.boost.org/doc/libs/1_54_0/libs/utility/doc/html/string_ref.html
+    BOOST_CHECK( true );
 }
 
-BOOST_AUTO_TEST_SUITE_END() // Experimental
+BOOST_AUTO_TEST_SUITE_END() // ExperimentalTestSuite

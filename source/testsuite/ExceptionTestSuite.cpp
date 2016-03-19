@@ -86,7 +86,7 @@ namespace
     };
 }
 
-BOOST_AUTO_TEST_CASE( CurrentAdnUncaughtException )
+BOOST_AUTO_TEST_CASE( CurrentAdnUncaughtExceptionTest )
 {
     try
     {
@@ -102,7 +102,7 @@ BOOST_AUTO_TEST_CASE( CurrentAdnUncaughtException )
     }
 }
 
-BOOST_AUTO_TEST_CASE( HandlingSignal )
+BOOST_AUTO_TEST_CASE( HandlingSignalTest )
 {
     // SIGTERM  termination request, sent to the program
     // SIGSEGV  invalid memory access (segmentation fault)

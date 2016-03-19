@@ -5,7 +5,7 @@
 #include <boost/test/unit_test.hpp>
 #include <iostream>
 
-BOOST_AUTO_TEST_SUITE( Argument )
+BOOST_AUTO_TEST_SUITE( ArgumentTestSuite )
 
 // http://isocpp.org/blog/2012/11/universal-references-in-c11-scott-meyers
 namespace
@@ -25,7 +25,7 @@ namespace
     }
 }
 
-BOOST_AUTO_TEST_CASE( UniversalReference )
+BOOST_AUTO_TEST_CASE( UniversalReferenceTest )
 {
     BOOST_CHECK( f( A() ) ); // rvalue
 
@@ -121,4 +121,4 @@ namespace
     // heap datas might be cold, meaning they could not be used for a long time, making them more apt to cache miss compared to stack datas (can still happen for both)
 }
 
-BOOST_AUTO_TEST_SUITE_END() // Argument
+BOOST_AUTO_TEST_SUITE_END() // ArgumentTestSuite

@@ -10,7 +10,7 @@
 #include "tools/MemoryPool.h"
 #include "tools/Timer.h"
 
-BOOST_AUTO_TEST_SUITE( MemoryPool )
+BOOST_AUTO_TEST_SUITE( MemoryPoolTestSuite )
 
 namespace
 {
@@ -47,7 +47,7 @@ namespace
     }
 }
 
-BOOST_AUTO_TEST_CASE( MemoryPoolTest )
+BOOST_AUTO_TEST_CASE( MemoryPoolBenchmark )
 {
     unsigned int to = 1'000'000;
     double noAllocator, pool, basic;
@@ -136,4 +136,4 @@ BOOST_AUTO_TEST_CASE( SlowMemoryPoolTest )
     BOOST_CHECK( true );
 }
 
-BOOST_AUTO_TEST_SUITE_END() // MemoryPool
+BOOST_AUTO_TEST_SUITE_END() // MemoryPoolTestSuite
