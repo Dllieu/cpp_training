@@ -44,6 +44,9 @@
     <Filter Include="Source Files\Benchmark">
       <UniqueIdentifier>{f71aa018-5c94-4e0e-8a7d-4f91cb31eb4e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Time">
+      <UniqueIdentifier>{fa11aa94-81ba-4f71-b1ab-37653458a7bb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\source\testsuite\Initializer.cpp">
@@ -151,9 +154,6 @@
     <ClCompile Include="..\..\source\testsuite\MemoryPoolTestSuite.cpp">
       <Filter>Source Files\Allocator</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\testsuite\SmartPointerTestSuite.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\source\testsuite\SIMDTestSuite.cpp">
       <Filter>Source Files\Benchmark</Filter>
     </ClCompile>
@@ -168,6 +168,12 @@
     </ClCompile>
     <ClCompile Include="..\..\source\testsuite\OptimizationTestSuite.cpp">
       <Filter>Source Files\Benchmark</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\testsuite\SmartPointerTestSuite.cpp">
+      <Filter>Source Files\STL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\testsuite\TimeTestSuite.cpp">
+      <Filter>Source Files\Time</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

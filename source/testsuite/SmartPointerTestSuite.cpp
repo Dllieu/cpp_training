@@ -167,4 +167,37 @@ BOOST_AUTO_TEST_CASE( SharedPtrTypeErasureTest )
     BOOST_CHECK( true );
 }
 
+namespace
+{
+    struct Base
+    {
+        virtual ~Base() {}
+    };
+
+    struct Derived final : public Base
+    {
+        virtual ~Derived() override final = default;
+        void g() { BOOST_CHECK( true ); }
+    };
+}
+
+
+// std::static_pointer_cast / std::dynamic_pointer_cast / std::const_pointer_cast / std::reinterpret_pointer_cast (see SyntaxSpecificityTestSuite for cast behaviour)
+BOOST_AUTO_TEST_CASE( SmartPtrCastTest )
+{
+    std::weak_ptr<Derived> wd;
+
+    {
+        std::shared_ptr<Base> b = std::make_shared<Derived>();
+        wd = std::static_pointer_cast<Derived>( b );
+
+        BOOST_CHECK( !wd.expired() );
+        wd.lock()->g();
+    }
+
+    // when converting weak_ptr<D> to weak_ptr<B>, the object might be dead (that's the whole point of weak_ptr), so you have to internally lock to shared_ptr before performing the pointer conversion
+    std::weak_ptr<Base> wb = wd;
+    BOOST_CHECK( wb.expired() );
+}
+
 BOOST_AUTO_TEST_SUITE_END() // SmartPointerTestSuite

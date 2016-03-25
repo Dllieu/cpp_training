@@ -1,6 +1,6 @@
-##To read
-**Randall Hyde**
-- Write Great Code, Volume 2: Thinking Low-Level, Writing High-Level
+﻿##To read
+**Andrei Alexandrescu**
+- Modern C++ Design (2001)
 
 
 **Paul E. McKenney**
@@ -11,8 +11,9 @@
 - The microarchitecture of Intel, AMD and VIA CPUs: An optimization guide for assembly programmers and compiler makers (update 2016)
 
 
-**Intel**
-- Combined Volume Set of Intel® 64 and IA-32 Architectures Software Developer’s Manuals (more an overview than anything, way too big)
+**Alex Robenko**
+- Bare Metal C++ (2016)
+
 
 ##Reading
 **Herb Sutters**

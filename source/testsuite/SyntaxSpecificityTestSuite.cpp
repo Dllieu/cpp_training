@@ -96,6 +96,8 @@ namespace
         {
             return i * 3;
         }
+
+        void    g() {}
     };
 
     void     defaultValueInheritanceExample()
@@ -185,6 +187,11 @@ namespace
             // can also be used to perform any other non-pointer conversion that could also be performed implicitly or convert numeric data types (enum to int, float to int) : static_cast<T>(e) == T v(e); when std::is_pointer(e)
             // no run-time type check is made, so static_cast return as if nothing went wrong which could lead to undefined behavior at run time but no run-time performance penalty
             // static_cast can induce a convertion (through a constructor) to be called at runtime : static_cast<std::string>("bla")
+            // static_cast
+            //   * mostly compile-time offset
+            //   * bitwise no-op for nullptr (rule is if nullptr -> static_cast return nullptr, meaning compiler might make a check: if nullptr then return nullptr otherwise apply offset)
+            //                                compiler can avoid this test if later on the ptr used is calling method e.g. p->method() // undefined behavior if nullptr so no need to precheck before applying the offset as it will be UB anyway
+            //   * sometimes run-time offset (e.g. D* -> B* if B virtual class, offset depends of the vptr, can only compute at runtime)
 
             // about const_cast
             // modify the constness
@@ -549,4 +556,29 @@ namespace
         silly_counter++;
         // ...
     }
+}
+
+namespace
+{
+    class FriendC;
+    struct FriendX
+    {
+        FriendX();
+        void modify();
+
+        std::unique_ptr<FriendC> c;
+    };
+
+    class FriendC
+    {
+        friend std::ostream& operator<<(std::ostream&, const FriendC& y);
+        friend FriendX::FriendX();
+        friend void FriendX::modify();
+
+        int data;
+    };
+
+    std::ostream& operator<<( std::ostream& os, const FriendC& y ) { return os << y.data; }
+    FriendX::FriendX() : c( new FriendC() ) { c->data = 45; }
+    void FriendX::modify() { c->data = 1; }
 }
