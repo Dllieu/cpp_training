@@ -3,7 +3,9 @@
 // See https://github.com/Dllieu for updates, documentation, and revision history.
 //--------------------------------------------------------------------------------
 #include <boost/test/unit_test.hpp>
+#include <boost/filesystem.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/date_time/local_time/local_time.hpp>
 
 #pragma warning( push )
 #pragma warning( disable : 4005 )
@@ -13,6 +15,8 @@
 #include <chrono>
 #include <time.h>
 #include <stdlib.h>
+
+#include "containers/ArrayUtils.h"
 
 BOOST_AUTO_TEST_SUITE( TimeTestSuite )
 
@@ -49,13 +53,13 @@ namespace
     // East is positive, West is negative
     // TZ = zone[ -]offset[ dst[ offset ][ , start[ / time ], end[ / time ] ] ]
     // Linux also accept user friendly format, i.e. "Asia/Kolkata" (see tzselect)
-    std::vector< const char * > TIMEZONES{
+    const auto TIMEZONES = std::make_array(
         "EST5EDT,M3.2.0/2,M11.1.0/2",   // U.S. Eastern Standard Time (5 hours west from Greenwich, daylight saving starts on the second Sunday in March at 2 AM and ends on the first Sunday in November at 2 AM)
-        "GMT0",                         // Greenwich Mean Time
+        "GMT0",                         // Greenwich Mean Time / Coordinated Universal Time (UTC)
         "CET-1CEST,M3.5.0/2,M10.5.0/3", // Central European Time (1 hour east from Greenwich, daylight starts last Sunday in March at 2AM and ends on last sunday in October at 3AM)
         "IST-5:30",                     // India
-        "UTC-8",                        // Hong Kong
-    };
+        "UTC-8"                         // Hong Kong
+    );
 
     void    display_time()
     {
@@ -115,6 +119,45 @@ BOOST_AUTO_TEST_CASE( TimezoneSystemCallTest )
 
     // get back to original timezone for the remaining tests
     BOOST_REQUIRE( _putenv_s( ENV_TIMEZONE, buffer.data() ) == 0 );
+}
+
+namespace
+{
+    // boost should always be in that path to compile this project
+    const auto PATH_TO_DATETIMES = std::make_array( "..", "..", "..", "dependencies", "boost", "libs", "date_time", "data", "date_time_zonespec.csv" );
+    const auto TIMEZONES_BOOST = std::make_array(
+        "America/New_York",
+        "Europe/London",
+        "Indian/Cocos",
+        "Asia/Hong_Kong"
+    );
+
+    boost::filesystem::path     get_datetime_path()
+    {
+        BOOST_REQUIRE( boost::unit_test::framework::master_test_suite().argc > 0 );
+        auto executablePath = boost::unit_test::framework::master_test_suite().argv[ 0 ];
+        BOOST_REQUIRE( executablePath );
+        auto pathDatetime = boost::filesystem::path( executablePath ).remove_filename();
+        for ( const auto& subPath : PATH_TO_DATETIMES )
+            pathDatetime /= subPath;
+
+        return pathDatetime;
+    }
+}
+
+BOOST_AUTO_TEST_CASE( TimezoneBoostTest )
+{
+    boost::posix_time::ptime utcNow( boost::gregorian::day_clock::universal_day(), boost::posix_time::second_clock::universal_time().time_of_day() );
+    std::cout << "UTC time: " << boost::posix_time::to_simple_string( utcNow ) << std::endl << "-----" << std::endl;
+
+    boost::local_time::tz_database tzDb;
+    tzDb.load_from_file( get_datetime_path().string() );
+
+    for ( const auto& tzName : TIMEZONES_BOOST )
+    {
+        boost::local_time::local_date_time ldt( utcNow, tzDb.time_zone_from_region( tzName ) );
+        std::cout << tzName << " (" << ldt.zone()->to_posix_string() << ") : " << ldt.local_time() << std::endl;
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END() // TimeTestSuite

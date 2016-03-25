@@ -28,5 +28,8 @@
     <ClInclude Include="..\..\source\containers\PolymorphicCollection.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\source\containers\ArrayUtils.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -24,6 +24,10 @@
 - What Every Programmer Should Know About Memory (http://www.akkadia.org/drepper/cpumemory.pdf)
 
 
+**Tigran Aivazian**
+- Linux Kernel Internals (2002 - http://www.tldp.org/LDP/lki/lki.pdf)
+
+
 ##Read
 **Agner Fog**
 - Optimizing software in C++: An optimization guide (updated 2015)

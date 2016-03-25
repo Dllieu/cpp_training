@@ -66,6 +66,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\source\containers\ArrayUtils.h" />
     <ClInclude Include="..\..\source\containers\LockBasedQueue.h" />
     <ClInclude Include="..\..\source\containers\LockFreeQueueSPSC.h" />
     <ClInclude Include="..\..\source\containers\LockFreeStack.h" />
