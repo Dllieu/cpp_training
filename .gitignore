@@ -2,6 +2,7 @@
 dependencies/*/
 delivery
 *.db
+*.opendb
 
 #################
 ## Eclipse

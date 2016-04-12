@@ -481,7 +481,10 @@ BOOST_AUTO_TEST_CASE( BranchPredictionBenchmark )
 // global variable non const will most likely reside in the same cache line with other global variable, even if these global have been declared in different translation unit, this could inccur hidden false sharing
 // Rules of thumb:
 //  - Separate at least read-only (after initialization) and read-write variables. Maybe extend this separation to read-mostly variables as a third category
-//  - Group read-write variables which are used together into a structure.Using a structure is the only way to ensure the memory locations for all of those variables are close together in a way which is translated consistently by all gcc versions..//  - Move read-write variables which are often written to by different threads onto their own cache line. This might mean adding padding at the end to fill a remainder of the cache line.//  - If a variable is used by multiple threads, but every use is independent, move the variable into TLS (thread local storage)BOOST_AUTO_TEST_CASE( FalseSharing1Benchmark )
+//  - Group read-write variables which are used together into a structure.Using a structure is the only way to ensure the memory locations for all of those variables are close together in a way which is translated consistently by all gcc versions..
+//  - Move read-write variables which are often written to by different threads onto their own cache line. This might mean adding padding at the end to fill a remainder of the cache line.
+//  - If a variable is used by multiple threads, but every use is independent, move the variable into TLS (thread local storage)
+BOOST_AUTO_TEST_CASE( FalseSharing1Benchmark )
 {
     auto test = [] ( auto n )
     {
