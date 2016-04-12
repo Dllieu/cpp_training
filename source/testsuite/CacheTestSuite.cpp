@@ -37,6 +37,7 @@ using namespace tools;
 //   - L2 (512 entries), 4-WAY
 //                   * miss penalty : 9 cycles, parallel miss: 21 cycle per access
 //
+//
 // Instruction cache
 // - L1  (32KB), 8-WAY, 64B / line
 //
@@ -50,6 +51,8 @@ using namespace tools;
 //             * 30.5 cycles for cores (0, 3)
 // - DRAM  (XX):   60   ns / 237 cycles
 //
+// cache size = cache line size * associativity * number of sets
+//
 // DRAM (dynamic ram) SRAM (static ram)
 //
 // Caches are small, assume 100MB program at runtime (code + data).
@@ -59,6 +62,30 @@ using namespace tools;
 // - 0.03% fits in each L1 cache.
 //
 // Check for more infos: http://www.7-cpu.com/
+
+// Main memory to cache
+// - Memory is transferred from the main memory into the caches in blocks which are smaller than the cache line size.Today 64 bits are transferred at once and the cache line size is (usually) 64 bytes (This means 8 or 16 transfers per cache line are needed)
+// - The DRAM chips can transfer those 64-byte blocks in burst mode.This can fill the cache line without any further commands from the memory controller and the possibly associated delays. If the processor prefetches cache lines this is probably the best way to operate
+// - The memory controller is free to request the words of the cache line in a different order.The processor can communicate which word the program is waiting on, the critical word, and the memory controller can request this word first.
+//   Once the word arrives the program can continue while the rest of the cache line arrives and the cache is not yet in a consistent state.
+//   This technique is called Critical Word First
+//   Processors nowadays implement this technique but there are situations when that is not possible.If the processor prefetches data the critical word is not known.Should the processor request the cache line during the time
+//   the prefetch operation is in flight it will have to wait until the critical word arrives without being able to influence the order.
+
+// When does a cache line transfer have to happen from a processor to another? when one processor needs a cache line which is dirty in another processor's cache for reading or writing ("easily" implemented with MESI)
+// MESI Protocol Transitions:
+//   * Modified: The local processor has modified the cache line. This also implies it is the only copy in any cache.
+//   * Exclusive: The cache line is not modified but known to not be loaded into any other processor’s cache.
+//   * Shared: The cache line is not modified and might exist in another processor’s cache.
+//   * Invalid: The cache line is invalid, i.e., unused
+//
+// About Modified transition:
+//   - If a Modified cache line is read from or written to on the local processor, the instruction can use the current cache content and the state does not change.
+//   - If a second processor wants to read from the cache line the first processor has to send the content of its cache to the second processor and then it can change the state to Shared.
+//   - The data sent to the second processor is also received and processed by the memory controller which stores the content in memory.
+//   - If this did not happen the cache line could not be marked as Shared.If the second processor wants to write to the cache line the first processor sends the cache line content and marks the cache line locally as invalid
+//   - This is the infamous "Request For Ownership" (RFO) operation. Performing this operation in the last level cache, just like the I->M transition is comparatively expensive.
+//   - For write-through caches we also have to add the time it takes to write the new cache line content to the next higher-level cache or the main memory, further increasing the cost
 
 // About cache misses
 //  A cache miss refers to a failed attempt to read or write a piece of data in the cache, which results in a main memory access with much longer latency.
@@ -87,6 +114,14 @@ using namespace tools;
 // Classical big-O algorithmic complexity analysis proves insufficient to estimate program performance for modern computer architectures,
 // current processors are equipped with several low-level components (hierarchical cache structures, pipelining, branch prediction)
 // that greatly favor certain code and data layout patterns not taken into account by naive computation models.
+
+// About Hyper-threading
+// - Hyper-Threads are implemented by the CPU and are a special case since the individual threads cannot really run concurrently.They all share almost all the processing resources except for the register set
+// - The real advantage is that the CPU can schedule another hyper-thread and take advantage of available resources such as arithmetic logic units (ALUs) when the currently running hyper-thread is delayed
+// - In most cases this is a delay caused by memory accesses
+// - If two threads are running on one hyper-threaded core the program is only more efficient than the single-threaded code if the combined runtime of both threads is lower than the runtime of the single-threaded code
+// - Might only be achievable if single thread have a low cache hit rate (need to take into account the overhead for parallelizing the code)
+// - Could be used as a mere thread to prefetch data into L2 or L1d for the "main" working thread (as they share the same cache) (imply proper affinity)
 
 // Take advantage of
 // - PGO (Profile-guided optimization) (i.e. -fprofile-generate in gcc), It works by placing extra code to count the number of times each codepath is taken. The profiling test must be representative to the production
@@ -397,10 +432,17 @@ namespace
 //   attempts to execute independent instructions after the instruction that is waiting for the cache miss data.Another technology, used by many processors, is simultaneous multithreading( SMT ),
 //   or-​in Intel's terminology—​hyper-threading (HT), which allows an alternate thread to use the CPU core while the first thread waits for required CPU resources to become available.
 //
+// - the execution of an instruction happens in stages. First an instruction is decoded, then the parameters are prepared, and finally it is executed.
+//   Such a pipeline can be quite long (> 20 stages for Intel's Netburst architecture).
+//   A long pipeline means that if the pipeline stalls (i.e., the instruction flow through it is interrupted) it takes a while to get up to speed again
+//   Pipeline stalls happen, for instance, if the location of the next instruction cannot be correctly predicted or if it takes too long to load the next instruction (e.g., when it has to be read from memory).
+//   As a result CPU designers spend a lot of time and chip real estate on branch prediction so that pipeline stalls happen as infrequently as possible
 //
 // - The time that is wasted in case of a branch misprediction is equal to the number of stages in the pipeline from the fetch stage to the execute stage.
 //   Modern microprocessors tend to have quite long pipelines so that the misprediction delay is between 10 and 20 clock cycles.
 //   As a result, making a pipeline longer increases the need for a more advanced branch predictor.
+//   * In recent years the processors do not cache the raw byte sequence of the instructions inL1i but instead they cache the decoded instructions (can skip decode step of the pipeline)
+//   * To achieve best performance of instruction cache: Generate code which is as small as possible (can be some exceptions) / Help the processor making good prefetching decisions (code layout / [un]likely / prefetching)
 //
 // - Flow:
 //   - Waiting instructions
@@ -433,8 +475,13 @@ BOOST_AUTO_TEST_CASE( BranchPredictionBenchmark )
 // In symmetric multiprocessor (SMP) systems, each processor has a local cache. The memory system must guarantee cache coherence.
 // False sharing occurs when threads on different processors (i.e. dosnt apply on HW on the same core) modify variables that reside on the same cache line. This invalidates the cache line and forces an update, which hurts performance.
 // Coherence management requires full write to DRAM
-// Rule of thumb: use shared write memory only to communicate (the less the better)
-BOOST_AUTO_TEST_CASE( FalseSharing1Benchmark )
+// Variables which are never written to and those which are only initialized once are basically constants.Since RFO messages are only needed for write operations, constants can be shared in the cache( ‘S’ state ).
+// So, these variables do not have to be treated specially; grouping them together is fine.If the programmer marks the variables correctly with const, the tool chain will move the variables away from the normal variables into the .rodata
+// (read-only data) or .data.rel.ro( read - only after relocation ) No other special action is required. If, for some reason, variables cannot be marked correctly with const, the programmer can influence their placement by assigning them to a special section
+// global variable non const will most likely reside in the same cache line with other global variable, even if these global have been declared in different translation unit, this could inccur hidden false sharing
+// Rules of thumb:
+//  - Separate at least read-only (after initialization) and read-write variables. Maybe extend this separation to read-mostly variables as a third category
+//  - Group read-write variables which are used together into a structure.Using a structure is the only way to ensure the memory locations for all of those variables are close together in a way which is translated consistently by all gcc versions..//  - Move read-write variables which are often written to by different threads onto their own cache line. This might mean adding padding at the end to fill a remainder of the cache line.//  - If a variable is used by multiple threads, but every use is independent, move the variable into TLS (thread local storage)BOOST_AUTO_TEST_CASE( FalseSharing1Benchmark )
 {
     auto test = [] ( auto n )
     {

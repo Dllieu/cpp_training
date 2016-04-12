@@ -189,6 +189,7 @@ BOOST_AUTO_TEST_CASE( AlgoTest )
     std::copy( v.begin(), v.end(), std::ostream_iterator< int >( std::cout /*buffer*/, " " /*delimiter*/) );
     std::cout << std::endl;
 
+    // std::find O(n), better container.find (i.e. map / set) or binary_search if applicable 
     auto it = std::find( v.begin(), v.end(), 3 );
     BOOST_CHECK( it != v.end() );
 

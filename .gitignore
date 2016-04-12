@@ -1,6 +1,7 @@
 # Specific folders
 dependencies/*/
 delivery
+*.db
 
 #################
 ## Eclipse

@@ -15,6 +15,14 @@
 - Bare Metal C++ (2016)
 
 
+**Bruce Dang, Alexandre Gazet, Elias Bachaalany, Sebastien Josse**
+- Practical Reverse Engineering: x86, x64, ARM (2014 - http://pdf.th7.cn/down/files/1411/Practical%20Reverse%20Engineering.pdf)
+
+
+**Jon Erickson**
+- Hacking: The Art of Exploitation, 2nd Edition (2008)
+
+
 ##Reading
 **Herb Sutters**
 - Exceptional C++
@@ -26,7 +34,6 @@
 
 **Tigran Aivazian**
 - Linux Kernel Internals (2002 - http://www.tldp.org/LDP/lki/lki.pdf)
-
 
 ##Read
 **Agner Fog**

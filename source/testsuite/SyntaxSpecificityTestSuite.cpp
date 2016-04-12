@@ -517,6 +517,7 @@ namespace
 namespace
 {
 // About Volatile
+// - The volatile type qualifier indicates that accesses to (reads from and writes to) the object are considered side effects and cannot be optimised away
 // - A variable should be declared volatile whenever its value could change unexpectedly. e.g.:
 //   * Memory-mapped peripheral registers
 //   * Global variables modified by an interrupt service routine
