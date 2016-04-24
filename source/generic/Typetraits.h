@@ -6,6 +6,8 @@
 #define __GENERICS_TYPETRAITS_H__
 
 #include <type_traits>
+#include <utility>
+#include <array>
 
 namespace generics
 {
@@ -65,6 +67,40 @@ namespace generics
 
     template < bool B, typename T >
     auto    static_if( T&& t ) { return static_if( __static_if_tag<B>{}, std::forward< T >( t ), []( auto&&... ){} ); }
+
+    template < typename F, typename G >
+    auto compose( F&& f, G&& g )
+    {
+        return [ f, g ] ( auto&&... x ) { return f( g( std::forward< decltype( x ) >( x )... ) ); };
+    }
+
+    namespace
+    {
+        // Convenience
+        template < typename F, typename G >
+        auto    operator*( F&& f, G&& g )
+        {
+            return compose( std::forward< F >( f ), std::forward< G >( g ) );
+        }
+    }
+
+    template < typename F, typename... Fs >
+    auto    compose( F&& f, Fs&&... fs )
+    {
+        return std::forward< F >( f ) * compose( std::forward< Fs >( fs )... );
+    }
+
+    template < std::size_t N1, std::size_t N2, std::size_t... I1, std::size_t... I2 >
+    constexpr std::array< const char, N1 + N2 - 1 > concatenate( const char( &a1 )[ N1 ], const char( &a2 )[ N2 ], std::index_sequence<I1...>, std::index_sequence<I2...> )
+    {
+        return{ { a1[ I1 ]..., a2[ I2 ]... } };
+    }
+
+    template < std::size_t N1, std::size_t N2 >
+    constexpr auto concatenate( const char( &a1 )[ N1 ], const char( &a2 )[ N2 ] )
+    {
+        return concatenate( a1, a2, std::make_index_sequence< N1 - 1 >{}, std::make_index_sequence< N2 >{} );
+    }
 }
 
 #endif // ! __GENERICS_TYPETRAITS_H__

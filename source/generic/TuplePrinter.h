@@ -66,7 +66,7 @@ namespace std
         using swallow = int[];
         // first 0 in case empty sequence
         // (expr1, expr2) -> expr2
-        (void)swallow{0, ( void( os << ( Is == 0 ? "" : ", " ) << std::get<Is>( t ) ), 0 )...};
+        (void)swallow{ 0, ( void( os << ( Is == 0 ? "" : ", " ) << std::get<Is>( t ) ), 0 )... };
     }
 
     template < typename C, typename T, typename... Ts >

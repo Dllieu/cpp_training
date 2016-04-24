@@ -6,6 +6,9 @@
 
 BOOST_AUTO_TEST_SUITE( MacroTestSuite )
 
+#define CT_ASSERT( ... ) \
+    static_assert( __VA_ARGS__, #__VA_ARGS__ )
+
 #define LOG_TYPE( type ) \
     BOOST_TEST_MESSAGE( #type << ": " << sizeof( type ) )
 
@@ -21,6 +24,9 @@ namespace
 
 BOOST_AUTO_TEST_CASE( TypeTest )
 {
+    // constexpr int i = 2;
+    // CT_ASSERT( i != 2 ); // error C2338: i != 2
+
     LOG_TYPE( bool );
     LOG_TYPE( char );
     LOG_TYPE( short );
@@ -36,6 +42,7 @@ BOOST_AUTO_TEST_CASE( TypeTest )
     BOOST_CHECK( true );
 }
 
+#undef CT_ASSERT
 #undef LOG_TYPE
 
 // - Preventing optimizations

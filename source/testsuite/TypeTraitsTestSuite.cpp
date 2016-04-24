@@ -555,4 +555,13 @@ BOOST_AUTO_TEST_CASE( IndexSequenceTest )
     BOOST_CHECK( true );
 }
 
+BOOST_AUTO_TEST_CASE( ComposeTest )
+{
+    auto add1 = [] ( int a ) { return a + 1; };
+    auto mult2 = [] ( int b ) { return b * 2; };
+    auto sum = [] ( int x, int y ) { return x + y; };
+
+    BOOST_CHECK( generics::compose( add1, mult2, sum )( 7, 8 ) == add1( mult2( sum( 7, 8 ) ) ) );
+}
+
 BOOST_AUTO_TEST_SUITE_END() // TypeTraitsTestSuite

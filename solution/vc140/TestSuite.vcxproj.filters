@@ -121,9 +121,6 @@
     <ClCompile Include="..\..\source\testsuite\SingletonTestSuite.cpp">
       <Filter>Source Files\DesignPattern</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\testsuite\ExperimentalTestSuite.cpp">
-      <Filter>Source Files\STL</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\source\testsuite\BasicNetworkingTestSuite.cpp">
       <Filter>Source Files\Networking</Filter>
     </ClCompile>

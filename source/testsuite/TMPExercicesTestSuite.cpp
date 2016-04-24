@@ -8,12 +8,16 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/type_traits.hpp>
 #include <boost/mpl/if.hpp>
-#include <type_traits>
 #include <iostream>
 
 #include "generic/Typetraits.h"
 
 BOOST_AUTO_TEST_SUITE( TMPTestSuite )
+
+BOOST_AUTO_TEST_CASE( CommonTypeTest )
+{
+    // TODO: common_type_t
+}
 
 namespace
 {
@@ -344,6 +348,41 @@ BOOST_AUTO_TEST_CASE( GenericInterfaceTest )
     BOOST_CHECK( v1.getVersion() == 1 );
     BOOST_CHECK( v2.getVersion() == 2 );
     BOOST_CHECK( v3.getVersion() == 3 );
+}
+
+namespace
+{
+    template < int v >
+    struct Int2Type { enum { value = v }; };
+
+    // Avoid dynamic branching (couldn't compile for every path), avoid template specialization
+    template < typename T, bool shouldClone >
+    class NiftyContainer
+    {
+    private:
+        T*  create( T* pObj, Int2Type< true > ) { return pObj->Clone(); }
+        T*  create( T* pObj, Int2Type< false> ) { return new T( *pObj ); }
+
+    public:
+        std::unique_ptr< T >  create( T* pObj ) { return std::unique_ptr< T >( create( pObj, Int2Type< shouldClone >() ) ); }
+    };
+}
+
+BOOST_AUTO_TEST_CASE( Int2TypeTest )
+{
+    auto i = 2;
+    auto iBis( NiftyContainer< decltype( i ), false >().create( &i ) );
+
+    BOOST_CHECK( *iBis == i );
+}
+
+BOOST_AUTO_TEST_CASE( ConcatStringTest )
+{
+    constexpr const char s1[] = "s1";
+    constexpr const char s2[] = "s5";
+    constexpr auto result = generics::concatenate( s1, s2 );
+
+    BOOST_CHECK( result.data() == ( std::string( s1 ) + s2 ) );
 }
 
 BOOST_AUTO_TEST_SUITE_END() // TMPTestSuite

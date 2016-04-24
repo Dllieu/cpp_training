@@ -15,6 +15,7 @@
 #include <chrono>
 #include <ctime>
 #include <iomanip>
+#include <boost/algorithm/clamp.hpp>
 
 #include "generic/TupleForEach.h"
 #include "generic/TuplePrinter.h"
@@ -282,8 +283,12 @@ BOOST_AUTO_TEST_CASE( AlgoTest )
     BOOST_CHECK( *lowerBound == 2 /*the first one*/ );
     auto upperBound = std::upper_bound( v.begin(), v.end(), 2 ); // first occurence that is > val
     BOOST_CHECK( *upperBound == 3 );
-
     BOOST_CHECK( upperBound - lowerBound == 2 );
+
+    // c++17
+    BOOST_CHECK( boost::algorithm::clamp( 54, 1/*lo*/, 7/*hi*/ ) == 7 );
+    BOOST_CHECK( boost::algorithm::clamp( 0, 1/*lo*/, 7/*hi*/ ) == 1 );
+    BOOST_CHECK( boost::algorithm::clamp( 3, 1/*lo*/, 7/*hi*/ ) == 3 );
 }
 
-BOOST_AUTO_TEST_SUITE_END() // STL
+BOOST_AUTO_TEST_SUITE_END() // STLTestSuite
