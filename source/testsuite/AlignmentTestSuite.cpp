@@ -72,6 +72,15 @@ namespace
     };
     static_assert( sizeof( Aligned ) == 12, "invalid size" );
 
+    struct Aligned2
+    {
+        int     a; // 0-4
+        char    b; // 4-8
+        int     c; // 8-16 (i.e. sizeof(size_t) can't be aligned if using 12-16)
+        char*   d; // 16-24
+    };
+    static_assert( sizeof( Aligned2 ) == 24, "invalid size" );
+
     // pragma pack 1 isn't helpful to avoid heap fragmentation.
     // pragma pack 1 is used to remove the padding bytes from structures to help with transmission of binary structures between programs (i.e. transferring a message through the NIC),
     // but will slower the program vs aligned struct when reading / writing on it (specially true for x86)

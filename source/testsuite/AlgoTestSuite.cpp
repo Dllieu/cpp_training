@@ -141,6 +141,34 @@ BOOST_AUTO_TEST_CASE( MinimumSumTest )
 
 namespace
 {
+    template < typename T >
+    auto  generate_n_primes( unsigned int n )
+    {
+        if ( n == 0 )
+            return std::vector< T >();
+
+        std::vector< T > result{ 2 };
+        --n;
+        for ( T i = 3; n != 0 && i + 2 < std::numeric_limits< T >::max(); i += 2 )
+            if ( std::all_of( std::next( result.cbegin() ), result.cend(), [ i ]( T v ){ return i % v != 0; } ) )
+            {
+                --n;
+                result.emplace_back( i );
+            }
+
+        return result;
+    }
+}
+
+BOOST_AUTO_TEST_CASE( PrimeTest )
+{
+    BOOST_CHECK( generate_n_primes< char >( 10000 ).size() == 30 );
+    BOOST_CHECK( generate_n_primes< unsigned char >( 10000 ).size() == 54 );
+    BOOST_CHECK( generate_n_primes< int >( 100 ).size() == 100 );
+}
+
+namespace
+{
     void    generate_all_permutations( std::string& str, std::size_t begin, std::size_t end, std::set< std::string >& result )
     {
 
@@ -192,6 +220,38 @@ BOOST_AUTO_TEST_CASE( PermutationTest )
     }
 
     BOOST_CHECK( resultWithoutSTL == resultWithSTL );
+}
+
+namespace
+{
+    
+    void    overload_f( std::string& str, double ) { str += 'd'; }
+    void    overload_f( std::string& str, const std::string & ) { str += 'e'; }
+    void    overload_f( std::string& str, const void * ) { str += 's'; }
+    void    overload_f( std::string& str, int ) { str += 'l'; }
+    void    overload_f( std::string& str, unsigned int ) { str += 'f'; }
+    void    overload_f( std::string& str, short ) { str += 'o'; }
+    void    overload_f( std::string& str, std::nullptr_t ) { str += 'a'; }
+    void    overload_f( std::string& str, float ) { str += 'b'; }
+    void    overload_f( std::string& str, long ) { str += 'k'; }
+}
+
+BOOST_AUTO_TEST_CASE( OverloadTest )
+{
+    std::string str;
+    short s = 3;
+
+    overload_f( str, s );
+    overload_f( str, +s );
+    overload_f( str, 1.0 );
+    overload_f( str, "hello" );
+    overload_f( str, nullptr );
+    overload_f( str, NULL ); // compiler dependent (i.e. gcc x64 #define NULL 0L but vc140 x64 as 0 (i.e. int))
+
+    using namespace std::literals;
+    overload_f( str, "hello"s );
+
+    BOOST_CHECK( str == "oldsale" );
 }
 
 BOOST_AUTO_TEST_CASE( ProductOfArrayTest )

@@ -60,7 +60,56 @@ Desired Skills:
 - Strong problem solving, analysis, and investigation skills 
 - The ability to raise issues and communicate with confidence in order to best collaborate with your team members 
 
-KEYWORDS: C++, UNIX, FIX, EXCHANGE CONNECTIVITY, TRADING, REAL-TIME, FINANCIAL MARKETS, EQUITIES, OPTIONS, FRONT-OFFICE, SYDNEY, AUSTRALIA, LATENCY, LINUX 
+#SC
+- Develop, test and deploy core strategy codes.
+- Review/upgrade/develop existing connectivity solutions;
+- Develop new exchange market data and order adaptors for HFT systems;
+- Develop, test and deploy market connectivity codes.
+- C++ and Java;
+- STL/Boost libraries;
+- Linux systems tuning;
+- Experience with financial protocols such as FIX/OMD/OCG;
+- Solid understanding of concurrency & network programming;
+- Network acceleration (SolarFlare Openonload);
+- Unit testing/automated systems testing;
+- Optimization for modern Intel architecture;
+- Previous experience in developing exchange connectivity;
+- Low latency design experience;
+- HFT systems direct experience;
+- Performance tuning and analysis;
+- Knowledge of cash and derivative exchange platforms;
+- C++ (11/14) is a plus;
+- Network acceleration (Chelsio, WireDirect, Mellanox VMA) is a plus;
+- Numerical computation libraries in C++/Java is a plus;
+- Previous experience in Market Making Systems employing HFT strategies is a plus;
+
+#KCG
+- Implementing domain-optimized data structures
+- Learn and internalize the theories behind current trading system
+- Participate in the design, architecture and implementation of automated trading systems
+- Take ownership of system from design through implementation
+- Expert in C++
+- Exchange Connectivity experience a plus
+- Familiarity with Linux environments; Windows a plus
+- Strong knowledge of scripting languages a plus (especially Python)
+- High level knowledge & competencies in one or more of the following areas:
+- TCP stack optimization
+- Multi-core 1 machine parallelism
+- Low level performance / cache optimization / profiling
+- Analytical Mindset
+- Consistently improving skill set and knowledge base
+- Iterative development style
+- Efficient communicator
+- Ability to manage numerous software development priorities with ease
+- Ability to relate/communicate effectively to all levels of associates-management, developers, traders, and operations
+- Heavy attention to detail (fastidious); broad picture view as well
+- Excellent interpersonal skills and desire to work as part of a hands-on, performance-driven team
+- Exceptional developer with  5+ years’ experience
+- Trading or Investing Firm Experience a plus
+- US Equity &/or Exchange connectivity Experience a major plus
+- Experience working with large data sets a plus
+- Experience with network programming involving low latency and high message rates
+- Creative/Innovative problem solving skills
 
 #Scott Meyers (Fastware C++ training)
 http://www.aristeia.com/FastwareForC++.html
