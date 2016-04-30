@@ -54,7 +54,6 @@ namespace
 #pragma warning( disable : 4700 )
     void        foo1()
     {
-        static_assert( static_cast< unsigned int >( 42 ) < -1, "implicit cast failed" );
         {
             int x = x; // undefined behavior, it won't use the global x because the affectation is after the definition
         }

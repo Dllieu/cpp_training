@@ -222,38 +222,6 @@ BOOST_AUTO_TEST_CASE( PermutationTest )
     BOOST_CHECK( resultWithoutSTL == resultWithSTL );
 }
 
-namespace
-{
-    
-    void    overload_f( std::string& str, double ) { str += 'd'; }
-    void    overload_f( std::string& str, const std::string & ) { str += 'e'; }
-    void    overload_f( std::string& str, const void * ) { str += 's'; }
-    void    overload_f( std::string& str, int ) { str += 'l'; }
-    void    overload_f( std::string& str, unsigned int ) { str += 'f'; }
-    void    overload_f( std::string& str, short ) { str += 'o'; }
-    void    overload_f( std::string& str, std::nullptr_t ) { str += 'a'; }
-    void    overload_f( std::string& str, float ) { str += 'b'; }
-    void    overload_f( std::string& str, long ) { str += 'k'; }
-}
-
-BOOST_AUTO_TEST_CASE( OverloadTest )
-{
-    std::string str;
-    short s = 3;
-
-    overload_f( str, s );
-    overload_f( str, +s );
-    overload_f( str, 1.0 );
-    overload_f( str, "hello" );
-    overload_f( str, nullptr );
-    overload_f( str, NULL ); // compiler dependent (i.e. gcc x64 #define NULL 0L but vc140 x64 as 0 (i.e. int))
-
-    using namespace std::literals;
-    overload_f( str, "hello"s );
-
-    BOOST_CHECK( str == "oldsale" );
-}
-
 BOOST_AUTO_TEST_CASE( ProductOfArrayTest )
 {
     // Given an array A[N] containing N numbers. Crate an array Output[N] where Output[i] is equal to the product of all the elements of A[N] except A[i]

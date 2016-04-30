@@ -564,4 +564,53 @@ BOOST_AUTO_TEST_CASE( ComposeTest )
     BOOST_CHECK( generics::compose( add1, mult2, sum )( 7, 8 ) == add1( mult2( sum( 7, 8 ) ) ) );
 }
 
+namespace
+{
+    char    overload( double ) { return 'd'; }
+    char    overload( const std::string & ) { return 's'; }
+    char    overload( const void * ) { return 'v'; }
+    char    overload( int ) { return 'i'; }
+    char    overload( unsigned int ) { return 'u'; }
+    char    overload( short ) { return 'h'; }
+    char    overload( std::nullptr_t ) { return 'n'; }
+    char    overload( float ) { return 'f'; }
+    char    overload( long ) { return 'l'; }
+}
+
+BOOST_AUTO_TEST_CASE( OverloadTest )
+{
+    short s = 3;
+
+    BOOST_CHECK( overload( s ) == 'h' );
+    BOOST_CHECK( overload( +s ) == 'i' );
+    BOOST_CHECK( overload( 1.0 ) == 'd' );
+    BOOST_CHECK( overload( "hello" ) == 'v' );
+    BOOST_CHECK( overload( nullptr ) == 'n' );
+    BOOST_CHECK( overload( NULL ) == 'i' ); // compiler dependent (i.e. gcc x64 #define NULL 0L but vc140 x64 as 0 (i.e. int))
+
+    using namespace std::literals;
+    BOOST_CHECK( overload( "hello"s ) == 's' );
+}
+
+BOOST_AUTO_TEST_CASE( UnsignedTest )
+{
+    signed int si = -1;
+    signed long sl = -2;
+    signed long long sll = -3;
+
+    unsigned int ui = 1;
+
+    // if the operand that has unsigned integer type has rank greater than or equal to the rank of the type of the other operand, the operand with signed integer type shall be converted to the type of the operand with unsigned integer type.
+    static_assert_is_same< unsigned int, decltype( si + ui ) >();
+    
+    // Otherwise, if the type of the operand with signed integer type can represent all of the values of the type of the operand with unsigned integer type, the operand with unsigned integer type shall be converted to the type of the operand with signed integer type.
+    static_assert_is_same< signed long long, decltype( sll + ui ) >();
+
+    // Otherwise, both operands shall be converted to the unsigned integer type corresponding to the type of the operand with signed integer type.
+    static_assert_is_same< unsigned long, decltype( sl + ui ) >();
+
+    // Implicit conversion of -1 to unsigned
+    static_assert( static_cast< unsigned int >( 42 ) < -1, "implicit conversion failed" );
+}
+
 BOOST_AUTO_TEST_SUITE_END() // TypeTraitsTestSuite
