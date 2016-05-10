@@ -154,9 +154,6 @@
     <ClCompile Include="..\..\source\testsuite\SIMDTestSuite.cpp">
       <Filter>Source Files\Benchmark</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\testsuite\AlignmentTestSuite.cpp">
-      <Filter>Source Files\Benchmark</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\source\testsuite\CacheTestSuite.cpp">
       <Filter>Source Files\Benchmark</Filter>
     </ClCompile>
@@ -171,6 +168,9 @@
     </ClCompile>
     <ClCompile Include="..\..\source\testsuite\TimeTestSuite.cpp">
       <Filter>Source Files\Time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\testsuite\AlignmentTestSuite.cpp">
+      <Filter>Source Files\Benchmark</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

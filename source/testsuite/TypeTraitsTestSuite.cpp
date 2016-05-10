@@ -592,7 +592,7 @@ BOOST_AUTO_TEST_CASE( OverloadTest )
     BOOST_CHECK( overload( "hello"s ) == 's' );
 }
 
-BOOST_AUTO_TEST_CASE( UnsignedTest )
+BOOST_AUTO_TEST_CASE( UnsignedConversionTest )
 {
     signed int si = -1;
     signed long sl = -2;

@@ -425,7 +425,7 @@ BOOST_AUTO_TEST_CASE( FindElementInSortedMatrixTest )
     // The Boost Multidimensional Array Library provides a class template for multidimensional arrays, as well as semantically equivalent adaptors for arrays of contiguous data (i.e. cache friendly multi array)
     boost::multi_array< int, 2 > matrix( boost::extents[ rowSize ][ colSize ] );
 
-    // Sorted matrix with rowSize * colSize elements
+    // Sorted matrix with rowSize * colSize elements (can't use std::iota on boost::multi_array)
     for ( auto i = 0, v = 0; i < rowSize; ++i )
         for ( auto j = 0; j < colSize; ++j )
             matrix[ i ][ j ] = ++v;
@@ -440,6 +440,92 @@ BOOST_AUTO_TEST_CASE( FindElementInSortedMatrixTest )
 
     BOOST_CHECK( ! findMatrixElement( matrix, -1 ) );
     BOOST_CHECK( ! findMatrixElement( matrix, rowSize * colSize + 1 ) );
+}
+
+namespace
+{
+    // 1 - flatten the matrix by layer
+    // 2 - rotate each layer
+    // 3 - replace the previous entries
+    void    rotate_matrix( boost::multi_array< int, 2 >& matrix, int rowSize, int colSize, int rotations )
+    {
+        auto minSize = std::min( rowSize, colSize ) / 2;
+        std::vector< std::vector< int > > flattenMatrixByLayer( minSize );
+        for ( auto i = 0; i < minSize; ++i )
+        {
+            auto side = rowSize - 1 - 2 * i;
+            auto top = colSize - 1 - 2 * i;
+
+            auto& layer = flattenMatrixByLayer[ i ];
+            layer.reserve( side * top );
+            for ( auto j = 0; j < top; ++j )
+                layer.push_back( matrix[ i ][ i + j ] );
+
+            for ( auto j = 0; j < side; ++j )
+                layer.push_back( matrix[ i + j ][ i + top ] );
+
+            for ( auto j = 0; j < top; ++j )
+                layer.push_back( matrix[ i + side ][ i + top - j ] );
+
+            for ( auto j = 0; j < side; ++j )
+                layer.push_back( matrix[ i + side - j ][ i ] );
+        }
+
+        for ( auto& v : flattenMatrixByLayer )
+            std::rotate( v.begin(), v.begin() + rotations % v.size(), v.end() );
+
+        for ( auto i = 0; i < minSize; ++i )
+        {
+            auto side = rowSize - 1 - 2 * i;
+            auto top = colSize - 1 - 2 * i;
+
+            const auto& layer = flattenMatrixByLayer[ i ];
+            auto k = 0;
+            for ( auto j = 0; j < top; ++j, ++k )
+                matrix[ i ][ i + j ] = layer[ k ];
+
+            for ( auto j = 0; j < side; ++j, ++k )
+                matrix[ i + j ][ i + top ] = layer[ k ];
+
+            for ( auto j = 0; j < top; ++j, ++k )
+                matrix[ i + side ][ i + top - j ] = layer[ k ];
+
+            for ( auto j = 0; j < side; ++j, ++k )
+                matrix[ i + side - j ][ i ] = layer[ k ];
+        }
+    }
+}
+
+BOOST_AUTO_TEST_CASE( MatrixRotationTest )
+{
+    constexpr const int rowSize = 4, colSize = 4;
+    constexpr const int rotations = 2;
+
+    boost::multi_array< int, 2 > matrix( boost::extents[ rowSize ][ colSize ] );
+    for ( auto i = 0, v = 0; i < rowSize; ++i )
+        for ( auto j = 0; j < colSize; ++j )
+            matrix[ i ][ j ] = ++v;
+
+    rotate_matrix( matrix, rowSize, colSize, rotations );
+
+    std::array< int, rowSize * colSize > result {
+        3, 4, 8, 12,
+        2, 11, 10, 16,
+        1, 7, 6, 15,
+        5, 9, 13, 14,
+    };
+
+    // std::cout is way too slow (specially for huge matrix)
+    for ( auto i = 0; i < rowSize; ++i )
+    {
+        for ( auto j = 0; j < colSize; ++j )
+        {
+            BOOST_CHECK( matrix[ i ][ j ] == result[ i * rowSize + j ] );
+            std::printf( "%d ", matrix[ i ][ j ] );
+        }
+
+        std::printf( "\n" );
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END() // AlgoTestSuite

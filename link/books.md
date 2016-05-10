@@ -1,7 +1,9 @@
 ﻿##To Read
 |Category | Title  | Year         | Author |
 |:----:|:---------:|:-------------:|:---------------:|
+|Perf|RHEL Performance Tuning Guide (6/7)|2015|Laura Bailey|
 |Perf|Is Parallel Programming Hard, And, If So, What Can You Do About It?|2014|Paul E. McKenney|
+|Perf|Systems Performance: Enterprise and the Cloud|2013|Brendan Gregg|
 |Low-level|The microarchitecture of Intel, AMD and VIA CPUs: An optimization guide for assembly programmers and compiler makers|2016|Agner Fog|
 |Low-level|Bare Metal C++|2016|Alex Robenko|
 |Low-level|Practical Reverse Engineering|2014|Bruce Dang, Alexandre Gazet, Elias Bachaalany, Sebastien Josse|

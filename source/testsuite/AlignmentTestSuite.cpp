@@ -29,6 +29,17 @@ BOOST_AUTO_TEST_CASE( AlignmentUpTest )
 
 namespace
 {
+    // All attributes must have unique address, instanciation of empty class still have size overhead, but inheritance of EmptyClass have 0 overhead (as there's no attributes)
+    class EmptyClass {};
+    class EmptyClass2 : public EmptyClass {};
+    class NonEmptyClass : public EmptyClass { int a; };
+    class EmptyVirtualClass { virtual void foo() {}; };
+
+    static_assert( sizeof( EmptyClass ) == sizeof( char ), "wrong size" ); // usually sizeof( char ) to be aligned
+    static_assert( sizeof( EmptyClass2 ) == sizeof( char ), "wrong size" ); // usually sizeof( char ) to be aligned
+    static_assert( sizeof( NonEmptyClass ) == sizeof( NonEmptyClass::a ), "wrong size" );
+    static_assert( sizeof( EmptyVirtualClass ) == sizeof( nullptr_t ), "wrong size" );
+
     struct alignas( 16 ) A
     {
         int     a;

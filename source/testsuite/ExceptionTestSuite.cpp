@@ -72,6 +72,8 @@ BOOST_AUTO_TEST_CASE( InitListTest )
 
 namespace
 {
+    // When an exception is thrown in a program, the stack begins to unroll, and objects get destroyed by calling their destructors.
+    // If the destructor of an object being destroyed during stack unrolling throws another exception which leaves the destructor, the C++ library will immediately terminate the program by calling the terminate() function.
     struct A
     {
         ~A()
