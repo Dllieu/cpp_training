@@ -19,7 +19,7 @@ namespace
     {
         auto i = 0;
         while ( i < to )
-            __yield_value i++;
+            co_yield i++;
     }
 
     auto   generate_fibonacci( size_t to )
@@ -28,7 +28,7 @@ namespace
         auto b = 1;
         for ( auto& i: generate_index( to ) )
         {
-            __yield_value a;
+            co_yield a;
             auto next = a + b;
             a = b;
             b = next;

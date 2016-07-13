@@ -4,6 +4,8 @@
 |Perf|RHEL Performance Tuning Guide (6/7)|2015|Laura Bailey|
 |Perf|Is Parallel Programming Hard, And, If So, What Can You Do About It?|2014|Paul E. McKenney|
 |Perf|Systems Performance: Enterprise and the Cloud|2013|Brendan Gregg|
+|Design|Game Engine Architecture, Second Edition|2014|Jason Gregory|
+|Design|Game Programming Patterns|2014|Robert Nystrom|
 |Low-level|The microarchitecture of Intel, AMD and VIA CPUs: An optimization guide for assembly programmers and compiler makers|2016|Agner Fog|
 |Low-level|Bare Metal C++|2016|Alex Robenko|
 |Low-level|Practical Reverse Engineering|2014|Bruce Dang, Alexandre Gazet, Elias Bachaalany, Sebastien Josse|
@@ -14,7 +16,7 @@
 ##Reading
 |Category | Title  | Year         | Author |
 |:----:|:---------:|:-------------:|:---------------:|
-|Design|Modern C++ Design|2001|Andrei Alexandrescu|
+|Perf|Intel® 64 and IA-32 Architectures Optimization Reference Manual|2016|Intel|
 
 ##Read
 |Category | Title  | Year         | Author |
@@ -28,3 +30,4 @@
 |Multi-Threading|C++ Concurrency in Action: Practical Multithreading|2012|Anthony Williams|
 |Networking|Beej's guides to Network Programming|2011|Beej|
 |Process|Recursive Make Considered Harmful|2008|Peter Miller|
+|Design|Modern C++ Design|2001|Andrei Alexandrescu|
