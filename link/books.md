@@ -1,22 +1,17 @@
-﻿##To Read
+##To Read
 |Category | Title  | Year         | Author |
 |:----:|:---------:|:-------------:|:---------------:|
 |Perf|RHEL Performance Tuning Guide (6/7)|2015|Laura Bailey|
-|Perf|Is Parallel Programming Hard, And, If So, What Can You Do About It?|2014|Paul E. McKenney|
-|Perf|Systems Performance: Enterprise and the Cloud|2013|Brendan Gregg|
 |Design|Game Engine Architecture, Second Edition|2014|Jason Gregory|
 |Design|Game Programming Patterns|2014|Robert Nystrom|
-|Low-level|The microarchitecture of Intel, AMD and VIA CPUs: An optimization guide for assembly programmers and compiler makers|2016|Agner Fog|
-|Low-level|Bare Metal C++|2016|Alex Robenko|
 |Low-level|Practical Reverse Engineering|2014|Bruce Dang, Alexandre Gazet, Elias Bachaalany, Sebastien Josse|
 |Low-level|Hacking: The Art of Exploitation, 2nd Edition|2008|Jon Erickson|
-|Low-level|The Architecture of the Nehalem Processor|2011|Michael E. Thomadakis|
-|Virtualization|Understanding and Hardening Linux Containers|2016|Aaron Grattafiori|
 
 ##Reading
 |Category | Title  | Year         | Author |
 |:----:|:---------:|:-------------:|:---------------:|
 |Perf|Intel® 64 and IA-32 Architectures Optimization Reference Manual|2016|Intel|
+|Finance|Algorithmic Trading & DMA|2010|Barry Johnson|
 
 ##Read
 |Category | Title  | Year         | Author |
