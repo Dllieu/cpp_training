@@ -6,6 +6,7 @@
 |Design|Game Programming Patterns|2014|Robert Nystrom|
 |Low-level|Practical Reverse Engineering|2014|Bruce Dang, Alexandre Gazet, Elias Bachaalany, Sebastien Josse|
 |Low-level|Hacking: The Art of Exploitation, 2nd Edition|2008|Jon Erickson|
+|Deep Learning|https://github.com/HFTrader/DeepLearningBook|2016||
 
 ##Reading
 |Category | Title  | Year         | Author |
