@@ -172,5 +172,8 @@
     <ClCompile Include="..\..\source\testsuite\AlignmentTestSuite.cpp">
       <Filter>Source Files\Benchmark</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\source\testsuite\IntrusiveContainerTestSuite.cpp">
+      <Filter>Source Files\Containers</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

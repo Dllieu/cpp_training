@@ -104,6 +104,7 @@
     <ClCompile Include="..\..\source\testsuite\FunctionCallTestSuite.cpp" />
     <ClCompile Include="..\..\source\testsuite\FutureTestSuite.cpp" />
     <ClCompile Include="..\..\source\testsuite\HashingTestSuite.cpp" />
+    <ClCompile Include="..\..\source\testsuite\IntrusiveContainerTestSuite.cpp" />
     <ClCompile Include="..\..\source\testsuite\IPCTestSuite.cpp" />
     <ClCompile Include="..\..\source\testsuite\LockFreeTestSuite.cpp" />
     <ClCompile Include="..\..\source\testsuite\MemoryOrderingTestSuite.cpp" />

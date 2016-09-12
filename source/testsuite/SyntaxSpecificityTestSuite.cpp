@@ -583,3 +583,31 @@ namespace
     FriendX::FriendX() : c( new FriendC() ) { c->data = 45; }
     void FriendX::modify() { c->data = 1; }
 }
+
+namespace
+{
+    struct ParentA
+    {
+        ParentA(int, double) {}
+    };
+
+    struct ParentB
+    {
+        ParentB( const std::string& ) {}
+    };
+
+    template < typename ParentClass >
+    struct Child : public ParentClass
+    {
+        using ParentClass::ParentClass; // will forward to the parent constructor with the same arguments
+    };
+
+    using ChildA = Child<ParentA>;
+    using ChildB = Child<ParentB>;
+
+    void    constructor_inheritance()
+    {
+        ChildA ca( 654, 45.8 );
+        ChildB cb( "asdasdasd" );
+    }
+}

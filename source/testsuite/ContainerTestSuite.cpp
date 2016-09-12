@@ -11,6 +11,8 @@
 #include <bitset>
 #include <iostream>
 
+#include <experimental\generator>
+
 #include "generic/HashCombine.h"
 
 BOOST_AUTO_TEST_SUITE( ContainerTestSuite )
