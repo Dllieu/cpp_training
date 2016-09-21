@@ -25,10 +25,10 @@ BOOST_AUTO_TEST_SUITE( TimeTestSuite )
 BOOST_AUTO_TEST_CASE( RatioTest )
 {
     using TimeRatio = std::milli;
-    
+
     constexpr const double timeMultiplicator = static_cast<double>(TimeRatio::num) /  TimeRatio::den;
-    const double timeMultiplicatorDeprecated = std::pow(10, -6);
-    
+    const double timeMultiplicatorDeprecated = std::pow(10, -3);
+
     BOOST_CHECK( timeMultiplicator == timeMultiplicatorDeprecated );
 }
 
