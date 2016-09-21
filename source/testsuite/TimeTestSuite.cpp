@@ -12,13 +12,25 @@
 #include <boost/asio.hpp>
 #pragma warning( pop )
 
+#include <cmath>
 #include <chrono>
 #include <time.h>
 #include <stdlib.h>
+#include <ratio>
 
 #include "containers/ArrayUtils.h"
 
 BOOST_AUTO_TEST_SUITE( TimeTestSuite )
+
+BOOST_AUTO_TEST_CASE( RatioTest )
+{
+    using TimeRatio = std::milli;
+    
+    constexpr const double timeMultiplicator = static_cast<double>(TimeRatio::num) /  TimeRatio::den;
+    constexpr const double timeMultiplicatorDeprecated = std::pow(10, -6);
+    
+    BOOST_CHECK( timeMultiplicator == timeMultiplicatorDeprecated );
+}
 
 BOOST_AUTO_TEST_CASE( SynchronousTimerTest )
 {
