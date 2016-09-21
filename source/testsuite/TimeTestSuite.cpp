@@ -14,7 +14,7 @@
 
 #include <cmath>
 #include <chrono>
-#include <time.h>
+#include <ctime>
 #include <stdlib.h>
 #include <ratio>
 
