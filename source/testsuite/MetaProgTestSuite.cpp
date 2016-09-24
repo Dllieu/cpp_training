@@ -330,4 +330,85 @@ BOOST_AUTO_TEST_CASE( FizzBuzzTest )
     BOOST_CHECK( true );
 }
 
+namespace
+{
+    struct var
+    {
+        struct InnerBase
+        {
+            virtual ~InnerBase() = default;
+            virtual InnerBase* clone() const = 0;
+        };
+
+        template <typename ValueType>
+        struct Inner final : InnerBase
+        {
+            Inner( ValueType value )
+                : value_( std::move( value ) )
+            {}
+
+            virtual InnerBase*              clone() const final override { return new Inner( value_ ); }
+            ValueType&                      operator*() { return value_; }
+            const ValueType&                operator*() const { return value_; }
+
+        private:
+            ValueType value_;
+        };
+
+        var( const var& src )
+            : inner_( src.inner_->clone() )
+        {}
+
+        template <typename ValueType>
+        var( ValueType value )
+            : inner_( new Inner<ValueType>( std::forward<ValueType>( value ) ) )
+        {}
+
+        template <typename ValueType>
+        var& operator=( ValueType value )
+        {
+            inner_ = std::make_unique< Inner< ValueType > >( std::forward<ValueType>( value ) );
+            return *this;
+        }
+
+        var& operator=( const var& src )
+        {
+            var oTmp( src );
+            std::swap( oTmp, *this );
+            return *this;
+        }
+
+        template <typename ValueType>
+        ValueType& cast()
+        {
+            return *dynamic_cast< Inner< ValueType > &>( *inner_ );
+        }
+
+        template <typename ValueType>
+        const ValueType& cast() const
+        {
+            return *dynamic_cast< Inner< ValueType > &>( *inner_ );
+        }
+
+    private:
+        std::unique_ptr< InnerBase > inner_;
+    };
+}
+
+BOOST_AUTO_TEST_CASE( TypeErasureTest )
+{
+    var v(50);
+    BOOST_TEST_CHECK( v.cast<int>() == 50 );
+
+    std::string s = "456fds";
+    v = s.c_str();
+    BOOST_TEST_CHECK( s == v.cast<const char*>() );
+
+    var v2 = v;
+    BOOST_TEST_CHECK( s == v2.cast<const char*>() );
+
+    std::vector<var> vs{ 54, "asdasd", 65.2 };
+    BOOST_TEST_CHECK( vs[2].cast<double>() == 65.2 );
+}
+
 BOOST_AUTO_TEST_SUITE_END() // MetaProgTestSuite

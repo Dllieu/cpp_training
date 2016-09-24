@@ -2,8 +2,9 @@
 // (C) Copyright 2014-2015 Stephane Molina, All rights reserved.
 // See https://github.com/Dllieu for updates, documentation, and revision history.
 //--------------------------------------------------------------------------------
-#ifndef __CONTAINERS_LOCKFREEQUEUESPSC_H__
-#define __CONTAINERS_LOCKFREEQUEUESPSC_H__
+#pragma once
+
+#include <memory>
 
 namespace containers
 {
@@ -77,4 +78,3 @@ namespace containers
     };
 }
 
-#endif /* ! __CONTAINERS_LOCKFREEQUEUESPSC_H__ */

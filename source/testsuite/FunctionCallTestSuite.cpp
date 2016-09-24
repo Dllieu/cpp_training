@@ -45,15 +45,44 @@ BOOST_AUTO_TEST_CASE( CallBenchmark )
 
     // about std::function (short version)
     // - store different types of callable objects. Hence, it must perform some type-erasure magic for the storage. Generally, this implies a dynamic memory allocation (by default through a call to new).
-    //   the standard encourages implementations to avoid the dynamic memory allocation for small objects (i.e. 
+    //   the standard encourages implementations to avoid the dynamic memory allocation for small objects
     // - std::function is not an alternative to templates, but rather a tool for design situations where templates cannot be used
     // - One such use case arises when you need to resolve a call at run-time by invoking a callable object that adheres to a specific signature, but whose concrete type is unknown at compile-time.
     //   This is typically the case when you have a collection of callbacks of potentially different types, but which you need to invoke uniformly;
     //   the type and number of the registered callbacks is determined at run-time based on the state of your program and the application logic. Some of those callbacks could be functors,
     //   some could be plain functions, some could be the result of binding other functions to certain arguments
     //   This result having the underlying call virtual which will very likely prevent inlining
+    // - use type-erasure which means it uses indirection to invoke the actual function, Means it first calls a virtual function which then invokes your function. So typically it involves (minimum) two function calls (one of them is virtual)
     // - tl;dr; no inlining / possible dynamic allocation (if not small object) / virtual call
     // - vs function ptr : std::function have a size overhead of 24 bytes (x86-64), the extra size is to allow at least a member function and an object pointer to be stored without requiring heap allocation
+    // The implementation of std::function can differ from one implementation to another, but the core idea is that it uses type-erasure.
+    // While there are multiple ways of doing it, you can imagine a trivial( not optimal ) solution could be like this ( simplified for the specific case of std::function<int( double )> for the sake of simplicity ) :
+    // struct callable_base
+    // {
+    //     virtual int operator()( double d ) = 0;
+    //     virtual ~callable_base() {}
+    // };
+    // template <typename F>
+    // struct callable : callable_base
+    // {
+    //     F functor;
+    //     callable( F functor ) : functor( functor ) {}
+    //     virtual int operator()( double d ) { return functor( d ); }
+    // };
+    // class function_int_double
+    // {
+    //     std::unique_ptr<callable_base> c;
+    // public:
+    //     template <typename F>
+    //     function( F f )
+    //     {
+    //         c.reset( new callable<F>( f ) );
+    //     }
+    //     int operator()( double d ) { return c( d ); }
+    //     // ...
+    // };
+    // In this simple approach the function object would store just a unique_ptr to a base type.For each different functor used with the function, a new type derived from the base is created and an object of that type instantiated dynamically.The std::function object is always of the same size and will allocate space as needed for the different functors in the heap.
+    // In real life there are different optimizations that provide performance advantages but would complicate the answer.The type could use small object optimizations, the dynamic dispatch can be replaced by a free - function pointer that takes the f
 
     // tl;dr : never use bind, always use lambda, or use transparent operator functor
     //       - std::function does have an overhead, always use template for the signature except if no choice
