@@ -385,4 +385,25 @@ BOOST_AUTO_TEST_CASE( ConcatStringTest )
     BOOST_CHECK( result.data() == ( std::string( s1 ) + s2 ) );
 }
 
+namespace
+{
+    template<typename U, typename ... T>
+    bool is_one_of(U&& u, T && ... t)
+    {
+        auto match = false;
+        (void)std::initializer_list<bool>{ (match = match || u == t)... };
+        return match;
+    }
+}
+
+BOOST_AUTO_TEST_SUITE( OneOfTest )
+{
+    constexpr const int n = 8;
+    
+    static_assert( is_one_of( n, 4, 1, 8, 3 ), "failed!" );
+    static_assert( !is_one_of( n, 4, 1, 3 ), "failed!" );
+    
+    BOOST_CHECK( true );
+}
+
 BOOST_AUTO_TEST_SUITE_END() // TMPTestSuite
