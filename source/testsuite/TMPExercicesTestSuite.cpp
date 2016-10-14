@@ -396,14 +396,12 @@ namespace
     }
 }
 
-BOOST_AUTO_TEST_SUITE( OneOfTest )
+BOOST_AUTO_TEST_SUITE( IsOneOfTest )
 {
-    constexpr const int n = 8;
+    const int n = 8;
     
-    static_assert( is_one_of( n, 4, 1, 8, 3 ), "failed!" );
-    static_assert( !is_one_of( n, 4, 1, 3 ), "failed!" );
-    
-    BOOST_CHECK( true );
+    BOOST_CHECK( is_one_of( n, 4, 1, 8, 3 ) );
+    BOOST_CHECK( ! is_one_of( n, 4, 1, 3 ) );
 }
 
 BOOST_AUTO_TEST_SUITE_END() // TMPTestSuite
