@@ -396,7 +396,7 @@ namespace
     }
 }
 
-BOOST_AUTO_TEST_SUITE( IsOneOfTest )
+BOOST_AUTO_TEST_CASE( IsOneOfTest )
 {
     const int n = 8;
     
