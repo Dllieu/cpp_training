@@ -8,8 +8,7 @@ platform:
 
 environment:
   MSVC_DEFAULT_OPTIONS: ON
-  #boost_1_60_0 not available
-  BOOST_VERSION: boost_1_65_1
+  BOOST_VERSION: boost_1_64_0
 
 configuration:
   - Debug
