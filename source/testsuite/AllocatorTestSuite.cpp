@@ -172,8 +172,8 @@ namespace
     {
     public:
         using value_type = T;
-        static auto constexpr alignment = Align;
-        static auto constexpr size = N;
+        static const auto constexpr alignment = Align;
+        static const auto constexpr size = N;
         using arena_type = arena<size, alignment>;
 
     private:

@@ -1,0 +1,179 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Intern">
+      <UniqueIdentifier>{daf409f9-ded1-48a6-be77-7a4d3a4e7cec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Threading">
+      <UniqueIdentifier>{9777bfd9-3eec-4bd7-9a00-f4dcbb14403f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Pricing">
+      <UniqueIdentifier>{14b1379a-4b0a-4f29-a005-0ee4d86e37fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\STL">
+      <UniqueIdentifier>{3301c939-acf3-4027-94bf-f89e4c44116e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Containers">
+      <UniqueIdentifier>{1651a1e8-3301-46ad-af81-6b088e242243}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Mocking">
+      <UniqueIdentifier>{217cb8ca-0929-4cad-8505-633ceb6f2777}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\SyntaxSpecific">
+      <UniqueIdentifier>{f3ad7e35-65da-4332-9f5c-1df8395a7801}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Exercice">
+      <UniqueIdentifier>{645b78f4-ebde-4402-b268-8943523ae891}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Networking">
+      <UniqueIdentifier>{f0672893-3e55-49b8-85d7-735281f484f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DesignPattern">
+      <UniqueIdentifier>{aaedfbce-5910-4f83-bae6-12a094be0b68}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Template">
+      <UniqueIdentifier>{7b9f038a-93ec-4302-93d7-742c2119735f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Allocator">
+      <UniqueIdentifier>{37cd6048-9909-4e23-873e-4d09b1a8453e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Benchmark">
+      <UniqueIdentifier>{f71aa018-5c94-4e0e-8a7d-4f91cb31eb4e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Time">
+      <UniqueIdentifier>{fa11aa94-81ba-4f71-b1ab-37653458a7bb}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\source\testsuite\Initializer.cpp">
+      <Filter>Source Files\Intern</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\testsuite\ObserverTestSuite.cpp">
+      <Filter>Source Files\DesignPattern</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\testsuite\VisitorTestSuite.cpp">
+      <Filter>Source Files\DesignPattern</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\testsuite\MacroTestSuite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\testsuite\ExceptionTestSuite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\testsuite\ByteTestSuite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\testsuite\FeatureTestSuite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\testsuite\MetaProgTestSuite.cpp">
+      <Filter>Source Files\Template</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\testsuite\TMPExercicesTestSuite.cpp">
+      <Filter>Source Files\Template</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\testsuite\ThreadingTestSuite.cpp">
+      <Filter>Source Files\Threading</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\testsuite\LockFreeTestSuite.cpp">
+      <Filter>Source Files\Threading</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\testsuite\StandardDeviationTestSuite.cpp">
+      <Filter>Source Files\Pricing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\testsuite\STLTestSuite.cpp">
+      <Filter>Source Files\STL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\testsuite\ContainerTestSuite.cpp">
+      <Filter>Source Files\Containers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\testsuite\CustomContainerTestSuite.cpp">
+      <Filter>Source Files\Containers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\testsuite\MockTestSuite.cpp">
+      <Filter>Source Files\Mocking</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\testsuite\FactoryTestSuite.cpp">
+      <Filter>Source Files\DesignPattern</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\testsuite\TypeTraitsTestSuite.cpp">
+      <Filter>Source Files\Template</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\testsuite\SyntaxSpecificityTestSuite.cpp">
+      <Filter>Source Files\SyntaxSpecific</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\testsuite\ArgumentTestSuite.cpp">
+      <Filter>Source Files\SyntaxSpecific</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\testsuite\FutureTestSuite.cpp">
+      <Filter>Source Files\Threading</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\testsuite\AlgoTestSuite.cpp">
+      <Filter>Source Files\Exercice</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\testsuite\MemoryOrderingTestSuite.cpp">
+      <Filter>Source Files\Threading</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\testsuite\SingletonTestSuite.cpp">
+      <Filter>Source Files\DesignPattern</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\testsuite\BasicNetworkingTestSuite.cpp">
+      <Filter>Source Files\Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\testsuite\HashingTestSuite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\testsuite\ProxyFunctorTestSuite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\testsuite\ScopeGuardTestSuite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\testsuite\IPCTestSuite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\testsuite\CoroutineTestSuite.cpp">
+      <Filter>Source Files\Threading</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\testsuite\ExceptionalCppTestSuite.cpp">
+      <Filter>Source Files\Exercice</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\testsuite\CRTPTestSuite.cpp">
+      <Filter>Source Files\Template</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\testsuite\AllocatorTestSuite.cpp">
+      <Filter>Source Files\Allocator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\testsuite\MemoryPoolTestSuite.cpp">
+      <Filter>Source Files\Allocator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\testsuite\SIMDTestSuite.cpp">
+      <Filter>Source Files\Benchmark</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\testsuite\CacheTestSuite.cpp">
+      <Filter>Source Files\Benchmark</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\testsuite\FunctionCallTestSuite.cpp">
+      <Filter>Source Files\Benchmark</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\testsuite\OptimizationTestSuite.cpp">
+      <Filter>Source Files\Benchmark</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\testsuite\SmartPointerTestSuite.cpp">
+      <Filter>Source Files\STL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\testsuite\TimeTestSuite.cpp">
+      <Filter>Source Files\Time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\testsuite\AlignmentTestSuite.cpp">
+      <Filter>Source Files\Benchmark</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\testsuite\IntrusiveContainerTestSuite.cpp">
+      <Filter>Source Files\Containers</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

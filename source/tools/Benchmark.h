@@ -16,8 +16,8 @@
 
 namespace tools
 {
-    static constexpr int                        NumberTrials = 20;
-    static constexpr std::chrono::milliseconds  MinTimePerTrial( 200 );
+    static constexpr const int                        NumberTrials = 20;
+    static constexpr const std::chrono::milliseconds  MinTimePerTrial( 200 );
 
     template < typename F >
     auto    benchmark_impl( size_t n, F&& f )

@@ -291,4 +291,60 @@ BOOST_AUTO_TEST_CASE( AlgoTest )
     BOOST_CHECK( boost::algorithm::clamp( 3, 1/*lo*/, 7/*hi*/ ) == 3 );
 }
 
+namespace
+{
+#define PRINT_STAT(STAT_NAME) \
+    std::cout << #STAT_NAME << ": " << m.##STAT_NAME() << std::endl
+
+    // Additional stats needed
+    // - When feeder started (i.e. was it started intraday or before open)
+    // - Instrument Name associated to that order map
+    template < typename UNORDERED_MAP >
+    void    print_stats( const UNORDERED_MAP& m )
+    {
+        PRINT_STAT( size );
+        PRINT_STAT( bucket_count );
+        PRINT_STAT( load_factor );
+    }
+
+#undef PRINT_STAT
+
+    using OrderId = size_t;
+    using OrderT = size_t;
+
+    size_t     nearest_power_8( size_t n )
+    {
+        // TODO
+        return n;
+    }
+}
+
+BOOST_AUTO_TEST_CASE( UnorderedMapStatTest )
+{
+    std::unordered_map< OrderId, OrderT > m;
+    // Sets the number of buckets to the number needed to accomodate at least count elements without exceeding maximum load factor and rehashes the container
+    //m.reserve( 7 ); // whatever happen, it will reserve nearest power of 2 (except if too small then it will use nearest power of 8 in vs2015)
+
+    // might be better to reserve upfront nearest power of 8 to diminish the collision and keep consistent with the default hash policy
+    m.reserve( nearest_power_8( 7 ) );
+
+    for ( auto i = 0; i < 10; ++i )
+    {
+        // Default reallocation pattern will multiply by 8 the number of bucket (e.g. (8 -> 64 -> 512) or (16 -> 128 -> ...)) if not enough space
+        // If reserved with the right size at first, number of bucket will be nearest power of 2 instead of nearest power of 8
+        // But might still want to keep more bucket that number of element to diminish the collision, might take that into consideration when reserving upfront
+        m.emplace( i, i );
+
+        print_stats( m );
+    }
+
+    for ( auto i = 0; i < 5; ++i )
+    {
+        m.erase( m.begin() );
+        m.reserve( m.size() ); // will shrink to nearest power of 2 (e.g. 64 -> 16 -> 8 -> ...) (i.e. won't be the case as we don't reserve at runtime)
+
+        print_stats( m );
+    }
+}
+
 BOOST_AUTO_TEST_SUITE_END() // STLTestSuite
