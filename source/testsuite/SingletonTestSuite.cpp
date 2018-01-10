@@ -35,7 +35,7 @@ namespace
                 memoryBarrier = singleton;
                 if ( memoryBarrier == nullptr )
                 {
-                    memoryBarrier.reset( new T );
+                    memoryBarrier.reset( new T{} );
                     singleton = memoryBarrier;
                 }
             }
